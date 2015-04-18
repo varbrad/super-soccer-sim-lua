@@ -31,6 +31,7 @@ function s.refresh(...)
 end
 
 function s.pop()
+	if #states==0 then return end
 	local state = s.active()
 	table.remove(states,#states)
 	return (state.removed or __NULL__)(state)
@@ -42,6 +43,10 @@ end
 
 function s.length()
 	return #states
+end
+
+function s.get_state(i)
+	return states[i]
 end
 
 return s

@@ -1,11 +1,11 @@
 local skin = {}
 
 skin.colors = {
-	"69D2E7";
-	"A7DBD8";
-	"E0E4CC";
-	"F38630";
-	"FA6900";
+	love.graphics.hexToRgb("3e3e3e");
+	love.graphics.hexToRgb("A7DBD8");
+	love.graphics.hexToRgb("E0E4CC");
+	love.graphics.hexToRgb("F38630");
+	love.graphics.hexToRgb("FA6900");
 }
 
 skin.navbar = {

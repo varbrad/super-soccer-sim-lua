@@ -1,0 +1,12 @@
+Team Database
+-------------
+
+id				|	integer		|	Unique team ID.
+long_name		|	string		|	The long version of the team name.
+short_name 		|	string		|	The shortened version of the team name.
+def, mid, att	|	integer		|	Numerical value for stats from 1-100.
+league_id		|	integer		|	League ID of the team.
+color_1			|	hex			|	Primary team color. Converted to RGB at run-time.
+color_2			|	hex			|	Secondary team color. Converted to RGB at run-time.
+
+Any other entries will be ignored.
