@@ -4,30 +4,27 @@ splash.name = "Splash"
 function splash:init()
 	self.__z = 1
 	self.timer = g.timer.new()
-	self.x, self.y = 50, 50
+	self.message = "Loading"
+	splash:draw()
+	--
+	g.console:log("splash:init")
 end
 
 function splash:added()
 	self.timer.clear() -- Clear the local timer
+	--
+	g.db_manager.load("../db/teams.csv", "../db/leagues.csv")
+	--
+	self.message = self.message .. "\nDB Loaded"
 end
 
 function splash:update(dt)
 	self.timer.update(dt)
-	self.x = self.x + 10*dt
-	self.y = self.y + 16*dt
 end
 
 function splash:draw()
-	love.graphics.setColor(255,90,95,255)
-	love.graphics.circle("fill",self.x, self.y,20)
-end
-
-function splash:keypressed(k, ir)
-
-end
-
-function splash:mousepressed(x, y, b)
-	self.x, self.y = x, y
+	love.graphics.setColor(255,255,255,255)
+	love.graphics.print(self.message, 10, 10)
 end
 
 return splash

@@ -14,6 +14,7 @@ function love.load()
 	g.state = require "libs.state"
 	g.timer = require "libs.timer"
 	-- Src
+	g.db_manager = require "src.db_manager"
 	g.skin = require "src.skin"
 	--
 	g.states = {
@@ -27,7 +28,6 @@ function love.load()
 	--
 	g.state.add(g.states.splash)
 	g.state.add(g.states.console)
-
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()

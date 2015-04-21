@@ -6,6 +6,7 @@ local data = {}
 function console:init()
 	self.__z = 999
 	self.visible = false
+	g.console:log("console:init")
 end
 
 function console:added()
@@ -52,6 +53,7 @@ function console:hr()
 end
 
 function console:print(text, color)
+	color = color or {123,123,123,255}
 	table.insert(data, 1, {text = text; color = color;} )
 	console:trim()
 end
