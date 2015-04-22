@@ -22,12 +22,12 @@ function console:draw()
 	love.graphics.setColor(0, 0, 0, 150)
 	love.graphics.rectangle("fill", g.skin.console.margin, g.skin.console.margin, g.width - g.skin.console.margin*2, g.height - g.skin.console.margin*2)
 	love.graphics.setColor(255, 255, 255, 255)
-	local font = love.graphics.getFont()
-	local y = g.height - g.skin.console.margin - g.skin.console.padding - font:getHeight()
+	g.font.set("console", 14)
+	local y = g.height - g.skin.console.margin - g.skin.console.padding - g.font.height()
 	for i = 1, #data do
 		love.graphics.setColor(data[i].color)
 		love.graphics.print(data[i].text, g.skin.console.margin + g.skin.console.padding, y)
-		y = y - font:getHeight()
+		y = y - g.font.height()
 	end
 end
 
@@ -48,7 +48,7 @@ function console:log(...)
 end
 
 function console:hr()
-	table.insert(data, 1, {text = "---------------------"; color = {123, 123, 123, 255};} )
+	table.insert(data, 1, {text = "────────────────────"; color = {123, 123, 123, 255};} )
 	console:trim()
 end
 

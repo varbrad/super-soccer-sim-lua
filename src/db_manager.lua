@@ -5,8 +5,10 @@ dbm.leagues = {}
 
 -- Paths to the teams and leagues .csv files
 function dbm.load(teams, leagues)
-	teams = g.csv.open(teams, { header = true } )
-	leagues = g.csv.open(leagues, { header = true } )
+	local team_file = love.filesystem.read(teams)
+	local league_file = love.filesystem.read(leagues)
+	teams = g.csv.use(team_file, { header = true } )
+	leagues = g.csv.use(league_file, { header = true } )
 	--
 	for fields in teams:lines() do
 		local team = {}

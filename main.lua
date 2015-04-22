@@ -11,6 +11,7 @@ function love.load()
 	love.graphics.setLineStyle("smooth")
 	-- Libs
 	g.csv = require "libs.csv"
+	g.font = require "libs.font"
 	g.state = require "libs.state"
 	g.timer = require "libs.timer"
 	-- Src
@@ -36,6 +37,7 @@ end
 function love.update(dt)
 	g.timer.update(dt)
 	--
+	if g.console.visible and g.console.update then return g.console:update() end
 	for i, state in g.state.states() do
 		if state.update then state:update(dt) end
 	end
