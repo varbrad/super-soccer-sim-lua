@@ -23,6 +23,7 @@ function splash:added()
 	--
 	g.db_manager.load("db/teams.csv", "db/leagues.csv")
 	-- Go to the menu state
+	g.state.switch(g.states.menu)
 end
 
 function splash:update(dt)

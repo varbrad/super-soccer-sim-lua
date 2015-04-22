@@ -20,6 +20,7 @@ function love.load()
 	--
 	g.states = {
 		console = require "states.console";
+		menu = require "states.menu";
 		splash = require "states.splash";
 	}
 	-- Common alliases for states
@@ -27,8 +28,8 @@ function love.load()
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	--
-	g.state.add(g.states.splash)
 	g.state.add(g.states.console)
+	g.state.add(g.states.splash)
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
