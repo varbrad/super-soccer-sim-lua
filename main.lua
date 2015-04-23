@@ -12,6 +12,7 @@ function love.load()
 	-- Libs
 	g.csv = require "libs.csv"
 	g.font = require "libs.font"
+	g.image = require "libs.image"
 	g.state = require "libs.state"
 	g.timer = require "libs.timer"
 	-- Src
@@ -29,7 +30,7 @@ function love.load()
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	--
 	g.state.add(g.states.console)
-	g.state.add(g.states.splash)
+	g.state.add(g.states.menu)
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()

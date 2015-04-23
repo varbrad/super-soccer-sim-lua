@@ -10,7 +10,6 @@ skin.black = hex("000000")
 
 -- Load fonts
 g.font.new("console", "assets/fonts/consolas/regular.ttf", {14})
-
 g.font.new("regular", "assets/fonts/titillium/regular.otf", {12, 13, 24})
 
 skin.colors = {
