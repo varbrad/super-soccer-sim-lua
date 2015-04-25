@@ -19,6 +19,7 @@ end
 function s.add(state, ...)
 	if state.init then state.init(state) end
 	state.init = nil
+	state.__z = state.__z or 1
 	_states[#_states+1] = state
 	_states_z[#_states_z+1] = state
 	-- Sort the z table
@@ -35,6 +36,23 @@ end
 function s.switch(state, ...)
 	s.pop()
 	s.add(state, ...)
+end
+
+function s.swap(old, new, ...)
+	for i=1,#_states do
+		local state = _states[i]
+		if state==old then
+			s.remove(old)
+			if new.init then new.init(new) end
+			new.init=nil
+			new.__z = new.__z or 1
+			_states[i] = new
+			_states_z[#_states_z+1] = new
+			--
+			sort_z()
+			return (new.added or __NULL__)(new, ...)
+		end
+	end
 end
 
 function s.refresh(...)

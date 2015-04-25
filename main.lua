@@ -10,6 +10,7 @@ function love.load()
 	love.graphics.setDefaultFilter("linear","linear")
 	love.graphics.setLineStyle("smooth")
 	-- Libs
+	g.button = require "libs.button"
 	g.csv = require "libs.csv"
 	g.font = require "libs.font"
 	g.image = require "libs.image"
@@ -20,17 +21,23 @@ function love.load()
 	g.skin = require "src.skin"
 	--
 	g.states = {
+		background = require "states.background";
 		console = require "states.console";
 		menu = require "states.menu";
-		splash = require "states.splash";
+		new_game_load = require "states.new_game_load";
 	}
 	-- Common alliases for states
 	g.console = g.states.console
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	--
+	g.state.add(g.states.background)
 	g.state.add(g.states.console)
 	g.state.add(g.states.menu)
+	--
+	g.mouse = {}
+	g.mouse.x = -1
+	g.mouse.y = -1
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
@@ -38,8 +45,11 @@ end
 
 function love.update(dt)
 	g.timer.update(dt)
-	--
 	if g.console.visible and g.console.update then return g.console:update() end
+	--
+	g.mouse.x, g.mouse.y = love.mouse.getPosition()
+	g.button.update(g.mouse.x, g.mouse.y)
+	--
 	for i, state in g.state.states() do
 		if state.update then state:update(dt) end
 	end
@@ -62,6 +72,10 @@ function love.keypressed(k,ir)
 end
 
 function love.mousepressed(x, y, b)
+	if g.console.visible then return end
+	--
+	g.button.mousepressed(x, y, b)
+	--
 	for i, state in g.state.states() do
 		if state.mousepressed then state:mousepressed(x, y, b) end
 	end

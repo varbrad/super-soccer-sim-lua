@@ -1,7 +1,7 @@
-local splash = {}
-splash.name = "Splash"
+local ngl = {}
+ngl.name = "New Game Load"
 
-function splash:init()
+function ngl:init()
 	self.__z = 1
 	self.timer = g.timer.new()
 	self.message = "Loading"
@@ -14,23 +14,22 @@ function splash:init()
 	self.loading.rotation = 0
 	self:draw()
 	--
-	g.console:log("splash:init")
+	g.console:log("ngl:init")
 end
 
-function splash:added()
+function ngl:added()
 	self.timer.clear() -- Clear the local timer
 	self:rotate_loading()
 	--
 	g.db_manager.load("db/teams.csv", "db/leagues.csv")
 	-- Go to the menu state
-	g.state.switch(g.states.menu)
 end
 
-function splash:update(dt)
+function ngl:update(dt)
 	self.timer.update(dt)
 end
 
-function splash:draw()
+function ngl:draw()
 	love.graphics.setColor(255,255,255,255)
 	g.font.set("regular", 24)
 	love.graphics.printf(self.message, 0, self.loading.y + self.loading.height + 10, g.width, "center")
@@ -39,9 +38,9 @@ end
 
 --
 
-function splash:rotate_loading()
+function ngl:rotate_loading()
 	self.loading.rotation = 0
 	self.timer.tween(1, self.loading, {rotation = math.pi * 2}, "linear", function() self:rotate_loading() end)
 end
 
-return splash
+return ngl
