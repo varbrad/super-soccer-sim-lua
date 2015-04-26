@@ -9,4 +9,24 @@ league_id		|	integer		|	League ID of the team.
 color_1			|	hex			|	Primary team color. Converted to RGB at run-time.
 color_2			|	hex			|	Secondary team color. Converted to RGB at run-time.
 
-Any other entries will be ignored.
+Run time additions
+------------------
+
+league 			|	object		|	A reference to the actual league this team is in
+
+
+League Database
+---------------
+
+id 				|	integer		|	Unique league ID.
+long_name		|	string		|	The long version of the league name (Usually with sponsor names)
+short_name		|	string		|	Shorter version of the name, without sponsors usually
+level			|	integer		|	The level on the pyramid of promotion/relegation
+flag			|	string		|	2 letter abb. of the nation the league is held in.
+color_1			|	hex			|	Primary league color (Should ALWAYS be a dark color)
+color_2			|	hex			|	Secondary league color (Should ALWAYS be a light color)
+
+Run time additions
+------------------
+
+teams			|	array		|	A list of teams currently registered to the competition

@@ -37,9 +37,10 @@ function console:draw()
 	arr[1] = string.format("LÖVE Version: %s.%s.%s", g.v_major, g.v_minor, g.v_revision)
 	arr[2] = string.format("Game Version: %s", g.version)
 	arr[3] = string.format("Current FPS: %s", love.timer.getFPS())
-	arr[4] = string.format("VRAM: %.2f MB", stats.texturememory/1024/1024)
-	arr[5] = string.format("Loaded Images: %s (%x)", stats.images, stats.images)
-	arr[6] = string.format("Loaded Fonts: %s (%x)", stats.fonts, stats.fonts)
+	arr[4] = string.format("Current Mem: %i KB", collectgarbage("count"))
+	arr[5] = string.format("VRAM: %.2f MB", stats.texturememory/1024/1024)
+	arr[6] = string.format("Loaded Images: %s (%x)", stats.images, stats.images)
+	arr[7] = string.format("Loaded Fonts: %s (%x)", stats.fonts, stats.fonts)
 	love.graphics.setColor(255, 255, 255, 255)
 	for i=1, #arr do
 		love.graphics.print(arr[i], pm, pm + (i-1)*g.font.height())
@@ -48,6 +49,8 @@ end
 
 function console:keypressed(k, ir)
 	if k=="`" then self.visible = not self.visible end
+	if k=="p" then self:print(g.state.order(), g.skin.green); self:print(g.state.z_order(), g.skin.blue) end
+	if k=="delete" then data = {} end
 end
 
 -- Functions

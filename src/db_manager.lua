@@ -1,7 +1,11 @@
 local dbm = {}
 
+local hex = love.graphics.hexToRgb
+
 dbm.teams = {}
+dbm.team_dict = {}
 dbm.leagues = {}
+dbm.league_dict = {}
 
 -- Paths to the teams and leagues .csv files
 function dbm.load(teams, leagues)
@@ -17,6 +21,7 @@ function dbm.load(teams, leagues)
 			if team[k] == "" then team[k] = nil end
 		end
 		dbm.teams[#dbm.teams+1] = team
+		dbm.team_dict[team.id] = team
 	end
 	-- Teams initial load in complete
 	g.console:print(#dbm.teams .. " teams loaded from db", g.skin.blue)
@@ -28,9 +33,18 @@ function dbm.load(teams, leagues)
 			if league[k] == "" then league[k] = nil end
 		end
 		dbm.leagues[#dbm.leagues+1] = league
+		dbm.league_dict[league.id] = league
 	end
 	-- Leagues initial load complete
 	g.console:print(#dbm.leagues .. " leagues loaded from db", g.skin.blue)
+	-- Now need to process data and link everything together
+	for i=1, #dbm.teams do
+		local team = dbm.teams[i]
+		team.league = dbm.league_dict[team.league_id]
+		team.color_1 = hex(team.color_1)
+		team.color_2 = hex(team.color_2)
+		team.color_3 = hex(team.color_3)
+	end
 end
 
 return dbm

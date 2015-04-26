@@ -90,17 +90,19 @@ function s.get_state_z(i)
 end
 
 function s.z_order()
-	print("Draw (z) Order")
+	local str = "Draw (z) Order\t"
 	for i=1,#_states_z do
-		print(i, _states_z[i].name)
+		str = str .. i .. ", " .. _states_z[i].name .. "\t"
 	end
+	return str
 end
 
 function s.order()
-	print("Standard State Order")
+	local str = "Standard State Order\t"
 	for i=1,#_states do
-		print(i, _states[i].name)
+		str = str .. i .. ", " ..  _states[i].name .. "\t"
 	end
+	return str
 end
 
 -- Iteration functions

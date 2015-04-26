@@ -23,17 +23,23 @@ function love.load()
 	g.states = {
 		background = require "states.background";
 		console = require "states.console";
-		menu = require "states.menu";
-		new_game_load = require "states.new_game_load";
+		navbar = require "states.navbar";
+		overview = require "states.overview";
+		ribbon = require "states.ribbon";
 	}
 	-- Common alliases for states
 	g.console = g.states.console
+	g.ribbon = g.states.ribbon
+	g.navbar = g.states.navbar
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	--
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)
-	g.state.add(g.states.menu)
+	--
+	g.state.add(g.states.navbar)
+	g.state.add(g.states.ribbon)
+	g.state.add(g.states.overview)
 	--
 	g.mouse = {}
 	g.mouse.x = -1
@@ -45,8 +51,6 @@ end
 
 function love.update(dt)
 	g.timer.update(dt)
-	if g.console.visible and g.console.update then return g.console:update() end
-	--
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.button.update(g.mouse.x, g.mouse.y)
 	--
@@ -72,8 +76,6 @@ function love.keypressed(k,ir)
 end
 
 function love.mousepressed(x, y, b)
-	if g.console.visible then return end
-	--
 	g.button.mousepressed(x, y, b)
 	--
 	for i, state in g.state.states() do
@@ -83,7 +85,8 @@ end
 
 -- New functions
 function love.graphics.hexToRgb(hex)
-	return { tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6)) }
+	if hex==nil then return nil end
+	return { tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6)), tonumber("0x"..hex:sub(7,8)) }
 end
 
 function love.graphics.setColorAlpha(color,alpha)
