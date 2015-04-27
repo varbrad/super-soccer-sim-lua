@@ -1,21 +1,45 @@
 id,long_name,short_name,def,mid,att,league_id,color_1,color_2,color_3
-1,Arsenal F.C.,Arsenal,77,80,83,1,ef0107,ffffff,bf0106
-2,Aston Villa F.C.,Aston Villa,73,70,74,1,7a003c,94bee5,620030
-3,Burnley F.C.,Burnley,70,69,73,1,661335,8dd2f1,520f2a
-4,Chelsea F.C.,Chelsea,82,84,84,1,034594,ffffff,023776
-5,Crystal Palace F.C.,Crystal Palace,73,74,74,1,1b458f,ffffff,163772
-6,Everton F.C.,Everton,78,77,78,1,274488,ffffff,1f366d
-7,Hull City A.F.C.,Hull,70,72,72,1,f5a12d,000000,c48124
-8,Leicester City F.C.,Leicester,71,71,71,1,0053a0,ffffff,004280
-9,Liverpool F.C.,Liverpool,76,80,82,1,d00027,ffffff,a6001f
-10,Manchester City F.C.,Manchester City,81,83,84,1,7dbeff,00003e,6498cc
-11,Manchester United F.C.,Manchester Utd,79,80,82,1,e20e0e,ffffff,b50b0b
-12,Newcastle United F.C.,Newcastle,75,73,78,1,000000,ffffff,333333
-13,Queens Parks Rangers F.C.,QPR,69,74,76,1,ffffff,005cab,cccccc
-14,Southampton F.C.,Southampton,75,76,77,1,ed1a3b,ffffff,be152f
-15,Stoke City F.C.,Stoke,75,75,75,1,e03a3e,ffffff,b32e32
-16,Sunderland A.F.C.,Sunderland,73,73,75,1,eb172b,ffffff,bc1222
-17,Swansea City A.F.C.,Swansea,74,73,75,1,ffffff,000000,cccccc
-18,Tottenham Hotspur F.C.,Tottenham,77,77,78,1,ffffff,001c58,cccccc
-19,West Bromwich Albion F.C.,West Brom,72,74,75,1,ffffff,091453,cccccc
-20,West Ham United F.C.,West Ham,75,75,76,1,60223b,80bfff,4d1b2f
+1,Arsenal,Arsenal,77,80,83,1,ef0107,ffffff,bf0106
+2,Aston Villa,Aston Villa,73,70,74,1,7a003c,94bee5,620030
+3,Burnley,Burnley,70,69,73,1,661335,8dd2f1,520f2a
+4,Chelsea,Chelsea,82,84,84,1,034594,ffffff,023776
+5,Crystal Palace,Crystal Palace,73,74,74,1,1b458f,ffffff,163772
+6,Everton,Everton,78,77,78,1,274488,ffffff,1f366d
+7,Hull City,Hull,70,72,72,1,f5a12d,000000,c48124
+8,Leicester City,Leicester,71,71,71,1,0053a0,ffffff,004280
+9,Liverpool,Liverpool,76,80,82,1,d00027,ffffff,a6001f
+10,Manchester City,Manchester City,81,83,84,1,7dbeff,00003e,6498cc
+11,Manchester United,Manchester Utd,79,80,82,1,e20e0e,ffffff,b50b0b
+12,Newcastle United,Newcastle,75,73,78,1,000000,ffffff,333333
+13,Queens Park Rangers,QPR,69,74,76,1,ffffff,005cab,cccccc
+14,Southampton,Southampton,75,76,77,1,ed1a3b,ffffff,be152f
+15,Stoke City,Stoke,75,75,75,1,e03a3e,ffffff,b32e32
+16,Sunderland,Sunderland,73,73,75,1,eb172b,ffffff,bc1222
+17,Swansea City,Swansea,74,73,75,1,ffffff,000000,cccccc
+18,Tottenham Hotspur,Tottenham,77,77,78,1,ffffff,001c58,cccccc
+19,West Bromwich Albion,West Brom,72,74,75,1,ffffff,091453,cccccc
+20,West Ham United,West Ham,75,75,76,1,60223b,80bfff,4d1b2f
+21,Birmingham City,Birmingham,67,67,67,2,254ea2,ffffff,254ea2
+22,Blackburn Rovers,Blackburn,67,68,70,2,1007b0,ffffff,0d068d
+23,Blackpool,Blackpool,62,65,62,2,ff8e02,ffffff,cc7202
+24,Bolton Wanderers,Bolton,66,66,69,2,ffffff,172442,cccccc
+25,AFC Bournemouth,Bournemouth,67,69,70,2,f50c13,000000,c40a0f
+26,Brentford,Brentford,67,68,68,2,dc351b,ffffff,b02a16
+27,Brighton & Hove Albion,Brighton,68,67,66,2,005daa,ffffff,004a88
+28,Cardiff City,Cardiff,69,66,67,2,0000cc,ffffff,0000a3
+29,Charlton Athletic,Charlton,67,67,68,2,d4021d,ffffff,aa0217
+30,Derby County,Derby,69,70,72,2,ffffff,000000,cccccc
+31,Fulham,Fulham,68,70,68,2,ffffff,000000,cccccc
+32,Huddersfield Town,Huddersfield,67,67,67,2,003990,ffffff,002e73
+33,Ipswich Town,Ipswich,68,68,68,2,3a64a2,ffffff,2e5082
+34,Leeds United,Leeds,66,66,66,2,ffffff,2e4f9e,cccccc
+35,Middlesbrough,Middlesbrough,68,68,70,2,d5020e,ffffff,aa020b
+36,Millwall,Millwall,65,66,65,2,002060,ffffff,001a4d
+37,Norwich City,Norwich,70,71,69,2,fff200,00a650,ccc200
+38,Nottingham Forest,Nottingham,68,67,70,2,e53233,ffffff,b72829
+39,Reading,Reading,68,67,67,2,ffffff,004494,cccccc
+40,Rotherham United,Rotherham,64,65,65,2,e44538,ffffff,b6372d
+41,Sheffield Wednesday,Sheffield Wed,66,66,66,2,005fab,ffffff,004c89
+42,Watford,Watford,69,69,70,2,fbee23,ed2127,c9be1c
+43,Wigan Athletic,Wigan,67,66,66,2,1d59af,ffffff,17478c
+44,Wolverhampton Wanderers,Wolves,66,67,69,2,faa61a,000000,c88515

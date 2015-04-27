@@ -11,7 +11,7 @@ skin.black = hex("333333")
 -- Load fonts
 g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 14, 24, 36, 48})
 g.font.new("regular", "assets/fonts/titillium/regular.otf", 	{12, 14, 24, 36, 48})
-g.font.new("bold", "assets/fonts/titillium/bold.otf",			{12, 14, 24, 36, 48})
+g.font.new("bold", "assets/fonts/montserrat/bold.ttf",			{12, 14, 24, 36, 48})
 g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 14, 24, 36, 48})
 
 skin.colors = {
@@ -27,6 +27,7 @@ skin.padding = 8
 skin.tab = 22
 
 skin.console = {
+	font = { "console", 14 };
 	margin = skin.margin;
 	padding = skin.padding;
 }

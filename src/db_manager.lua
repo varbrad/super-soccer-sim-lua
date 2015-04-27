@@ -32,6 +32,7 @@ function dbm.load(teams, leagues)
 			league[k] = v
 			if league[k] == "" then league[k] = nil end
 		end
+		league.teams = {}
 		dbm.leagues[#dbm.leagues+1] = league
 		dbm.league_dict[league.id] = league
 	end
@@ -41,9 +42,10 @@ function dbm.load(teams, leagues)
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
 		team.league = dbm.league_dict[team.league_id]
-		team.color_1 = hex(team.color_1)
-		team.color_2 = hex(team.color_2)
-		team.color_3 = hex(team.color_3)
+		table.insert(team.league.teams, team)
+		team.color_1 = hex(team.color_1) or g.skin.black
+		team.color_2 = hex(team.color_2) or g.skin.white
+		team.color_3 = hex(team.color_3) or g.skin.black
 	end
 end
 

@@ -24,7 +24,7 @@ function console:draw()
 	love.graphics.setColor(0, 0, 0, 150)
 	love.graphics.rectangle("fill", g.skin.console.margin, g.skin.console.margin, g.width - g.skin.console.margin*2, g.height - g.skin.console.margin*2)
 	love.graphics.setColor(255, 255, 255, 255)
-	g.font.set("console", 14)
+	g.font.set(g.skin.console.font)
 	local y = g.height - g.skin.console.margin - g.skin.console.padding - g.font.height()
 	for i = 1, #data do
 		love.graphics.setColor(data[i].color)

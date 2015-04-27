@@ -3,10 +3,12 @@ local image = {}
 local cache = {}
 
 function image.new(path, x, y, sx, sy)
+	path = "assets/images/" .. path
 	local i = {}
 	if cache[path] then
 		i.img = cache[path]
 	else
+		if not love.filesystem.exists(path) then return nil end
 		i.img = love.graphics.newImage(path)
 		cache[path] = i.img
 	end

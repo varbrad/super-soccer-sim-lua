@@ -5,12 +5,15 @@ function ribbon:init()
 	self.__z = 2
 	self.timer = g.timer.new()
 	self.colors = { g.skin.black, g.skin.white, g.skin.red } -- First is bg, 2nd is text, 3rd is dark color
+	self.gradient = love.graphics.gradient({{200,200,200},{255,255,255}, direction = "h"})
+	self.gradient_w, self.gradient_h = g.skin.ribbon.w / self.gradient:getWidth(), (g.skin.ribbon.h - g.skin.ribbon.border) / self.gradient:getHeight()
 	self.header = { text = "ribbon"; x = g.skin.ribbon.x + g.skin.padding; y = g.skin.ribbon.y + ((g.skin.ribbon.h-g.skin.ribbon.border)/2 - g.font.height(g.skin.ribbon.font)/2)}
 	self.logo = nil
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
 	--
 	g.console:log("ribbon:init")
+	g.console:log(self.gradient)
 end
 
 function ribbon:added()
@@ -26,6 +29,11 @@ function ribbon:draw()
 	--
 	love.graphics.setColor(self.colors[1])
 	love.graphics.rectangle("fill", g.skin.ribbon.x, g.skin.ribbon.y, g.skin.ribbon.w, g.skin.ribbon.h - g.skin.ribbon.border)
+	--
+	love.graphics.setBlendMode("multiplicative")
+	love.graphics.setColor(255, 255, 255, 255)
+	love.graphics.draw(self.gradient, g.skin.ribbon.x, g.skin.ribbon.y, 0, self.gradient_w, self.gradient_h)
+	love.graphics.setBlendMode("alpha")
 	--
 	if self.header.text~="" then
 		g.font.set(g.skin.ribbon.font)
@@ -51,7 +59,6 @@ end
 
 function ribbon:set_image(path)
 	if path==nil then self.logo = nil; self.large_logo = nil; return end
-	path = "assets/images/" .. path
 	self.logo = g.image.new(path)
 	self.large_logo = g.image.new(path)
 	self:set_positions()
@@ -100,7 +107,7 @@ end
 function ribbon:reset()
 	self:set_image()
 	self:set_header()
-	self:set_colors(g.skin.black, g.skin.white, g.skin.blue)
+	self:set_colors(g.skin.black, g.skin.white, g.skin.black)
 	--
 	self:set_positions()
 end
