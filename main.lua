@@ -10,12 +10,12 @@ function love.load()
 	love.graphics.setDefaultFilter("linear","linear")
 	love.graphics.setLineStyle("smooth")
 	-- Libs
-	g.button = require "libs.button"
 	g.csv = require "libs.csv"
 	g.font = require "libs.font"
 	g.image = require "libs.image"
 	g.state = require "libs.state"
 	g.timer = require "libs.timer"
+	g.ui = require "libs.ui"
 	-- Src
 	g.db_manager = require "src.db_manager"
 	g.skin = require "src.skin"
@@ -44,6 +44,10 @@ function love.load()
 	g.mouse = {}
 	g.mouse.x = -1
 	g.mouse.y = -1
+	g.mouse.cursor = {}
+	g.mouse.cursor.arrow = love.mouse.getSystemCursor("arrow")
+	g.mouse.cursor.hand = love.mouse.getSystemCursor("hand")
+	love.mouse.setCursor(g.mouse.cursor.arrow)
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
@@ -52,7 +56,7 @@ end
 function love.update(dt)
 	g.timer.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
-	g.button.update(g.mouse.x, g.mouse.y)
+	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)
 	--
 	for i, state in g.state.states() do
 		if state.update then state:update(dt) end
@@ -76,8 +80,6 @@ function love.keypressed(k,ir)
 end
 
 function love.mousepressed(x, y, b)
-	g.button.mousepressed(x, y, b)
-	--
 	for i, state in g.state.states() do
 		if state.mousepressed then state:mousepressed(x, y, b) end
 	end

@@ -5,12 +5,13 @@ function ribbon:init()
 	self.__z = 2
 	self.timer = g.timer.new()
 	self.colors = { g.skin.black, g.skin.white, g.skin.red } -- First is bg, 2nd is text, 3rd is dark color
-	self.gradient = love.graphics.gradient({{200,200,200},{255,255,255}, direction = "h"})
+	self.gradient = love.graphics.gradient({{220,220,220},{255,255,255}, direction = "h"})
 	self.gradient_w, self.gradient_h = g.skin.ribbon.w / self.gradient:getWidth(), (g.skin.ribbon.h - g.skin.ribbon.border) / self.gradient:getHeight()
 	self.header = { text = "ribbon"; x = g.skin.ribbon.x + g.skin.padding; y = g.skin.ribbon.y + ((g.skin.ribbon.h-g.skin.ribbon.border)/2 - g.font.height(g.skin.ribbon.font)/2)}
 	self.logo = nil
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
+	self.button = g.ui.button.new("League Position", g.skin.ribbon.x, g.skin.ribbon.y, {w="auto"})
 	--
 	g.console:log("ribbon:init")
 	g.console:log(self.gradient)
@@ -22,6 +23,7 @@ end
 
 function ribbon:update(dt)
 	self.timer.update(dt)
+	self.button:update(dt)
 end
 
 function ribbon:draw()
@@ -49,6 +51,7 @@ function ribbon:draw()
 		love.graphics.setColor(255, 255, 255, 255 * self.tween.alpha)
 		g.image.draw(self.logo, self.tween.ox, self.tween.oy)
 	end
+	self.button:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -73,6 +76,7 @@ function ribbon:set_colors(c1, c2, c3)
 	self.colors[1] = c1 or self.colors[1]
 	self.colors[2] = c2 or self.colors[2]
 	self.colors[3] = c3 or self.colors[3]
+	self.button:set_colors(c1, c2, c3)
 end
 
 function ribbon:set_positions()
@@ -85,6 +89,8 @@ function ribbon:set_positions()
 	else
 		self.header.x = g.skin.ribbon.x + g.skin.margin
 	end
+	self.button.x = self.header.x + g.font.width(self.header.text, g.skin.ribbon.font) + g.skin.tab
+	self.button.y = (g.skin.ribbon.h-g.skin.ribbon.border)/2 - self.button.h/2
 end
 
 function ribbon:start_tween()
@@ -97,7 +103,8 @@ end
 function ribbon:set_team(team)
 	self:set_image("logos/128/"..team.id..".png")
 	self:set_header(team.long_name)
-	self:set_colors(team.color_1, team.color_2, team.color_3)
+	self:set_colors(team.color1, team.color2, team.color3)
+	self.button:set_text(team.league.long_name)
 	--
 	self:set_positions()
 	self:start_tween()

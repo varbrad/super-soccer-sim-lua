@@ -43,9 +43,9 @@ function dbm.load(teams, leagues)
 		local team = dbm.teams[i]
 		team.league = dbm.league_dict[team.league_id]
 		table.insert(team.league.teams, team)
-		team.color_1 = hex(team.color_1) or g.skin.black
-		team.color_2 = hex(team.color_2) or g.skin.white
-		team.color_3 = hex(team.color_3) or g.skin.black
+		team.color1 = hex(team.color1) or g.skin.black
+		team.color2 = hex(team.color2) or g.skin.white
+		team.color3 = hex(team.color3) or g.skin.black
 	end
 end
 
