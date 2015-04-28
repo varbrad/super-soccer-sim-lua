@@ -22,7 +22,9 @@ function love.load()
 	--
 	g.states = {
 		background = require "states.background";
+		club_overview = require "states.club_overview";
 		console = require "states.console";
+		league_overview = require "states.league_overview";
 		navbar = require "states.navbar";
 		overview = require "states.overview";
 		ribbon = require "states.ribbon";
@@ -33,6 +35,8 @@ function love.load()
 	g.navbar = g.states.navbar
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
+	--
+	g.ui.button.__defaultFont = g.font.get(g.skin.ui.button.font)
 	--
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)
@@ -82,6 +86,12 @@ end
 function love.mousepressed(x, y, b)
 	for i, state in g.state.states() do
 		if state.mousepressed then state:mousepressed(x, y, b) end
+	end
+end
+
+function love.mousereleased(x, y, b)
+	for i, state in g.state.states() do
+		if state.mousereleased then state:mousereleased(x, y, b) end
 	end
 end
 

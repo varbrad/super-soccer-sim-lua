@@ -20,8 +20,9 @@ function dbm.load(teams, leagues)
 			team[k] = v
 			if team[k] == "" then team[k] = nil end
 		end
+		if team.league_id then team.league_id = tonumber(team.league_id) end
 		dbm.teams[#dbm.teams+1] = team
-		dbm.team_dict[team.id] = team
+		dbm.team_dict[tonumber(team.id)] = team
 	end
 	-- Teams initial load in complete
 	g.console:print(#dbm.teams .. " teams loaded from db", g.skin.blue)
@@ -34,7 +35,7 @@ function dbm.load(teams, leagues)
 		end
 		league.teams = {}
 		dbm.leagues[#dbm.leagues+1] = league
-		dbm.league_dict[league.id] = league
+		dbm.league_dict[tonumber(league.id)] = league
 	end
 	-- Leagues initial load complete
 	g.console:print(#dbm.leagues .. " leagues loaded from db", g.skin.blue)
@@ -46,6 +47,13 @@ function dbm.load(teams, leagues)
 		team.color1 = hex(team.color1) or g.skin.black
 		team.color2 = hex(team.color2) or g.skin.white
 		team.color3 = hex(team.color3) or g.skin.black
+	end
+	-- Now process league data
+	for i=1, #dbm.leagues do
+		local league = dbm.leagues[i]
+		league.color1 = hex(league.color1) or g.skin.black
+		league.color2 = hex(league.color2) or g.skin.white
+		league.color3 = hex(league.color3) or g.skin.black
 	end
 end
 

@@ -61,18 +61,53 @@ function ui.button.new(text, x, y, settings)
 		b.on_enter = settings.on_enter or nil
 		b.on_exit = settings.on_exit or nil
 		b.on_click = settings.on_click or nil
+		b.on_release = settings.on_release or nil
+		b.clickable = settings.clickable or true
+		b.image = settings.image or nil
 	end
 	--
 	b.visible, b.enabled = true, true
+	b.is_mousepressed = false
 	b.color1, b.color2, b.color3 = ui.button.__defaultColor1, ui.button.__defaultColor2, ui.button.__defaultColor3
 	b.font = ui.button.__defaultFont
+	b.tw = b.font:getWidth(b.text)
+	b.tx, b.ty = 0, b.h/2 - b.font:getHeight()/2 - 1
+	b.ix, b.iy = ui.button.__defaultMargin, 0
+	if b.image then
+		b.iy = b.h/2 - b.image.h/2 - 1
+	end
 	if b.w == "auto" then
 		b.__auto = true
-		b.w = b.font:getWidth(b.text) + ui.button.__defaultMargin * 2
+		b.w = b.tw + ui.button.__defaultMargin * 2
+		if b.image then
+			b.w = b.w + b.image.w + ui.button.__defaultMargin
+		end
 	end
-	b.tx, b.ty = 0, b.h/2 - b.font:getHeight()/2
 	b.hover = false
 	return b
+end
+
+function ui.button:reset()
+	self:set_image()
+	self:set_text()
+	self:set_events() -- Nil all events
+	self:set_colors(ui.button.__defaultColor1, ui.button.__defaultColor2, ui.button.__defaultColor3)
+	self.hover, self.is_mousepressed = false, false
+	self.visible, self.enabled, self.clickable = true, true, true
+end
+
+function ui.button:set_image(image)
+	-- Image must be a Image class object, not the native Love2D image!
+	self.image = image
+	if self.image then
+		self.iy = self.h/2 - self.image.h/2 - 1
+	end
+	if self.__auto then
+		self.w = self.tw + ui.button.__defaultMargin * 2
+		if self.image then
+			self.w = self.w + self.image.w + ui.button.__defaultMargin
+		end
+	end
 end
 
 function ui.button:set_colors(c1, c2, c3)
@@ -81,13 +116,22 @@ end
 
 function ui.button:set_text(text)
 	self.text = text or ""
+	self.tw = self.font:getWidth(self.text)
 	if self.__auto then
-		self.w = self.font:getWidth(self.text) + ui.button.__defaultMargin * 2
+		self.w = self.tw + ui.button.__defaultMargin * 2
+		if self.image then
+			self.w = self.w + self.image.w + ui.button.__defaultMargin
+			self.tx = ui.button.__defaultMargin * 2 + self.image.w
+		end
 	end
 end
 
+function ui.button:set_events(on_enter, on_exit, on_click, on_release)
+	self.on_enter, self.on_exit, self.on_click, self.on_release = on_enter, on_exit, on_click, on_release
+end
+
 function ui.button:update(dt)
-	if not self.enabled then return end
+	if not self.enabled or not self.clickable then return end
 	if not self.hover and ui.mx >= self.x and ui.my >= self.y and ui.mx < self.x + self.w and ui.my < self.y + self.h then
 		self.hover = true
 		if self.on_enter then self.on_enter(self) end
@@ -100,23 +144,37 @@ end
 function ui.button:draw(ox, oy, alpha)
 	if not self.visible then return end
 	local x, y = self.x + ox, self.y + oy
-	if self.hover then
-		setColorAlpha(self.color3, 255 * alpha)
-		roundrect("fill", x, y + 1, self.w, self.h - 1, 5, 5, 5, 5)
-		setColorAlpha(self.color1, 255 * alpha)
-		roundrect("fill", x+1, y+2, self.w-2, self.h-5, 5, 5, 0, 0)
-		setColorAlpha(self.color2, 255 * alpha)
-		love.graphics.setFont(self.font)
-		love.graphics.printf(self.text, x + self.tx, y + self.ty + 1, self.w, "center")
-	else
-		setColorAlpha(self.color3, 255 * alpha)
-		roundrect("fill", x, y, self.w, self.h, 5, 5, 5, 5)
-		setColorAlpha(self.color1, 255 * alpha)
-		roundrect("fill", x+1, y+1, self.w-2, self.h-4, 5, 5, 0, 0)
-		setColorAlpha(self.color2, 255 * alpha)
-		love.graphics.setFont(self.font)
-		love.graphics.printf(self.text, x + self.tx, y + self.ty, self.w, "center")
+	local dy = 0
+	if self.is_mousepressed and self.hover then
+		dy = 2
+	elseif self.hover then
+		dy = 1
 	end
+	setColorAlpha(self.color3, 255 * alpha)
+	roundrect("fill", x, y + dy, self.w, self.h - dy, 5, 5, 5, 5)
+	setColorAlpha(self.color1, 255 * alpha)
+	roundrect("fill", x+1, y+1+dy, self.w-2, self.h-4-dy, 5, 5, 0, 0)
+	setColorAlpha(self.color2, 255 * alpha)
+	love.graphics.setFont(self.font)
+	love.graphics.printf(self.text, x + self.tx, y + self.ty + dy, self.tw, "center")
+	setColorAlpha(g.skin.white, 255 * alpha)
+	g.image.draw(self.image, x + self.ix, y + self.iy + dy)
+end
+
+function ui.button:mousepressed(x, y, b)
+	if self.hover then
+		self.is_mousepressed = true
+		if self.on_click then self.on_click(self) end
+	else
+		self.is_mousepressed = false
+	end
+end
+
+function ui.button:mousereleased(x, y, b)
+	if self.hover and self.is_mousepressed then
+		if self.on_release then self.on_release(self) end
+	end
+	self.is_mousepressed = false
 end
 
 setmetatable(ui.button, {_call = function(_,...) return ui.button.new(...) end})

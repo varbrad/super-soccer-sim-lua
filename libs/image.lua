@@ -1,34 +1,42 @@
 local image = {}
+image.__index = image
+image.__type = "Image"
 
 local cache = {}
 
-function image.new(path, x, y, sx, sy)
+function image.new(path, settings)
 	path = "assets/images/" .. path
+	settings = settings or {}
+	--
 	local i = {}
+	setmetatable(i, image)
 	if cache[path] then
 		i.img = cache[path]
 	else
 		if not love.filesystem.exists(path) then return nil end
 		i.img = love.graphics.newImage(path)
+		if settings.mipmap==true then i.img:setMipmapFilter("nearest", 0) end
 		cache[path] = i.img
 	end
-	i.x, i.y = x or 0, y or 0
-	i.w, i.h = i.img:getWidth(), i.img:getHeight()
-	i.__w, i.__h = i.w, i.h
-	i.__sx, i.__sy = sx or 1, sy or 1
+	i.__w, i.__h = i.img:getWidth(), i.img:getHeight()
+	--
+	i.x, i.y = settings.x or 0, settings.y or 0
+	i.w, i.h = settings.w or i.__w, settings.h or i.__h
+	i.sx, i.sy = i.w / i.__w, i.h / i.__h
 	return i
 end
 
-function image.set_size(i, w, h)
-	if w==nil and h==nil then i.sx, i.sy, i.w, i.h = 1, 1, i.__w, i.__h; return end
-	i.sx, i.sy = w / i.__w, h / i.__h
-	i.w, i.h = w, h
+function image:resize(w, h)
+	self.w, self.h = w or self.__w, h or self.__h
+	self.sx, self.sy = self.w / self.__w, self.h / self.__h
+	return self
 end
 
 -- Can provide offsets
-function image.draw(image, ox, oy)
+function image:draw(ox, oy, sx, sy)
 	ox, oy = ox or 0, oy or 0
-	love.graphics.draw(image.img, image.x + ox, image.y + oy, 0, image.sx, image.sy)
+	sx, sy = sx or 1, sy or 1
+	love.graphics.draw(self.img, self.x + ox, self.y + oy, 0, self.sx * sx, self.sy * sy)
 end
 
 return image

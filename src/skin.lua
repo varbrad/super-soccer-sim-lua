@@ -9,10 +9,11 @@ skin.white = hex("ffffff")
 skin.black = hex("333333")
 
 -- Load fonts
-g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 14, 24, 36, 48})
-g.font.new("regular", "assets/fonts/titillium/regular.otf", 	{12, 14, 24, 36, 48})
-g.font.new("bold", "assets/fonts/montserrat/bold.ttf",			{12, 14, 24, 36, 48})
-g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 14, 24, 36, 48})
+g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 13, 14, 24, 36, 48})
+g.font.new("regular", "assets/fonts/opensans/regular.ttf", 		{12, 13, 14, 24, 36, 48})
+g.font.new("semibold", "assets/fonts/opensans/semibold.ttf",	{12, 13, 14, 24, 36, 48})
+g.font.new("bold", "assets/fonts/opensans/bold.ttf",			{12, 13, 14, 24, 36, 48})
+g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 13, 14, 24, 36, 48})
 
 skin.colors = {
 	hex("090909ff"); -- Primary color used for navbar bg, etc
@@ -50,10 +51,16 @@ skin.ribbon = {
 	shadow_y = 2;
 	large_logo_alpha = 50;
 	tween_time = .4;
-	tween_type = "out-quart";
+	tween_type = "out-circ";
 	tween_ox = 0;
 	tween_oy = -20;
 	tween_alpha = 0;
+}
+
+skin.ui = {
+	button = {
+		font = { "semibold", 12 };
+	};
 }
 
 return skin

@@ -14,7 +14,6 @@ function ribbon:init()
 	self.button = g.ui.button.new("League Position", g.skin.ribbon.x, g.skin.ribbon.y, {w="auto"})
 	--
 	g.console:log("ribbon:init")
-	g.console:log(self.gradient)
 end
 
 function ribbon:added()
@@ -58,6 +57,14 @@ function ribbon:draw()
 	love.graphics.rectangle("fill", g.skin.ribbon.x, g.skin.ribbon.y + g.skin.ribbon.h - g.skin.ribbon.border, g.skin.ribbon.w, g.skin.ribbon.border)
 end
 
+function ribbon:mousepressed(x, y, b)
+	self.button:mousepressed(x, y, b)
+end
+
+function ribbon:mousereleased(x, y, b)
+	self.button:mousereleased(x, y, b)
+end
+
 -- functions
 
 function ribbon:set_image(path)
@@ -81,7 +88,7 @@ end
 
 function ribbon:set_positions()
 	if self.logo then
-		g.image.set_size(self.logo, 64, 64)
+		self.logo:resize(64, 64)
 		self.large_logo.x, self.large_logo.y = g.skin.ribbon.x + g.skin.margin, g.skin.ribbon.y + (g.skin.ribbon.h/2 - self.large_logo.w/2)
 		self.logo.x, self.logo.y = self.large_logo.x + (self.large_logo.w/2 - self.logo.w/2), self.large_logo.y + (self.large_logo.h/2 - self.logo.h/2)
 		--
@@ -98,23 +105,23 @@ function ribbon:start_tween()
 	self.timer.tween(g.skin.ribbon.tween_time, self.tween, { ox = 0; oy = 0; alpha = 1; }, g.skin.ribbon.tween_type)
 end
 
--- useful multi-funcs
-
-function ribbon:set_team(team)
-	self:set_image("logos/128/"..team.id..".png")
-	self:set_header(team.long_name)
-	self:set_colors(team.color1, team.color2, team.color3)
-	self.button:set_text(team.league.long_name)
+function ribbon:set_league(league)
+	self:set_image("logos/128/"..league.flag..league.level..".png")
+	self:set_header(league.long_name)
+	self:set_colors(league.color1, league.color2, league.color3)
+	self.button:reset()
+	self.button.enabled, self.button.visible = false, false
 	--
 	self:set_positions()
 	self:start_tween()
-	g.console:print("Ribbon set to team " .. team.short_name .. " (ID:" .. team.id .. ")", g.skin.green)
 end
 
 function ribbon:reset()
 	self:set_image()
 	self:set_header()
 	self:set_colors(g.skin.black, g.skin.white, g.skin.black)
+	self.button:reset()
+	self.button.enabled, self.button.visible = false, false
 	--
 	self:set_positions()
 end

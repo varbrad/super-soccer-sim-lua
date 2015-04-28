@@ -17,6 +17,11 @@ function font.set(name, size)
 	love.graphics.setFont(active)
 end
 
+function font.get(name, size)
+	if type(name)=="table" then name, size = name[1], name[2] end
+	return cache[name][size]
+end
+
 function font.height(name, size)
 	if name==nil and size==nil then return active:getHeight() end
 	if type(name)=="table" then name, size = name[1], name[2] end
