@@ -20,7 +20,7 @@ function dbm.load(teams, leagues)
 			team[k] = v
 			if team[k] == "" then team[k] = nil end
 		end
-		if team.league_id then team.league_id = tonumber(team.league_id) end
+		if team.league_id then team.league_id = tonumber(team.league_id) else team.league_id = 0 end -- default league id to 0 if not present
 		dbm.teams[#dbm.teams+1] = team
 		dbm.team_dict[tonumber(team.id)] = team
 	end
@@ -46,14 +46,15 @@ function dbm.load(teams, leagues)
 		table.insert(team.league.teams, team)
 		team.color1 = hex(team.color1) or g.skin.black
 		team.color2 = hex(team.color2) or g.skin.white
-		team.color3 = hex(team.color3) or g.skin.black
+		team.color3 = hex(team.color3) or love.graphics.darken(team.color1)
 	end
 	-- Now process league data
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
 		league.color1 = hex(league.color1) or g.skin.black
 		league.color2 = hex(league.color2) or g.skin.white
-		league.color3 = hex(league.color3) or g.skin.black
+		league.color3 = hex(league.color3) or love.graphics.darken(league.color1)
+		if league.flag==nil then league.flag="" end
 	end
 end
 

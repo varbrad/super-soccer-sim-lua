@@ -104,6 +104,10 @@ function love.graphics.hexToRgb(hex)
 	return { tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6)), tonumber("0x"..hex:sub(7,8)) }
 end
 
+function love.graphics.darken(color)
+	return { color[1] * g.skin.darken, color[2] * g.skin.darken, color[3] * g.skin.darken, color[4] or 255}
+end
+
 function love.graphics.setColorAlpha(color,alpha)
 	love.graphics.setColor(color[1],color[2],color[3],alpha)
 end

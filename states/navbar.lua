@@ -11,7 +11,7 @@ function navbar:added()
 	self.buttons = {}
 	local funcs = { function() g.state.switch(g.states.club_overview) end, function() g.state.switch(g.states.league_overview) end, nil, nil }
 	local imgs = { g.image.new("logos/128/21.png", {mipmap=true, w = 32, h=32}), g.image.new("logos/128/en1.png", {mipmap=true, w=32, h=32}), nil, nil}
-	for i = 1, 4 do
+	for i = 1, 2 do
 		self.buttons[i] = g.ui.button.new("", { x = 4, y = 4 + (i-1)*48, w = 44, h = 44, image = imgs[i], on_release = funcs[i] })
 	end
 end

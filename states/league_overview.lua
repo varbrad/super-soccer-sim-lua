@@ -43,6 +43,7 @@ function league_overview:set_league()
 	infobox.enabled = false
 	infobox.image = g.image.new("flags/"..self.league.flag..".png")
 	infobox.color1, infobox.color2, infobox.color3 = self.league.color1, self.league.color2, self.league.color3
+	if infobox.image==nil then infobox.visible = false end
 	g.ribbon:set_infobox("", infobox)
 	--
 	g.ribbon:set_positions()

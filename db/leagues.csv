@@ -1,4 +1,6 @@
 id,long_name,short_name,level,flag,color1,color2,color3
-1,Barclays Premier League,Premier League,1,en,050528,ffffff,040420
-2,Sky Bet Championship,Championship,2,en,002a67,ffffff,002252
-3,Sky Bet League One,League One,3,en,ffffff,002a67,cccccc
+0,No League Assigned,No League Assigned,1,unassigned,ffffff,000000,
+1,Barclays Premier League,Premier League,1,en,050528,ffffff,
+2,Sky Bet Championship,Championship,2,en,002a67,ffffff,
+3,Sky Bet League One,League One,3,en,002A67,ffffff,
+4,Sky Bet League Two,League Two,4,en,002A67,ffffff,

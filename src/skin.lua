@@ -27,6 +27,8 @@ skin.margin = 4
 skin.padding = 8
 skin.tab = 22
 
+skin.darken = 0.8 -- 20% color reduction for darken
+
 skin.console = {
 	font = { "console", 14 };
 	margin = skin.margin;
