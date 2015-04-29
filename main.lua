@@ -77,6 +77,9 @@ function love.keypressed(k,ir)
 	if k=="escape" then
 		love.event.quit()
 	end
+	if k=="f1" then
+		g.console:print(g.state.order(), g.skin.blue)
+	end
 	--
 	for i, state in g.state.states() do
 		if state.keypressed then state:keypressed(k,ir) end
@@ -126,4 +129,23 @@ function love.graphics.gradient(colors)
 	result = love.graphics.newImage(result)
 	result:setFilter("linear", "linear")
 	return result
+end
+
+function love.graphics.roundrect(mode, x, y, w, h, tl, tr, bl, br)
+	tr, bl, br = tr or tl, bl or tl, br or tl
+	local r = tl
+	local g = love.graphics
+	x, y, h, r = math.floor(x+.5), math.floor(y+.5), math.floor(h+.5), math.floor(r+.5)
+	-- Draw inner rect
+	g.rectangle(mode,x+r,y+r,w-r*2,h-r*2)
+	-- Draw left, right, top, bottom rects
+	g.rectangle(mode,x,y+r,r,h-r*2)
+	g.rectangle(mode,x+w-r,y+r,r,h-r*2)
+	g.rectangle(mode,x+r,y,w-r*2,r)
+	g.rectangle(mode,x+r,y+h-r,w-r*2,r)
+	-- Draw arcs (top left, top right, bottom right, bottom left
+	g.arc(mode,x+r,y+r,r,math.pi,math.pi*1.5)
+	g.arc(mode,x+w-r,y+r,r,0,-math.pi*.5)
+	g.arc(mode,x+w-r,y+h-r,r,0,math.pi*.5)
+	g.arc(mode,x+r,y+h-r,r,math.pi*.5,math.pi)
 end

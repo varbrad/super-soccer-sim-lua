@@ -11,7 +11,7 @@ function ribbon:init()
 	self.logo = nil
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
-	self.button = g.ui.button.new()
+	self.infobox = g.ui.button.new()
 	--
 	g.console:log("ribbon:init")
 end
@@ -22,7 +22,7 @@ end
 
 function ribbon:update(dt)
 	self.timer.update(dt)
-	self.button:update(dt)
+	self.infobox:update(dt)
 end
 
 function ribbon:draw()
@@ -50,7 +50,7 @@ function ribbon:draw()
 		love.graphics.setColor(255, 255, 255, 255 * self.tween.alpha)
 		g.image.draw(self.logo, self.tween.ox, self.tween.oy)
 	end
-	self.button:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
+	self.infobox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -58,11 +58,11 @@ function ribbon:draw()
 end
 
 function ribbon:mousepressed(x, y, b)
-	self.button:mousepressed(x, y, b)
+	self.infobox:mousepressed(x, y, b)
 end
 
 function ribbon:mousereleased(x, y, b)
-	self.button:mousereleased(x, y, b)
+	self.infobox:mousereleased(x, y, b)
 end
 
 -- functions
@@ -83,7 +83,11 @@ function ribbon:set_colors(c1, c2, c3)
 	self.colors[1] = c1 or self.colors[1]
 	self.colors[2] = c2 or self.colors[2]
 	self.colors[3] = c3 or self.colors[3]
-	self.button:set_colors(c1, c2, c3)
+	self.infobox:set_colors(c1, c2, c3)
+end
+
+function ribbon:set_infobox(text, settings)
+	self.infobox:reset(text, settings)
 end
 
 function ribbon:set_positions()
@@ -96,8 +100,8 @@ function ribbon:set_positions()
 	else
 		self.header.x = g.skin.ribbon.x + g.skin.margin
 	end
-	self.button.x = self.header.x + g.font.width(self.header.text, g.skin.ribbon.font) + g.skin.tab
-	self.button.y = (g.skin.ribbon.h-g.skin.ribbon.border)/2 - self.button.h/2
+	self.infobox.x = self.header.x + g.font.width(self.header.text, g.skin.ribbon.font) + g.skin.tab
+	self.infobox.y = (g.skin.ribbon.h-g.skin.ribbon.border)/2 - self.infobox.h/2
 end
 
 function ribbon:start_tween()
@@ -109,7 +113,7 @@ function ribbon:set_league(league)
 	self:set_image("logos/128/"..league.flag..league.level..".png")
 	self:set_header(league.long_name)
 	self:set_colors(league.color1, league.color2, league.color3)
-	self.button:reset()
+	self.infobox:reset()
 	--
 	self:set_positions()
 	self:start_tween()
@@ -119,7 +123,7 @@ function ribbon:reset()
 	self:set_image()
 	self:set_header()
 	self:set_colors(g.skin.black, g.skin.white, g.skin.black)
-	self.button:reset()
+	self.infobox:reset()
 	--
 	self:set_positions()
 end

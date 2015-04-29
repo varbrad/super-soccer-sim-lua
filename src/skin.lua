@@ -57,6 +57,11 @@ skin.ribbon = {
 	tween_alpha = 0;
 }
 
+skin.screen = {
+	x = 52; -- Width of the navbar
+	y = 74; -- Height of the ribbon
+}
+
 skin.ui = {
 	button = {
 		font = { "semibold", 12 };

@@ -3,17 +3,9 @@ bg.name = "Background"
 
 function bg:init()
 	self.__z = 0
-	self.image = g.image.new("bg/2.jpg")
+	self.image = g.image.new("bg/1.jpg", { w = g.width; h = g.height; })
 	--
 	g.console:log("background:init")
-end
-
-function bg:added()
-
-end
-
-function bg:update(dt)
-
 end
 
 function bg:draw()

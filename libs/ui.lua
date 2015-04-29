@@ -56,13 +56,14 @@ end
 function ui.button:reset(text, settings)
 	self:set_text(text)
 	settings = settings or self.__settings or {}
+	if settings.visible==nil then settings.visible=true end
+	if settings.enabled==nil then settings.enabled=true end
 	self.x, self.y = settings.x or 0, settings.y or 0
 	self.w = settings.w or ui.button.__defaultWidth
 	self.h = settings.h or ui.button.__defaultHeight
 	self:set_image(settings.image)
 	self:set_events(settings.on_enter, settings.on_exit, settings.on_click, settings.on_release)
-	self.clickable = settings.clickable or true
-	self.visible, self.enabled = true, true
+	self.visible, self.enabled = settings.visible, settings.enabled
 	self.hover, self.is_mousepressed = false, false
 	self:set_colors(settings.color1 or ui.button.__defaultColor1,
 					settings.color2 or ui.button.__defaultColor2,
@@ -88,7 +89,7 @@ function ui.button:set_text(text)
 end
 
 function ui.button:set_events(enter, exit, click, release)
-
+	self.on_enter, self.on_exit, self.on_click, self.on_release = enter, exit, click, release
 end
 
 function ui.button:position()
@@ -98,6 +99,7 @@ function ui.button:position()
 	if self.w == "auto" then
 		if self.image then
 			self.w = self.__defaultMargin * 3 + self.image.w + self.tw
+			if self.text=="" then self.w = self.w - self.__defaultMargin end
 			self.iy = math.floor(self.h/2 - self.image.h/2 + .5) - 1
 			self.tx = self.tx + self.image.w + ui.button.__defaultMargin
 		else
@@ -116,7 +118,7 @@ function ui.button:position()
 end
 
 function ui.button:update(dt)
-	if not self.enabled or not self.clickable then return end
+	if not self.enabled then return end
 	if not self.hover and ui.mx >= self.x and ui.my >= self.y and ui.mx < self.x + self.w and ui.my < self.y + self.h then
 		self.hover = true
 		if self.on_enter then self.on_enter(self) end
@@ -128,17 +130,18 @@ end
 
 function ui.button:draw(ox, oy, alpha)
 	if not self.visible then return end
+	ox, oy, alpha = ox or 0, oy or 0, alpha or 1
 	local x, y, dy = self.x + ox, self.y + oy, 0
 	love.graphics.setScissor(x, y + dy, self.w, self.h - dy)
-	if self.is_mousepressed and self.hover then	dy = 2 elseif self.hover then dy = 1 end
+	if self.is_mousepressed and self.hover or not self.enabled then	dy = 2 elseif self.hover then dy = 1 end
 	local c = {self.color3, self.color1, self.color2}
 	if self.hover then
 		c[1], c[2], c[3] = c[3], c[2], c[3]
 	end
 	setColorAlpha(c[1], 255 * alpha)
-	roundrect("fill", x, y + dy, self.w, self.h - dy, 5, 5, 5, 5)
+	roundrect("fill", x, y + dy, self.w, self.h - dy, 5)
 	setColorAlpha(c[2], 255 * alpha)
-	roundrect("fill", x+1, y+1+dy, self.w-2, self.h-4-dy, 5, 5, 0, 0)
+	roundrect("fill", x+1, y+1+dy, self.w-2, self.h-4, 5)
 	setColorAlpha(c[3], 255 * alpha)
 	love.graphics.setFont(self.font)
 	love.graphics.print(self.text, x + self.tx, y + self.ty + dy)
@@ -151,6 +154,7 @@ function ui.button:draw(ox, oy, alpha)
 end
 
 function ui.button:mousepressed(x, y, b)
+	if not self.enabled then return end
 	if self.hover then
 		self.is_mousepressed = true
 		if self.on_click then self.on_click(self) end
@@ -160,6 +164,7 @@ function ui.button:mousepressed(x, y, b)
 end
 
 function ui.button:mousereleased(x, y, b)
+	if not self.enabled then return end
 	if self.hover and self.is_mousepressed then
 		if self.on_release then self.on_release(self) end
 	end
