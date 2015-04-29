@@ -1,6 +1,7 @@
 g = {}
 --
-function love.load()
+function love.load(args)
+	print(args, #args, args[-1])
 	g.version = require "version" -- Game version!
 	-- Standard setup stuff
 	g.width, g.height, g.flags = love.window.getMode()
@@ -36,7 +37,7 @@ function love.load()
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	--
-	g.ui.button.__defaultFont = g.font.get(g.skin.ui.button.font)
+	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	--
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)

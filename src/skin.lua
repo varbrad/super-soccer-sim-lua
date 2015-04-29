@@ -60,8 +60,10 @@ skin.ribbon = {
 }
 
 skin.screen = {
-	x = 52; -- Width of the navbar
-	y = 74; -- Height of the ribbon
+	x = skin.navbar.w; -- Width of the navbar
+	y = skin.ribbon.h; -- Height of the ribbon
+	w = g.width - skin.navbar.w;
+	h = g.height - skin.ribbon.h;
 }
 
 skin.ui = {

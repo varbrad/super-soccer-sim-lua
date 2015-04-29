@@ -3,25 +3,29 @@ club_overview.name = "Club Overview"
 
 function club_overview:init()
 	self.__z = 1
+	self.timer = g.timer.new()
 	--
 	g.console:log("club_overview:init")
 end
 
 function club_overview:added(id)
 	self.team_id = id or self.team_id or 1
+	self.panel = g.ui.panel.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin*2, g.skin.screen.h - g.skin.margin*2, {0, 0, 0}, {33, 33, 33}, 160)
 	self:set_team()
 end
 
 function club_overview:update(dt)
-	
+	self.timer.update(dt)
 end
 
 function club_overview:draw()
-
+	self.panel:draw()
 end
 
 function club_overview:set_team()
 	self.team = g.db_manager.team_dict[self.team_id]
+	-- Clear any previous tweens on our timer
+	self.timer.clear()
 	--
 	g.ribbon:reset()
 	--
@@ -38,7 +42,7 @@ function club_overview:set_team()
 	btn_settings.underline = true
 	btn_settings.on_release = function() g.state.swap(self, g.states.league_overview, self.team.league_id) end
 	g.ribbon:set_infobox(self.team.league.long_name, btn_settings)
-	--
+	-- Start positioning and tweens
 	g.ribbon:set_positions()
 	g.ribbon:start_tween()
 end
