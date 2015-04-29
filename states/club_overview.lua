@@ -28,6 +28,15 @@ function club_overview:set_team()
 	g.ribbon:set_image("logos/128/"..self.team.id..".png")
 	g.ribbon:set_header(self.team.long_name)
 	g.ribbon:set_colors(self.team.color1, self.team.color2, self.team.color3)
+	local btn_settings = {}
+	btn_settings.w = "auto"
+	btn_settings.color1 = self.team.color1
+	btn_settings.color2 = self.team.color2
+	btn_settings.color3 = self.team.color3
+	btn_settings.image = g.image.new("logos/128/"..self.team.league.flag..self.team.league.level..".png", {mipmap=true, w=26, h=26})
+	btn_settings.underline = true
+	g.ribbon.button:reset("9th in "..self.team.league.long_name, btn_settings)
+	--[[
 	local btn_img = g.image.new("logos/128/"..self.team.league.flag..self.team.league.level..".png", {mipmap = true, w = 26, h = 26 })
 	g.ribbon.button:reset()
 	g.ribbon.button:set_colors(self.team.color1, self.team.color2, self.team.color3)
@@ -35,7 +44,7 @@ function club_overview:set_team()
 	g.ribbon.button:set_text(self.team.league.long_name)
 	g.ribbon.button:set_events(nil, nil, nil, function() g.state.swap(self, g.states.league_overview, self.team.league_id) end)
 	g.ribbon.button.visible, g.ribbon.button.enabled = true, true
-	--
+	--]]
 	g.ribbon:set_positions()
 	g.ribbon:start_tween()
 end

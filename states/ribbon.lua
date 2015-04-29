@@ -11,7 +11,7 @@ function ribbon:init()
 	self.logo = nil
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
-	self.button = g.ui.button.new("League Position", g.skin.ribbon.x, g.skin.ribbon.y, {w="auto"})
+	self.button = g.ui.button.new()
 	--
 	g.console:log("ribbon:init")
 end
@@ -110,7 +110,6 @@ function ribbon:set_league(league)
 	self:set_header(league.long_name)
 	self:set_colors(league.color1, league.color2, league.color3)
 	self.button:reset()
-	self.button.enabled, self.button.visible = false, false
 	--
 	self:set_positions()
 	self:start_tween()
@@ -121,7 +120,6 @@ function ribbon:reset()
 	self:set_header()
 	self:set_colors(g.skin.black, g.skin.white, g.skin.black)
 	self.button:reset()
-	self.button.enabled, self.button.visible = false, false
 	--
 	self:set_positions()
 end
