@@ -9,6 +9,7 @@ end
 
 function league_overview:added(id)
 	self.league_id = id or self.league_id or 1
+	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, 900, g.skin.screen.h - g.skin.margin * 2)
 	self:set_league()
 end
 
@@ -17,20 +18,12 @@ function league_overview:update(dt)
 end
 
 function league_overview:draw()
-	love.graphics.setColor(self.league.color3)
-	love.graphics.roundrect("fill", g.skin.screen.x + 8, g.skin.screen.y + 8, 204, 20*#self.league.teams + 24, 10)
-	love.graphics.setColor(self.league.color1)
-	love.graphics.roundrect("fill", g.skin.screen.x + 10, g.skin.screen.y + 10, 200, 20*#self.league.teams + 20, 10)
-	for i=1, #self.league.teams do
-		local t = self.league.teams[i]
-		g.font.set("regular", 14)
-		love.graphics.setColor(self.league.color2)
-		love.graphics.print(t.short_name, g.skin.screen.x + 20, g.skin.screen.y + i*20)
-	end
+	self.league_table:draw()
 end
 
 function league_overview:set_league()
 	self.league = g.db_manager.league_dict[self.league_id]
+	self.league_table:set_league(self.league)
 	--
 	g.ribbon:reset()
 	--

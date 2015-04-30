@@ -12,6 +12,7 @@ function image.new(path, settings)
 	setmetatable(i, image)
 	if cache[path] then
 		i.img = cache[path]
+		if settings.mipmap==true then i.img:setMipmapFilter("nearest",0) end
 	else
 		if not love.filesystem.exists(path) then return nil end
 		i.img = love.graphics.newImage(path)

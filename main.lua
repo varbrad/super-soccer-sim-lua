@@ -20,6 +20,10 @@ function love.load(args)
 	-- Src
 	g.db_manager = require "src.db_manager"
 	g.skin = require "src.skin"
+	-- Load components
+	g.components = {
+		league_table = require "components.league_table";
+	}
 	--
 	g.states = {
 		background = require "states.background";
@@ -38,6 +42,7 @@ function love.load(args)
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	--
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
+	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
 	--
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)

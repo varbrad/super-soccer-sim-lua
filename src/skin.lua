@@ -23,7 +23,7 @@ skin.colors = {
 	hex("fa6900ff");
 }
 
-skin.margin = 4
+skin.margin = 6
 skin.padding = 8
 skin.tab = 22
 
@@ -66,9 +66,28 @@ skin.screen = {
 	h = g.height - skin.ribbon.h;
 }
 
+skin.components = {
+	color1 = hex("0a0a0aff");
+	color2 = hex("ffffffff");
+	color3 = hex("0f0f0fff");
+}
+
+skin.bars = {
+	h = 38;
+	alpha = 150;
+	color1 = hex("1a1a1aff");
+	color2 = hex("ffffffff");
+	color3 = hex("1f1f1fff");
+	font = { {"bold", 14}, {"regular", 12} };
+	img_size = 28;
+}
+
 skin.ui = {
 	button = {
-		font = { "semibold", 12 };
+		font = { "regular", 12 };
+	};
+	panel = {
+		alpha = 150;
 	};
 }
 
