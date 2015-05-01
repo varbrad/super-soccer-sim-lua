@@ -22,6 +22,7 @@ function league_table:set_league(league)
 	self.bars[1].ty = math.floor(self.bars[1].h / 2 - g.font.height(g.skin.bars.font[1])/2 +.5)
 	self.bars[1].pos = "Pos"
 	self.bars[1].name = "Team"
+	self.bars[1].pts = "Pts"
 	for i=1, #self.league.teams do
 		local t = self.league.teams[i]
 		local bar = {}
@@ -35,6 +36,7 @@ function league_table:set_league(league)
 		bar.pos = i .. "."
 		bar.logo = g.image.new("logos/128/"..t.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, y = bar.y + math.floor(bar.h/2 - g.skin.bars.img_size/2 +.5) })
 		bar.name = t.short_name
+		bar.pts = t.season.stats.w*3 + t.season.stats.d
 		self.bars[i+1] = bar
 	end
 end
@@ -50,6 +52,8 @@ function league_table:draw()
 		if i==1 then g.font.set(g.skin.bars.font[1]) else g.font.set(g.skin.bars.font[2]) end
 		love.graphics.printf(bar.pos, bar.x + g.skin.margin, bar.y + bar.ty, 30, "right")
 		love.graphics.print(bar.name, bar.x + g.skin.margin * 3 + 30 + g.skin.bars.img_size, bar.y + bar.ty)
+		love.graphics.printf(bar.pts, bar.x + bar.w - g.skin.margin - 30, bar.y + bar.ty, 30, "center")
+		--
 		if bar.logo then
 			love.graphics.setColor(255, 255, 255, 255)
 			bar.logo:draw(bar.x + g.skin.margin * 2 + 30)

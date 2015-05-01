@@ -9,7 +9,7 @@ end
 
 function league_overview:added(id)
 	self.league_id = id or self.league_id or 1
-	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, 900, g.skin.screen.h - g.skin.margin * 2)
+	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, 500, g.skin.screen.h - g.skin.margin * 2)
 	self:set_league()
 end
 

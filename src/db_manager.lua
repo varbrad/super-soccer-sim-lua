@@ -47,6 +47,9 @@ function dbm.load(teams, leagues)
 		team.color1 = hex(team.color1) or g.skin.black
 		team.color2 = hex(team.color2) or g.skin.white
 		team.color3 = hex(team.color3) or love.graphics.darken(team.color1)
+
+		team.season = {}
+		team.season.stats = { w=0; d=0; l=0; gf=0; ga=0; }
 	end
 	-- Now process league data
 	for i=1, #dbm.leagues do
