@@ -10,6 +10,8 @@ function love.load(args)
 	love.keyboard.setKeyRepeat(true)
 	love.graphics.setDefaultFilter("linear","linear")
 	love.graphics.setLineStyle("smooth")
+	-- Write current os.time to a store file
+	love.filesystem.write("store", os.time())
 	-- Libs
 	g.csv = require "libs.csv"
 	g.font = require "libs.font"

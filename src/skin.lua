@@ -73,12 +73,12 @@ skin.components = {
 }
 
 skin.bars = {
-	h = 38;
+	h = 36;
 	alpha = 150;
 	color1 = hex("1a1a1aff");
 	color2 = hex("ffffffff");
 	color3 = hex("1f1f1fff");
-	font = { {"bold", 14}, {"regular", 12} };
+	font = { {"bold", 14}, {"regular", 13}, {"semibold", 14} };
 	img_size = 28;
 }
 
