@@ -78,6 +78,7 @@ skin.bars = {
 	color1 = hex("1a1a1aff");
 	color2 = hex("ffffffff");
 	color3 = hex("1f1f1fff");
+	color4 = hex("0a0a0aff");
 	font = { {"bold", 14}, {"regular", 13}, {"semibold", 14} };
 	img_size = 28;
 }

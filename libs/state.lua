@@ -61,6 +61,12 @@ function s.refresh(...)
 	return (state.added or __NULL__)(state, ...)
 end
 
+function s.refresh_all()
+	for i=1, #_states do
+		if _states[i].added then _states[i]:added() end
+	end
+end
+
 function s.pop()
 	if #_states==0 then return end
 	local state = s.active()

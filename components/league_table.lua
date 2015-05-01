@@ -2,11 +2,12 @@ local league_table = {}
 league_table.__index = league_table
 league_table.__type = "Component.LeagueTable"
 
-function league_table.new(x, y, w, h, league)
+function league_table.new(x, y, w, h, league, style)
 	local lt = {}
 	setmetatable(lt, league_table)
-	lt.x, lt.y, lt.w, lt.h = x or 0, y or 0, w or 10, h or 10
+	lt.x, lt.y, lt.w, lt.h, lt.style = x or 0, y or 0, w or 10, h or 10, style or "default"
 	lt.panel = g.ui.panel.new(lt.x, lt.y, lt.w, lt.h)
+	lt.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	lt:set_league(league)
 	return lt
 end
@@ -16,7 +17,6 @@ function league_table:set_league(league)
 	self.bars = {}
 	--
 	if self.league==nil then return end
-	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	--
 	self.bars[1] = {x = self.x + g.skin.margin; y = self.y + g.skin.margin; w = self.w - g.skin.margin * 2; h = g.skin.bars.h; color = self.league.color3; alpha = g.skin.bars.alpha}
 	self.bars[1].ty = math.floor(self.bars[1].h / 2 - g.font.height(g.skin.bars.font[1])/2 +.5)
@@ -40,6 +40,7 @@ function league_table:set_league(league)
 		bar.stats = {}
 		bar.stats.pts = t.season.stats.w*3 + t.season.stats.d
 		bar.stats.gd = t.season.stats.gf - t.season.stats.ga
+		if bar.stats.gd > 0 then bar.stats.gd = "+" .. bar.stats.gd end
 		bar.stats.ga = t.season.stats.ga
 		bar.stats.gf = t.season.stats.gf
 		bar.stats.l = t.season.stats.l
@@ -62,14 +63,20 @@ function league_table:draw()
 		love.graphics.printf(bar.pos, bar.x + g.skin.margin, bar.y + bar.ty, 30, "right")
 		love.graphics.print(bar.name, bar.x + g.skin.margin * 5 + 30 + g.skin.bars.img_size, bar.y + bar.ty)
 		if i>1 then g.font.set(g.skin.bars.font[3]) end
-		love.graphics.printf(bar.stats.pts, bar.x + bar.w - g.skin.margin - 30, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.gd, bar.x + bar.w - g.skin.margin * 2 - 60, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.ga, bar.x + bar.w - g.skin.margin * 3 - 90, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.gf, bar.x + bar.w - g.skin.margin * 4 - 120, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.l, bar.x + bar.w - g.skin.margin * 5 - 150, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.d, bar.x + bar.w - g.skin.margin * 6 - 180, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.w, bar.x + bar.w - g.skin.margin * 7 - 210, bar.y + bar.ty, 30, "center")
-		love.graphics.printf(bar.stats.p, bar.x + bar.w - g.skin.margin * 8 - 240, bar.y + bar.ty, 30, "center")
+		if self.style=="default" then
+			love.graphics.printf(bar.stats.pts, bar.x + bar.w - g.skin.margin - 30, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.gd, bar.x + bar.w - g.skin.margin * 2 - 60, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.ga, bar.x + bar.w - g.skin.margin * 3 - 90, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.gf, bar.x + bar.w - g.skin.margin * 4 - 120, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.l, bar.x + bar.w - g.skin.margin * 5 - 150, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.d, bar.x + bar.w - g.skin.margin * 6 - 180, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.w, bar.x + bar.w - g.skin.margin * 7 - 210, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.p, bar.x + bar.w - g.skin.margin * 8 - 240, bar.y + bar.ty, 30, "center")
+		elseif self.style=="small" then
+			love.graphics.printf(bar.stats.pts, bar.x + bar.w - g.skin.margin - 30, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.gd, bar.x + bar.w - g.skin.margin * 2 - 60, bar.y + bar.ty, 30, "center")
+			love.graphics.printf(bar.stats.p, bar.x + bar.w - g.skin.margin * 3 - 90, bar.y + bar.ty, 30, "center")
+		end
 		--
 		if bar.logo then
 			love.graphics.setColor(255, 255, 255, 255)

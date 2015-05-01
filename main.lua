@@ -24,6 +24,7 @@ function love.load(args)
 	g.skin = require "src.skin"
 	-- Load components
 	g.components = {
+		fixture_group = require "components.fixture_group";
 		league_table = require "components.league_table";
 	}
 	--
@@ -45,6 +46,9 @@ function love.load(args)
 	--
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
+	--
+	g.vars = {}
+	g.vars.week = 1
 	--
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)
@@ -87,6 +91,10 @@ function love.keypressed(k,ir)
 	end
 	if k=="f1" then
 		g.console:print(g.state.order(), g.skin.blue)
+	end
+	if k==" " then
+		g.vars.week = g.vars.week + 1
+		g.state.refresh_all()
 	end
 	--
 	for i, state in g.state.states() do
