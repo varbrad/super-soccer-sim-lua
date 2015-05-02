@@ -93,7 +93,7 @@ function love.keypressed(k,ir)
 		g.console:print(g.state.order(), g.skin.blue)
 	end
 	if k==" " then
-		g.vars.week = g.vars.week + 1
+		g.db_manager.advance_week()
 		g.state.refresh_all()
 	end
 	--

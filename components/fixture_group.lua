@@ -52,7 +52,8 @@ function fixture_group:set(league, round, is_results)
 		away_text.x = away_logo.x + g.skin.margin + g.skin.bars.img_size - bar.x
 		bar.text = {home_text, away_text}
 		if fixture.finished then
-
+			local score = { text = fixture.home_score .. "\t-\t" .. fixture.away_score; x = bar.w/2 - 30; y = math.floor(bar.h/2 - g.font.height(g.skin.bars.font[3])/2); w = 60; align="center"; font=g.skin.bars.font[3]}
+			bar.text[#bar.text+1] = score
 		else
 			local versus = { text = "v"; x = bar.w/2 - 30; y = math.floor(bar.h/2 - g.font.height(g.skin.bars.font[3])/2); w = 60; align="center"; font=g.skin.bars.font[3]}
 			bar.text[#bar.text+1] = versus

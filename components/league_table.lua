@@ -38,15 +38,15 @@ function league_table:set_league(league)
 		bar.logo = g.image.new("logos/128/"..t.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, y = bar.y + math.floor(bar.h/2 - g.skin.bars.img_size/2 +.5) })
 		bar.name = t.short_name
 		bar.stats = {}
-		bar.stats.pts = t.season.stats.w*3 + t.season.stats.d
-		bar.stats.gd = t.season.stats.gf - t.season.stats.ga
+		bar.stats.pts = t.season.stats.pts
+		bar.stats.gd = t.season.stats.gd
 		if bar.stats.gd > 0 then bar.stats.gd = "+" .. bar.stats.gd end
 		bar.stats.ga = t.season.stats.ga
 		bar.stats.gf = t.season.stats.gf
 		bar.stats.l = t.season.stats.l
 		bar.stats.d = t.season.stats.d
 		bar.stats.w = t.season.stats.w
-		bar.stats.p = t.season.stats.w + t.season.stats.d + t.season.stats.l
+		bar.stats.p = t.season.stats.p
 		self.bars[i+1] = bar
 	end
 end
