@@ -2,6 +2,10 @@ local league_table = {}
 league_table.__index = league_table
 league_table.__type = "Component.LeagueTable"
 
+local function color_copy(c)
+	return {c[1], c[2], c[3], c[4] or 255}
+end
+
 function league_table.new(x, y, w, h, league, style)
 	local lt = {}
 	setmetatable(lt, league_table)
@@ -31,7 +35,15 @@ function league_table:set_league(league)
 		bar.y = self.y + g.skin.margin + i * g.skin.bars.h
 		bar.w = self.w - g.skin.margin * 2
 		bar.h = g.skin.bars.h
-		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
+		bar.color = i%2==0 and color_copy(g.skin.bars.color1) or color_copy(g.skin.bars.color3)
+		if self.league.promoted >= i then
+			bar.color[2] = bar.color[2] + 50
+		elseif self.league.promoted + self.league.playoffs >= i then
+			bar.color[1], bar.color[2] = bar.color[1] + 50, bar.color[2] + 25
+		elseif self.league.relegated > #self.league.teams - i then
+			bar.color[1] = bar.color[1] + 50
+		end
+		--
 		bar.alpha = g.skin.bars.alpha
 		bar.ty = math.floor(bar.h / 2 - g.font.height(g.skin.bars.font[2])/2 +.5)
 		bar.pos = i .. "."

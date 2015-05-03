@@ -44,11 +44,20 @@ function club_overview:set_team()
 	btn_settings.image = g.image.new("logos/128/"..self.team.league.flag..self.team.league.level..".png", {mipmap=true, w=26, h=26})
 	btn_settings.underline = true
 	btn_settings.on_release = function() g.state.swap(self, g.states.league_overview, self.team.league_id) end
-	g.ribbon:set_infobox(self.team.league.long_name, btn_settings)
+	g.ribbon:set_infobox(self:format_position(self.team.season.stats.pos) .. " in " .. self.team.league.long_name, btn_settings)
 
 	-- Start positioning and tweens
 	g.ribbon:set_positions()
 	g.ribbon:start_tween()
+end
+
+function club_overview:format_position(p)
+	local last = string.sub(p, -1)
+	if p>10 and p<20 then return p.."th" end
+	if last=="1" then return p.."st" end
+	if last=="2" then return p.."nd" end
+	if last=="3" then return p.."rd" end
+	return p.."th"
 end
 
 function club_overview:keypressed(k, ir)

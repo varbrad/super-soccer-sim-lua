@@ -34,6 +34,9 @@ function dbm.load(teams, leagues)
 			if league[k] == "" then league[k] = nil end
 		end
 		league.teams = {}
+		league.promoted = tonumber(league.promoted) or 0
+		league.relegated = tonumber(league.relegated) or 0
+		league.playoffs = tonumber(league.playoffs) or 0
 		dbm.leagues[#dbm.leagues+1] = league
 		dbm.league_dict[tonumber(league.id)] = league
 	end
@@ -72,6 +75,20 @@ function dbm.load(teams, leagues)
 		local team = dbm.teams[i]
 		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
 	end
+end
+
+-- Calculates average strengths of teams in league
+function dbm.average_strength(league)
+	local str = {0, 0, 0}
+	local c = #league.teams
+	for i=1, c do
+		local t = league.teams[i]
+		str[1] = str[1] + t.def
+		str[2] = str[2] + t.mid
+		str[3] = str[3] + t.att
+	end
+	str[1], str[2], str[3] = str[1] / c, str[2] / c, str[3] / c
+	return str
 end
 
 function dbm.generate_fixtures(league)
@@ -246,10 +263,10 @@ function dbm.calculate_league(league)
 	end
 end
 
-local rand = {min=-5,max=5}
-local preset_chance = {home=0.017, away=0.0134; home_min=0.0003; away_min=0.0003}
-local upset_chance = 0.033
-local att_weight, mid_weight, boost_weight = 0.05, 0.04, 0.0035
+local rand = {min=-2,max=2}
+local preset_chance = {home=0.017, away=0.0135; home_min=0.0003; away_min=0.0003}
+local upset_chance = 0.03
+local att_weight, mid_weight, boost_weight = 0.06, 0.035, 0.003
 local min_chance = -0.004
 -- Should determine the winner, and finish the fixture. Optional s1 and s2 score params.
 function dbm.simulate_fixture(f,s1,s2)
