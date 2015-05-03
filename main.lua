@@ -90,7 +90,7 @@ function love.keypressed(k,ir)
 		love.event.quit()
 	end
 	if k=="f1" then
-		g.console:print(g.state.order(), g.skin.blue)
+		g.console:print(g.state.order(), g.skin.red)
 	end
 	if k==" " then
 		g.db_manager.advance_week()
