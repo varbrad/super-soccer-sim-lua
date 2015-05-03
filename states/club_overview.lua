@@ -18,11 +18,7 @@ function club_overview:update(dt)
 end
 
 function club_overview:draw()
-	g.font.set(g.skin.bars.font[2])
-	for i=1, #self.team.season.fixtures do
-		local fix = self.team.season.fixtures[i]
-		love.graphics.print(fix.home.short_name .. " v " .. fix.away.short_name, g.skin.screen.x, g.skin.screen.y + i*24)
-	end
+	
 end
 
 function club_overview:set_team()
