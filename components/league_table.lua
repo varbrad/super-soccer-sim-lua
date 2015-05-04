@@ -22,6 +22,7 @@ function league_table:set_league(league)
 	--
 	if self.league==nil then return end
 	--
+	g.db_manager.calculate_league(league)
 	self.bars[1] = {x = self.x + g.skin.margin; y = self.y + g.skin.margin; w = self.w - g.skin.margin * 2; h = g.skin.bars.h; color = self.league.color3; alpha = g.skin.bars.alpha}
 	self.bars[1].ty = math.floor(self.bars[1].h / 2 - g.font.height(g.skin.bars.font[1])/2 +.5)
 	self.bars[1].logo = g.image.new("logos/128/"..self.league.flag..self.league.level..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, y = self.bars[1].y + math.floor(self.bars[1].h/2 - g.skin.bars.img_size/2 + .5) })
@@ -68,6 +69,7 @@ end
 function league_table:draw()
 	if self.league==nil then return end
 	self.panel:draw()
+	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
 	for i=1, #self.bars do
 		local bar = self.bars[i]
 		love.graphics.setColorAlpha(bar.color, bar.alpha)
@@ -97,6 +99,7 @@ function league_table:draw()
 			bar.logo:draw(bar.x + g.skin.margin * 3 + 30)
 		end
 	end
+	love.graphics.setScissor()
 end
 
 setmetatable(league_table, {_call = function(_, ...) return league_table.new(...) end})

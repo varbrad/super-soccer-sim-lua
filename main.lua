@@ -28,6 +28,7 @@ function love.load(args)
 		fixture_group = require "components.fixture_group";
 		fixture_list = require "components.fixture_list";
 		league_table = require "components.league_table";
+		result_grid = require "components.result_grid";
 	}
 	--
 	g.states = {
@@ -35,6 +36,8 @@ function love.load(args)
 		club_overview = require "states.club_overview";
 		console = require "states.console";
 		league_overview = require "states.league_overview";
+		league_result_grid = require "states.league_result_grid";
+		league_summary = require "states.league_summary";
 		navbar = require "states.navbar";
 		overview = require "states.overview";
 		ribbon = require "states.ribbon";
@@ -51,6 +54,9 @@ function love.load(args)
 	--
 	g.vars = {}
 	g.vars.week = 1
+	g.vars.view = {}
+	g.vars.view.league_id = 1
+	g.vars.view.team_id = 1
 	--
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)
@@ -90,11 +96,19 @@ end
 function love.keypressed(k,ir)
 	if k=="escape" then
 		love.event.quit()
-	end
-	if k=="f1" then
+	elseif k=="f1" then
+		g.state.switch(g.states.club_overview)
+	elseif k=="f2" then
+		g.state.switch(g.states.league_overview)
+	elseif k=="f3" then
+		g.state.switch(g.states.league_summary)
+	elseif k=="f4" then
+		g.state.switch(g.states.league_result_grid)
+	elseif k=="f8" then
 		g.console:print(g.state.order(), g.skin.red)
-	end
-	if k==" " then
+	elseif k=="f9" then
+		g.console:print(g.state.z_order(), g.skin.red)
+	elseif k==" " then
 		g.db_manager.advance_week()
 		g.state.refresh_all()
 	end

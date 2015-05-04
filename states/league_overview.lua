@@ -7,8 +7,7 @@ function league_overview:init()
 	g.console:log("league_overview:init")
 end
 
-function league_overview:added(id)
-	self.league_id = id or self.league_id or 1
+function league_overview:added()
 	local split_h = g.skin.screen.h/2 - g.skin.margin *1.5
 	local split_w = g.skin.screen.w/2 - g.skin.margin *1.5
 	local height = g.skin.screen.h - g.skin.margin * 2
@@ -29,7 +28,7 @@ function league_overview:draw()
 end
 
 function league_overview:set_league()
-	self.league = g.db_manager.league_dict[self.league_id]
+	self.league = g.db_manager.league_dict[g.vars.view.league_id]
 	self.league_table:set_league(self.league)
 	self.upcoming:set(self.league, g.vars.week, false)
 	self.results:set(self.league, g.vars.week-1, true)
@@ -53,15 +52,14 @@ function league_overview:set_league()
 end
 
 function league_overview:keypressed(k, ir)
-	local old_id = self.league_id
-	if k=="left" then self.league_id = self.league_id - 1 end
-	if k=="right" then self.league_id = self.league_id + 1 end
+	local old_id = g.vars.view.league_id
+	local id = old_id
+	if k=="left" then id = id - 1 end
+	if k=="right" then id = id + 1 end
 	if k=="left" or k=="right" then
-		local l = g.db_manager.league_dict[self.league_id]
-		if l==nil then
-			self.league_id = old_id
-			return
-		else
+		local l = g.db_manager.league_dict[id]
+		if l then
+			g.vars.view.league_id = id
 			self:set_league()
 		end
 	end

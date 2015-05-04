@@ -1,6 +1,6 @@
 ﻿id,long_name,short_name,def,mid,att,league_id,color1,color2,color3
 1,Arsenal,Arsenal,77,80,83,1,ef0107,ffffff,
-2,Aston Villa,Aston Villa,73,72,74,1,7a003c,94bee5,
+2,Aston Villa,Aston Villa,73,73,74,1,7a003c,94bee5,
 3,Burnley,Burnley,68,67,69,2,661335,8dd2f1,
 4,Chelsea,Chelsea,82,84,84,1,034594,ffffff,
 5,Crystal Palace,Crystal Palace,73,74,74,1,1b458f,c4122e,
@@ -19,7 +19,7 @@
 18,Tottenham Hotspur,Tottenham,77,77,78,1,ffffff,001c58,
 19,West Bromwich Albion,West Brom,72,74,75,1,ffffff,091453,
 20,West Ham United,West Ham,75,75,76,1,60223b,80bfff,
-21,Birmingham City,Birmingham,67,67,67,2,254ea2,ffffff,
+21,Birmingham City,Birmingham,68,67,67,2,254ea2,ffffff,
 22,Blackburn Rovers,Blackburn,67,68,70,2,1007b0,ffffff,
 23,Blackpool,Blackpool,60,62,59,3,ff8e02,ffffff,
 24,Bolton Wanderers,Bolton,66,66,69,2,ffffff,172442,

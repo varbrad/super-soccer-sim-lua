@@ -8,8 +8,7 @@ function club_overview:init()
 	g.console:log("club_overview:init")
 end
 
-function club_overview:added(id)
-	self.team_id = id or self.team_id or 1
+function club_overview:added()
 	local height = g.skin.screen.h - g.skin.margin * 2
 	local split_w = math.floor(g.width/3 - g.skin.margin * 1.5 + .5)
 	self.fixture_list = g.components.fixture_list.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, split_w, height)
@@ -25,7 +24,7 @@ function club_overview:draw()
 end
 
 function club_overview:set_team()
-	self.team = g.db_manager.team_dict[self.team_id]
+	self.team = g.db_manager.team_dict[g.vars.view.team_id]
 	-- Clear any previous tweens on our timer
 	self.timer.clear()
 	self.fixture_list:set(self.team)
@@ -52,27 +51,25 @@ function club_overview:set_team()
 end
 
 function club_overview:keypressed(k, ir)
-	local old_id = self.team_id
-	if k=="left" then self.team_id = self.team_id - 1 end
-	if k=="right" then self.team_id = self.team_id + 1 end
+	local id = g.vars.view.team_id
+	if k=="left" then id = id - 1 end
+	if k=="right" then id = id + 1 end
 	if k=="up" or k=="down" then
 		local diff = k=="up" and -1 or 1
 		local t_pos = self.team.season.stats.pos
 		for i=1, #self.team.league.teams do
 			local t = self.team.league.teams[i]
 			if t.season.stats.pos == t_pos + diff then
-				self.team_id = t.id
+				g.vars.view.team_id = t.id
 				self:set_team()
 				return
 			end
 		end
 	end
 	if k=="left" or k=="right" then
-		local t = g.db_manager.team_dict[self.team_id]
-		if t==nil then
-			self.team_id = old_id
-			return
-		else
+		local t = g.db_manager.team_dict[id]
+		if t then
+			g.vars.view.team_id = id
 			self:set_team()
 		end
 	end

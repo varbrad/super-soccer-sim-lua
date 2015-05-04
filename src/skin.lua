@@ -6,7 +6,7 @@ skin.red = hex("ff3333")
 skin.green = hex("33ff33")
 skin.blue = hex("72f7ff")
 skin.white = hex("ffffff")
-skin.black = hex("333333")
+skin.black = hex("000000")
 
 -- Load fonts
 g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 13, 14, 24, 36, 48})
@@ -23,7 +23,7 @@ skin.colors = {
 	hex("fa6900ff");
 }
 
-skin.margin = 6
+skin.margin = 4
 skin.padding = 8
 skin.tab = 22
 
@@ -73,14 +73,14 @@ skin.components = {
 }
 
 skin.bars = {
-	h = 36;
+	h = 34;
 	alpha = 150;
 	color1 = hex("1a1a1aff");
 	color2 = hex("ffffffff");
 	color3 = hex("1f1f1fff");
 	color4 = hex("0a0a0aff");
 	font = { {"bold", 14}, {"regular", 13}, {"semibold", 14} };
-	img_size = 28;
+	img_size = 26;
 }
 
 skin.small_bars = {
