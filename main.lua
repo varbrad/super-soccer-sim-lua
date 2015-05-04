@@ -24,7 +24,9 @@ function love.load(args)
 	g.skin = require "src.skin"
 	-- Load components
 	g.components = {
+		bar_draw = require "components.bar_draw";
 		fixture_group = require "components.fixture_group";
+		fixture_list = require "components.fixture_list";
 		league_table = require "components.league_table";
 	}
 	--

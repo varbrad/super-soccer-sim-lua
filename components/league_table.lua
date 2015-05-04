@@ -36,11 +36,13 @@ function league_table:set_league(league)
 		bar.w = self.w - g.skin.margin * 2
 		bar.h = g.skin.bars.h
 		bar.color = i%2==0 and color_copy(g.skin.bars.color1) or color_copy(g.skin.bars.color3)
-		if self.league.promoted >= i then
-			bar.color[2] = bar.color[2] + 50
+		if self.league.promoted >= i or i==1 then
+			bar.color[2] = bar.color[2] + 70
 		elseif self.league.promoted + self.league.playoffs >= i then
-			bar.color[1], bar.color[2] = bar.color[1] + 50, bar.color[2] + 25
+			bar.color[1], bar.color[2] = bar.color[1] + 70, bar.color[2] + 35
 		elseif self.league.relegated > #self.league.teams - i then
+			bar.color[1] = bar.color[1] + 70
+		elseif self.league.relegated + self.league.r_playoffs > #self.league.teams - i then
 			bar.color[1] = bar.color[1] + 50
 		end
 		--

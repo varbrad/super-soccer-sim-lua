@@ -24,6 +24,7 @@ function button:reset(text, settings)
 	if settings.visible==nil then settings.visible=true end
 	if settings.enabled==nil then settings.enabled=true end
 	self.x, self.y = settings.x or 0, settings.y or 0
+	self.x, self.y = math.floor(self.x + .5), math.floor(self.y + .5)
 	self.w = settings.w or button.__defaultWidth
 	self.h = settings.h or button.__defaultHeight
 	self:set_image(settings.image)

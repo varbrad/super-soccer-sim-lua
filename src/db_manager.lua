@@ -20,9 +20,10 @@ function dbm.load(teams, leagues)
 			team[k] = v
 			if team[k] == "" then team[k] = nil end
 		end
+		if team.id then team.id = tonumber(team.id) end
 		if team.league_id then team.league_id = tonumber(team.league_id) else team.league_id = 0 end -- default league id to 0 if not present
 		dbm.teams[#dbm.teams+1] = team
-		dbm.team_dict[tonumber(team.id)] = team
+		dbm.team_dict[team.id] = team
 	end
 	-- Teams initial load in complete
 	g.console:print(#dbm.teams .. " teams loaded from db", g.skin.blue)
@@ -33,12 +34,14 @@ function dbm.load(teams, leagues)
 			league[k] = v
 			if league[k] == "" then league[k] = nil end
 		end
+		if league.id then league.id = tonumber(league.id) end
 		league.teams = {}
 		league.promoted = tonumber(league.promoted) or 0
 		league.relegated = tonumber(league.relegated) or 0
 		league.playoffs = tonumber(league.playoffs) or 0
+		league.r_playoffs = tonumber(league.r_playoffs) or 0
 		dbm.leagues[#dbm.leagues+1] = league
-		dbm.league_dict[tonumber(league.id)] = league
+		dbm.league_dict[league.id] = league
 	end
 	-- Leagues initial load complete
 	g.console:print(#dbm.leagues .. " leagues loaded from db", g.skin.blue)
@@ -67,7 +70,11 @@ function dbm.load(teams, leagues)
 		if league.flag==nil then league.flag="" end
 		--
 		league.season = {}
-		league.season.fixtures = dbm.generate_fixtures(league)
+		if league.id == 0 then
+			league.season.fixtures = {}
+		else
+			league.season.fixtures = dbm.generate_fixtures(league)
+		end
 		dbm.sort_league(league)
 	end
 	g.console:print("All leagues fully processed", g.skin.green)
@@ -87,8 +94,17 @@ function dbm.average_strength(league)
 		str[2] = str[2] + t.mid
 		str[3] = str[3] + t.att
 	end
-	str[1], str[2], str[3] = str[1] / c, str[2] / c, str[3] / c
+	str[1], str[2], str[3] = math.floor(str[1] / c + .5), math.floor(str[2] / c + .5), math.floor(str[3] / c + .5)
 	return str
+end
+
+function dbm.format_position(p)
+	local last = string.sub(p, -1)
+	if p>10 and p<20 then return p.."th" end
+	if last=="1" then return p.."st" end
+	if last=="2" then return p.."nd" end
+	if last=="3" then return p.."rd" end
+	return p.."th"
 end
 
 function dbm.generate_fixtures(league)
