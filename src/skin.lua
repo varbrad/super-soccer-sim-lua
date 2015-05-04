@@ -83,6 +83,17 @@ skin.bars = {
 	img_size = 28;
 }
 
+skin.small_bars = {
+	h = 24;
+	alpha = skin.bars.alpha;
+	color1 = skin.bars.color1;
+	color2 = skin.bars.color2;
+	color3 = skin.bars.color3;
+	color4 = skin.bars.color4;
+	font = { {"bold", 12}, {"regular", 12}, {"semibold", 12} };
+	img_size = 16;
+}
+
 skin.ui = {
 	button = {
 		font = { "regular", 12 };
