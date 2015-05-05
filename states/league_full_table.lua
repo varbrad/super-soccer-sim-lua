@@ -43,16 +43,9 @@ function league_full_table:set_league()
 end
 
 function league_full_table:keypressed(k, ir)
-	local old_id = g.vars.view.league_id
-	local id = old_id
-	if k=="left" then id = id - 1 end
-	if k=="right" then id = id + 1 end
-	if k=="left" or k=="right" then
-		local l = g.db_manager.league_dict[id]
-		if l then
-			g.vars.view.league_id = id
-			self:set_league()
-		end
+	if k=="1" then self.league_table:set(self.league, "small")
+	elseif k=="2" then self.league_table:set(self.league, "default")
+	elseif k=="3" then self.league_table:set(self.league, "full")
 	end
 end
 

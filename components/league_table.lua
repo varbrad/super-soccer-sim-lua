@@ -26,8 +26,9 @@ function league_table.new(x, y, w, h, league, style)
 	return lt
 end
 
-function league_table:set(league)
+function league_table:set(league, style)
 	self.league = league
+	self.style = style or self.style or "default"
 	self.bars = {}
 	--
 	if self.league==nil then return end

@@ -12,6 +12,7 @@ function club_overview:added()
 	local height = g.skin.screen.h - g.skin.margin * 2
 	local split_w = math.floor(g.width/3 - g.skin.margin * 1.5 + .5)
 	self.fixture_list = g.components.fixture_list.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, split_w, height)
+	self.league_table = g.components.league_table.new(self.fixture_list.x + self.fixture_list.w + g.skin.margin, self.fixture_list.y, split_w, height, nil, "small")
 	self:set_team()
 end
 
@@ -21,6 +22,7 @@ end
 
 function club_overview:draw()
 	self.fixture_list:draw()
+	self.league_table:draw()
 end
 
 function club_overview:set_team()
@@ -28,6 +30,7 @@ function club_overview:set_team()
 	-- Clear any previous tweens on our timer
 	self.timer.clear()
 	self.fixture_list:set(self.team)
+	self.league_table:set(self.team.league)
 	--
 	g.ribbon:reset()
 	--
