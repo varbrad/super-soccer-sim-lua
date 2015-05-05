@@ -74,7 +74,7 @@ skin.components = {
 
 skin.bars = {
 	h = 34;
-	alpha = 150;
+	alpha = 130;
 	color1 = hex("1a1a1aff");
 	color2 = hex("ffffffff");
 	color3 = hex("1f1f1fff");
@@ -105,7 +105,7 @@ skin.ui = {
 		font = { "regular", 12 };
 	};
 	panel = {
-		alpha = 150;
+		alpha = 110;
 	};
 }
 

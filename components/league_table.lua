@@ -77,7 +77,9 @@ function league_table:set(league)
 		for i=1, #s_list do
 			local item = s_list[i]
 			if type(item)=="string" then
-				table.insert(bar.labels, { text = stats[string.lower(item)], x = x, y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2, w = g.skin.bars.column_size, align = "center" })
+				local stat = stats[string.lower(item)]
+				if (item == "GD" or item == "AGD" or item == "HGD") and stat > 0 then stat = "+" .. stat end
+				table.insert(bar.labels, { text = stat, x = x, y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2, w = g.skin.bars.column_size, align = "center" })
 				x = x - g.skin.margin - g.skin.bars.column_size
 			elseif type(item)=="number" then
 				x = x - g.skin.tab * item
@@ -86,49 +88,6 @@ function league_table:set(league)
 		--
 		table.insert(self.bars, bar)
 	end
-	--[[
-	self.bars[1] = {x = self.x + g.skin.margin; y = self.y + g.skin.margin; w = self.w - g.skin.margin * 2; h = g.skin.bars.h; color = self.league.color3; alpha = g.skin.bars.alpha}
-	self.bars[1].ty = math.floor(self.bars[1].h / 2 - g.font.height(g.skin.bars.font[1])/2 +.5)
-	self.bars[1].logo = g.image.new("logos/128/"..self.league.flag..self.league.level..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, y = self.bars[1].y + math.floor(self.bars[1].h/2 - g.skin.bars.img_size/2 + .5) })
-	self.bars[1].pos = "Pos"
-	self.bars[1].name = "Team"
-	self.bars[1].stats = {p = "P", w = "W", d = "D", l = "L", gf = "GF", ga = "GA", gd = "GD", pts = "Pts" }
-	for i=1, #self.league.teams do
-		local t = self.league.teams[i]
-		local bar = {}
-		bar.x = self.x + g.skin.margin
-		bar.y = self.y + g.skin.margin + i * g.skin.bars.h
-		bar.w = self.w - g.skin.margin * 2
-		bar.h = g.skin.bars.h
-		bar.color = i%2==0 and color_copy(g.skin.bars.color1) or color_copy(g.skin.bars.color3)
-		if self.league.promoted >= i or i==1 then
-			bar.color[2] = bar.color[2] + 70
-		elseif self.league.promoted + self.league.playoffs >= i then
-			bar.color[1], bar.color[2] = bar.color[1] + 70, bar.color[2] + 35
-		elseif self.league.relegated > #self.league.teams - i then
-			bar.color[1] = bar.color[1] + 70
-		elseif self.league.relegated + self.league.r_playoffs > #self.league.teams - i then
-			bar.color[1] = bar.color[1] + 50
-		end
-		--
-		bar.alpha = g.skin.bars.alpha
-		bar.ty = math.floor(bar.h / 2 - g.font.height(g.skin.bars.font[2])/2 +.5)
-		bar.pos = i .. "."
-		bar.logo = g.image.new("logos/128/"..t.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, y = bar.y + math.floor(bar.h/2 - g.skin.bars.img_size/2 +.5) })
-		bar.name = t.short_name
-		bar.stats = {}
-		bar.stats.pts = t.season.stats.pts
-		bar.stats.gd = t.season.stats.gd
-		if bar.stats.gd > 0 then bar.stats.gd = "+" .. bar.stats.gd end
-		bar.stats.ga = t.season.stats.ga
-		bar.stats.gf = t.season.stats.gf
-		bar.stats.l = t.season.stats.l
-		bar.stats.d = t.season.stats.d
-		bar.stats.w = t.season.stats.w
-		bar.stats.p = t.season.stats.p
-		self.bars[i+1] = bar
-	end
-	--]]
 end
 
 function league_table:draw()

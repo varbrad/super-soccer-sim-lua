@@ -38,6 +38,7 @@ function love.load(args)
 		console = require "states.console";
 		league_full_table = require "states.league_full_table";
 		league_overview = require "states.league_overview";
+		league_past_winners = require "states.league_past_winners";
 		league_result_grid = require "states.league_result_grid";
 		league_summary = require "states.league_summary";
 		navbar = require "states.navbar";
@@ -107,6 +108,8 @@ function love.keypressed(k,ir)
 		g.state.switch(g.states.league_full_table)
 	elseif k=="f4" then
 		g.state.switch(g.states.league_result_grid)
+	elseif k=="f5" then
+		g.state.switch(g.states.league_past_winners)
 	elseif k=="f8" then
 		g.console:print(g.state.order(), g.skin.red)
 	elseif k=="f9" then

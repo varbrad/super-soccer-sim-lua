@@ -36,6 +36,8 @@ function dbm.load(teams, leagues)
 		end
 		if league.id then league.id = tonumber(league.id) end
 		league.teams = {}
+		league.history = {}
+		league.history.past_winners = {}
 		league.level_up = tonumber(league.level_up) or -1
 		league.level_up_boost_min = tonumber(league.level_up_boost_min) or 0
 		league.level_up_boost_max = tonumber(league.level_up_boost_max) or 0
@@ -62,6 +64,7 @@ function dbm.load(teams, leagues)
 		team.att = tonumber(team.att) or 50
 		team.mid = tonumber(team.mid) or 50
 		team.def = tonumber(team.def) or 50
+		team.history = {}
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
@@ -135,6 +138,8 @@ function dbm.end_of_season()
 	end
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
+		dbm.sort_league(league)
+		table.insert(league.history.past_winners, {{ team = league.teams[1] }, { team = league.teams[2] }, { team = league.teams[3] }, season = g.vars.season})
 		league.teams = {}
 	end
 	for i=1, #dbm.teams do
