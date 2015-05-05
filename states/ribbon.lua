@@ -7,7 +7,7 @@ function ribbon:init()
 	self.colors = { g.skin.black, g.skin.white, g.skin.red } -- First is bg, 2nd is text, 3rd is dark color
 	self.gradient = love.graphics.gradient({{220,220,220},{255,255,255}, direction = "h"})
 	self.gradient_w, self.gradient_h = g.skin.ribbon.w / self.gradient:getWidth(), (g.skin.ribbon.h - g.skin.ribbon.border) / self.gradient:getHeight()
-	self.header = { text = "ribbon"; x = g.skin.ribbon.x + g.skin.padding; y = g.skin.ribbon.y + ((g.skin.ribbon.h-g.skin.ribbon.border)/2 - g.font.height(g.skin.ribbon.font)/2)}
+	self.header = { text = "ribbon"; x = g.skin.ribbon.x + g.skin.padding; y = g.skin.ribbon.y + ((g.skin.ribbon.h-g.skin.ribbon.border)/2 - g.font.height(g.skin.ribbon.font[1])/2)}
 	self.logo = nil
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
@@ -37,7 +37,7 @@ function ribbon:draw()
 	love.graphics.setBlendMode("alpha")
 	--
 	if self.header.text~="" then
-		g.font.set(g.skin.ribbon.font)
+		g.font.set(g.skin.ribbon.font[1])
 		love.graphics.setColorAlpha(self.colors[3], 255 * self.tween.alpha)
 		love.graphics.print(self.header.text, self.header.x + g.skin.ribbon.shadow_x + self.tween.ox, self.header.y + g.skin.ribbon.shadow_y + self.tween.oy)
 		love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
@@ -51,6 +51,11 @@ function ribbon:draw()
 		g.image.draw(self.logo, self.tween.ox, self.tween.oy)
 	end
 	self.infobox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
+	--
+	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
+	g.font.set(g.skin.ribbon.font[2])
+	love.graphics.printf("Season: " .. g.vars.season .. "/" .. (g.vars.season + 1) .."\nWeek: " .. g.vars.week, g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin - 200, g.skin.ribbon.y + g.skin.margin, 200, "right")
+
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -100,7 +105,7 @@ function ribbon:set_positions()
 	else
 		self.header.x = g.skin.ribbon.x + g.skin.margin
 	end
-	self.infobox.x = self.header.x + g.font.width(self.header.text, g.skin.ribbon.font) + g.skin.tab
+	self.infobox.x = self.header.x + g.font.width(self.header.text, g.skin.ribbon.font[1]) + g.skin.tab
 	self.infobox.y = (g.skin.ribbon.h-g.skin.ribbon.border)/2 - self.infobox.h/2
 end
 

@@ -43,7 +43,7 @@ skin.navbar = {
 }
 
 skin.ribbon = {
-	font = { "bold", 36 };
+	font = { {"bold", 36}, {"regular", 14} };
 	x = skin.navbar.w;
 	y = 0;
 	w = g.width - skin.navbar.w;
@@ -81,7 +81,10 @@ skin.bars = {
 	color4 = hex("0a0a0aff");
 	font = { {"bold", 14}, {"regular", 13}, {"semibold", 14} };
 	img_size = 26;
+	column_size = 40;
 }
+skin.bars.iy = math.floor(skin.bars.h/2 - skin.bars.img_size/2 +.5);
+skin.bars.ty = math.floor(skin.bars.h/2 - g.font.height(skin.bars.font[1])/2 + .5);
 
 skin.small_bars = {
 	h = 24;
@@ -92,7 +95,10 @@ skin.small_bars = {
 	color4 = skin.bars.color4;
 	font = { {"bold", 12}, {"regular", 12}, {"semibold", 12} };
 	img_size = 16;
+	column_size = 30;
 }
+skin.small_bars.iy = math.floor(skin.small_bars.h/2 - skin.small_bars.img_size/2 +.5);
+skin.small_bars.ty = math.floor(skin.small_bars.h/2 - g.font.height(skin.small_bars.font[1])/2 + .5);
 
 skin.ui = {
 	button = {

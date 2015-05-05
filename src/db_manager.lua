@@ -36,6 +36,12 @@ function dbm.load(teams, leagues)
 		end
 		if league.id then league.id = tonumber(league.id) end
 		league.teams = {}
+		league.level_up = tonumber(league.level_up) or -1
+		league.level_up_boost_min = tonumber(league.level_up_boost_min) or 0
+		league.level_up_boost_max = tonumber(league.level_up_boost_max) or 0
+		league.level_down = tonumber(league.level_down) or -1
+		league.level_down_boost_min = tonumber(league.level_down_boost_min) or 0
+		league.level_down_boost_max = tonumber(league.level_down_boost_max) or 0
 		league.promoted = tonumber(league.promoted) or 0
 		league.relegated = tonumber(league.relegated) or 0
 		league.playoffs = tonumber(league.playoffs) or 0
@@ -53,9 +59,9 @@ function dbm.load(teams, leagues)
 		team.color1 = hex(team.color1) or g.skin.black
 		team.color2 = hex(team.color2) or g.skin.white
 		team.color3 = hex(team.color3) or love.graphics.darken(team.color1)
-		team.att = team.att or 50
-		team.mid = team.mid or 50
-		team.def = team.def or 50
+		team.att = tonumber(team.att) or 50
+		team.mid = tonumber(team.mid) or 50
+		team.def = tonumber(team.def) or 50
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
@@ -71,8 +77,10 @@ function dbm.load(teams, leagues)
 		--
 		league.season = {}
 		if league.id == 0 then
+			league.active = false
 			league.season.fixtures = {}
 		else
+			league.active = true
 			league.season.fixtures = dbm.generate_fixtures(league)
 		end
 		dbm.sort_league(league)
@@ -82,6 +90,79 @@ function dbm.load(teams, leagues)
 		local team = dbm.teams[i]
 		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
 	end
+end
+
+function dbm.end_of_season()
+	for i=1, #dbm.teams do
+		local team = dbm.teams[i]
+		if team.league.active then
+			-- Lets figure out if this team should be promoted or relegated
+			local promoted = team.league.promoted
+			local relegated = team.league.relegated
+			local final_pos = team.season.stats.pos
+			-- If winner of the prem, write to the history log
+			if team.id==21 then
+				local _season = g.vars.season.."/"..(g.vars.season+1)
+				local str = string.format("%12s | %-20s : %5s with %4i pts | (%3i, %3i, %3i)\n", _season, team.league.short_name, dbm.format_position(team.season.stats.pos), team.season.stats.pts, team.def, team.mid, team.att)
+				love.filesystem.append("history.txt", str)
+			end
+			--
+			local total_teams = #team.league.teams
+			local old_id = team.league_id
+			if team.league.level_up~=-1 and final_pos <= promoted+1 then
+				-- promoted
+				team.league_id = team.league.level_up
+				-- give this team a random boost to their stats (to help cope with the higher league!)
+				local boost_min, boost_max = dbm.league_dict[old_id].level_up_boost_min, dbm.league_dict[old_id].level_up_boost_max
+				local r1, r2, r3 = love.math.random(boost_min, boost_max), love.math.random(boost_min, boost_max), love.math.random(boost_min, boost_max)
+				team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att +  r3
+			elseif team.league.level_down~=-1 and total_teams - final_pos < relegated then
+				-- relegated
+				team.league_id = team.league.level_down
+				-- give htis team a negative boost to lower their ability
+				local boost_min, boost_max = dbm.league_dict[old_id].level_down_boost_min, dbm.league_dict[old_id].level_down_boost_max
+				local r1, r2, r3 = love.math.random(boost_min, boost_max), love.math.random(boost_min, boost_max), love.math.random(boost_min, boost_max)
+				team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att +  r3
+			else
+				-- give teams a random + or -
+				local r1, r2, r3 = love.math.random(-1, 1), love.math.random(-1, 1), love.math.random(-1, 1)
+				if love.math.random() > 0.7 then team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att + r3 end
+			end
+			if team.def > 100 then team.def = 100 end
+			if team.mid > 100 then team.mid = 100 end
+			if team.att > 100 then team.att = 100 end
+		end
+	end
+	for i=1, #dbm.leagues do
+		local league = dbm.leagues[i]
+		league.teams = {}
+	end
+	for i=1, #dbm.teams do
+		local team = dbm.teams[i]
+		team.league = dbm.league_dict[team.league_id]
+		table.insert(team.league.teams, team)
+		team.season = {}
+		team.season.past_pos = {}
+		team.season.stats = dbm.new_stats()
+	end
+	for i=1, #dbm.leagues do
+		local league = dbm.leagues[i]
+		if league.active then
+			league.season = {}
+			league.season.fixtures = dbm.generate_fixtures(league)
+			dbm.sort_league(league)
+		end
+	end
+	for i=1, #dbm.teams do
+		local team = dbm.teams[i]
+		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
+	end
+	g.console:print("Season "..g.vars.season.."/"..(g.vars.season+1).." finished.", g.skin.blue)
+	g.vars.week = 1
+	g.vars.season = g.vars.season + 1
+	g.console:print("New Season generated", g.skin.green)
+	g.console:hr()
+	g.state.refresh_all()
 end
 
 -- Calculates average strengths of teams in league
@@ -107,7 +188,7 @@ function dbm.format_position(p)
 	return p.."th"
 end
 
-function dbm.generate_fixtures(league)
+function dbm.generate_fixtures(league) -- Generates all league fixtures for a season
 	local teams = league.teams
 	if #teams==0 then return {} end
 	-- First, shuffle the order of the teams in the league.data.teams array
@@ -121,6 +202,7 @@ function dbm.generate_fixtures(league)
 		fixture = {}
 		fixture.home = teams[i]
 		fixture.away = teams[i+1]
+		fixture.type = "L"
 		round[#round+1] = fixture
 	end
 	fixtures[1] = round
@@ -128,7 +210,7 @@ function dbm.generate_fixtures(league)
 	for a=2,#teams-1 do
 		round, fixture = {}, nil
 		for n=1,games_per_week do
-			fixture = {}
+			fixture = { type = "L" }
 			if n==1 then
 				fixture.home = fixtures[a-1][1].home
 				fixture.away = fixtures[a-1][n+1].home
@@ -147,7 +229,7 @@ function dbm.generate_fixtures(league)
 	for a=1,#teams-1 do
 		local r,f = {},nil
 		for n=1,games_per_week do
-			f={}
+			f={type="L"}
 			f.home=fixtures[a][n].away
 			f.away=fixtures[a][n].home
 			r[#r+1]=f
@@ -279,10 +361,10 @@ function dbm.calculate_league(league)
 	end
 end
 
-local rand = {min=-2,max=2}
-local preset_chance = {home=0.017, away=0.0135; home_min=0.0003; away_min=0.0003}
-local upset_chance = 0.03
-local att_weight, mid_weight, boost_weight = 0.06, 0.035, 0.003
+local rand = {min=-5,max=5}
+local preset_chance = {home=0.017, away=0.0134; home_min=0.0003; away_min=0.0003}
+local upset_chance = 0.033
+local att_weight, mid_weight, boost_weight = 0.05, 0.04, 0.0035
 local min_chance = -0.004
 -- Should determine the winner, and finish the fixture. Optional s1 and s2 score params.
 function dbm.simulate_fixture(f,s1,s2)

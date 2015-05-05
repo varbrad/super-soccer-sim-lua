@@ -43,7 +43,7 @@ function result_grid:set(league)
 		local bar = { x = self.x + g.skin.margin, y = self.y + g.skin.margin + i * g.skin.bars.h, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
 		bar.rects = { { x = 0, y = 0, w = rest_width, h = bar.h, color = self.league.color3, alpha = g.skin.bars.alpha } }
-		bar.rects[2] = { x = rest_width + (i-1) * column_width + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = g.skin.black, alpha = g.skin.bars.alpha, rounded = 5 }
+		bar.rects[2] = { x = rest_width + (i-1) * column_width + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = g.skin.black, alpha = g.skin.bars.alpha}
 		bar.images = { g.image.new("logos/128/"..team.id..".png", {mipmap = true, x = rest_width - g.skin.margin - g.skin.bars.img_size, y = iy, w = g.skin.bars.img_size, h = g.skin.bars.img_size })}
 		bar.labels = { { text = team.short_name, x = 0, y = ty, w = rest_width - g.skin.margin * 2 - g.skin.bars.img_size, align="right", font = g.skin.bars.font[2], color = g.skin.bars.color2 }}
 		for i=1, #team.season.fixtures do
@@ -51,7 +51,7 @@ function result_grid:set(league)
 			if fix.home==team and fix.finished then
 				local color = fix.winner==team and {0, 123, 0, 255} or (fix.draw and {123, 63, 0, 255} or {123, 0, 0, 255})
 				local score = fix.home_score .. "\t-\t" .. fix.away_score
-				bar.rects[#bar.rects+1] = { x = team_x[fix.away.id] + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = color, alpha = g.skin.bars.alpha, rounded = 5}
+				bar.rects[#bar.rects+1] = { x = team_x[fix.away.id] + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = color, alpha = g.skin.bars.alpha}
 				bar.labels[#bar.labels+1] = { text = score, x = team_x[fix.away.id], y = ty, w = column_width, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 			end
 		end

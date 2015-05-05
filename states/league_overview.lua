@@ -29,7 +29,7 @@ end
 
 function league_overview:set_league()
 	self.league = g.db_manager.league_dict[g.vars.view.league_id]
-	self.league_table:set_league(self.league)
+	self.league_table:set(self.league)
 	self.upcoming:set(self.league, g.vars.week, false)
 	self.results:set(self.league, g.vars.week-1, true)
 	--
