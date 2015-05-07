@@ -18,6 +18,7 @@ end
 
 function club_overview:update(dt)
 	self.timer.update(dt)
+	self.league_table:update(dt)
 end
 
 function club_overview:draw()
@@ -31,6 +32,7 @@ function club_overview:set_team()
 	self.timer.clear()
 	self.fixture_list:set(self.team)
 	self.league_table:set(self.team.league)
+	self.league_table:highlight_team(self.team)
 	--
 	g.ribbon:set_team(self.team)
 end
@@ -58,6 +60,14 @@ function club_overview:keypressed(k, ir)
 			self:set_team()
 		end
 	end
+end
+
+function club_overview:mousepressed(x, y, b)
+	self.league_table:mousepressed(x, y, b)
+end
+
+function club_overview:mousereleased(x, y, b)
+	self.league_table:mousereleased(x, y, b)
 end
 
 return club_overview

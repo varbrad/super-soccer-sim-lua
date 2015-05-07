@@ -13,7 +13,7 @@ function league_full_table:added()
 end
 
 function league_full_table:update(dt)
-	
+	self.league_table:update(dt)
 end
 
 function league_full_table:draw()
@@ -32,6 +32,14 @@ function league_full_table:keypressed(k, ir)
 	elseif k=="2" then self.league_table:set(self.league, "default")
 	elseif k=="3" then self.league_table:set(self.league, "full")
 	end
+end
+
+function league_full_table:mousepressed(x, y, b)
+	self.league_table:mousepressed(x, y, b)
+end
+
+function league_full_table:mousereleased(x, y, b)
+	self.league_table:mousereleased(x, y, b)
 end
 
 return league_full_table

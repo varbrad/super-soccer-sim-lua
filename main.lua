@@ -12,7 +12,7 @@ function love.load(args)
 	love.graphics.setLineStyle("smooth")
 	-- Write current os.time to a store file
 	love.filesystem.write("store", os.time())
-	love.filesystem.write("history.txt", "History of Premier League Winners\n---------------------------------\n")
+	love.filesystem.write("history.txt", "History of Birmingham City\n---------------------------------\n")
 	-- Libs
 	g.csv = require "libs.csv"
 	g.font = require "libs.font"
@@ -58,6 +58,8 @@ function love.load(args)
 	g.vars = {}
 	g.vars.week = 1
 	g.vars.season = 2015
+	g.vars.player = {}
+	g.vars.player.team_id = 97
 	g.vars.view = {}
 	g.vars.view.league_id = 1
 	g.vars.view.team_id = 1
@@ -65,8 +67,6 @@ function love.load(args)
 	g.state.add(g.states.background)
 	g.state.add(g.states.console)
 	--
-	g.state.add(g.states.navbar)
-	g.state.add(g.states.ribbon)
 	g.state.add(g.states.overview)
 	--
 	g.mouse = {}

@@ -65,6 +65,7 @@ function dbm.load(teams, leagues)
 		team.mid = tonumber(team.mid) or 50
 		team.def = tonumber(team.def) or 50
 		team.history = {}
+		team.history.honours = {}
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()

@@ -14,52 +14,51 @@ end
 
 function fixture_group:set(league, round, is_results)
 	self.league, self.round = league, round
-	self.bars = {}
+	self.bars, self.buttons = {}, {}
 	if self.league==nil or self.league.season.fixtures[round]==nil then
-		local no_fix = {x = self.x + g.skin.margin; y = self.y + g.skin.margin; w = self.w - g.skin.margin*2; h = g.skin.bars.h;}
-		no_fix.color = g.skin.bars.color1
-		no_fix.alpha = g.skin.bars.alpha
-		no_fix.header=true;
-		no_fix.ty = math.floor(no_fix.h/2 - g.font.height(g.skin.bars.font[1])/2 + .5)
-		no_fix.images, no_fix.text = {}, { {x=0;y=no_fix.ty;w=no_fix.w;align="center";text=is_results and "No Results To Show" or "No Fixtures Scheduled"}}
-		self.bars[1] = no_fix
+		local no_fix = {x = self.x + g.skin.margin, y = self.y + g.skin.margin, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, color = g.skin.bars.color1, alpha = g.skin.bars.alpha }
+		no_fix.labels = { { text = is_results and "No Results To Show" or "No Fixtures Scheduled", x = 0, y = g.skin.bars.ty, w = no_fix.w, font = g.skin.bars.font[1], align = "center", color = g.skin.bars.color2 }}
+		table.insert(self.bars, no_fix)
 		return
 	end
-	local header = {x = self.x + g.skin.margin; y = self.y + g.skin.margin; w = self.w - g.skin.margin*2; h = g.skin.bars.h; color = self.league.color3; alpha = g.skin.bars.alpha }
-	header.header = true
-	header.ty = math.floor(header.h/2 - g.font.height(g.skin.bars.font[1])/2 +.5)
-	header.images = {}
-	header.text = { {x = 0; y = header.ty; w = header.w; align="center"; text=self.league.short_name .. (is_results and " Results - Round " or " Fixtures - Round ") .. round}}
-	self.bars[1] = header
+	local header = {x = self.x + g.skin.margin, y = self.y + g.skin.margin, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, color = self.league.color2, alpha = g.skin.bars.alpha }
+	header.labels = { { text = self.league.short_name .. (is_results and " Results - Week " or " Fixtures - Week ") .. round, x = 0, y = g.skin.bars.ty, w = header.w, font = g.skin.bars.font[1], align = "center", color = self.league.color1 } }
+	table.insert(self.bars, header)
+	--
 	for i=1, #self.league.season.fixtures[round] do
 		local fixture = self.league.season.fixtures[round][i]
-		local bar = { x = self.x + g.skin.margin; y = self.y + g.skin.margin + i*g.skin.bars.h; w = self.w - g.skin.margin*2; h = g.skin.bars.h}
-		bar.ty = math.floor(bar.h/2 - g.font.height(g.skin.bars.font[2])/2 + .5)
+		local bar = {x = self.x + g.skin.margin, y = self.y + g.skin.margin + i * g.skin.bars.h, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
-		bar.alpha = g.skin.bars.alpha
-		local home_logo = g.image.new("logos/128/"..fixture.home.id..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size})
-		home_logo.x = bar.x + bar.w/2 - 30 - g.skin.margin - g.skin.bars.img_size
-		local away_logo = g.image.new("logos/128/"..fixture.away.id..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size})
-		away_logo.x = bar.x + bar.w/2 + 30 + g.skin.margin
-		local iy = bar.y + math.floor(bar.h/2 - g.skin.bars.img_size/2 + .5)
-		home_logo.y, away_logo.y = iy, iy
-		bar.images = {home_logo, away_logo}
-		local home_text = { text = fixture.home.short_name; y = bar.ty; }
-		local away_text = { text = fixture.away.short_name; y = bar.ty; }
-		home_text.w = g.font.width(home_text.text, g.skin.bars.font[2])
-		away_text.w = g.font.width(away_text.text, g.skin.bars.font[2])
-		home_text.x = home_logo.x - g.skin.margin - home_text.w - bar.x
-		away_text.x = away_logo.x + g.skin.margin + g.skin.bars.img_size - bar.x
-		bar.text = {home_text, away_text}
-		if fixture.finished then
-			local score = { text = fixture.home_score .. "\t-\t" .. fixture.away_score; x = bar.w/2 - 30; y = math.floor(bar.h/2 - g.font.height(g.skin.bars.font[3])/2); w = 60; align="center"; font=g.skin.bars.font[3]}
-			bar.text[#bar.text+1] = score
-		else
-			local versus = { text = "v"; x = bar.w/2 - 30; y = math.floor(bar.h/2 - g.font.height(g.skin.bars.font[3])/2); w = 60; align="center"; font=g.skin.bars.font[3]}
-			bar.text[#bar.text+1] = versus
-		end
-		self.bars[#self.bars+1] = bar
+		local c1, c2 = fixture.home.id==g.vars.player.team_id and g.skin.colors[3] or g.skin.bars.color2, fixture.away.id==g.vars.player.team_id and g.skin.colors[3] or g.skin.bars.color2
+		bar.labels = {
+			{ text = fixture.home.short_name, w = g.font.width(fixture.home.short_name, g.skin.bars.font[2]), h = g.font.height(g.skin.bars.font[2]), x = math.floor(bar.w / 2 - 30 - g.skin.margin * 2 - g.skin.bars.img_size - g.font.width(fixture.home.short_name, g.skin.bars.font[2]) + .5), y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c1 };
+			{ text = fixture.away.short_name, w = g.font.width(fixture.away.short_name, g.skin.bars.font[2]), h = g.font.height(g.skin.bars.font[2]), x = math.floor(bar.w / 2 + 30 + g.skin.margin * 2 + g.skin.bars.img_size + .5), y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c2 };
+			{ text = g.db_manager.format_position(fixture.home.season.stats.pos), x = g.skin.margin, y = g.skin.bars.ty, w = 50, align = "center", font = g.skin.bars.font[2], color = g.skin.bars.color2 };
+			{ text = g.db_manager.format_position(fixture.away.season.stats.pos), x = bar.w - g.skin.margin - 50, y = g.skin.bars.ty, w = 50, align = "center", font = g.skin.bars.font[2], color = g.skin.bars.color2 };
+			{ text = fixture.finished and fixture.home_score.." - "..fixture.away_score or "v", x = math.floor(bar.w / 2 - 30), y = g.skin.bars.ty, w = 60, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 };
+		}
+		bar.images = {
+			g.image.new("logos/128/"..fixture.home.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = math.floor(bar.w / 2 - 30 - g.skin.margin - g.skin.bars.img_size + .5), y = g.skin.bars.iy });
+			g.image.new("logos/128/"..fixture.away.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = math.floor(bar.w / 2 + 30 + g.skin.margin + .5), y = g.skin.bars.iy });
+		}
+		bar.rects = {
+			{ x = math.floor(bar.w / 2 - 30), y = g.skin.margin, w = 60, h = bar.h - g.skin.margin * 2, color = g.skin.bars.color4, alpha = g.skin.bars.alpha, rounded = 5 }
+		}
+		local btn1 = g.ui.button.new("", { w = bar.labels[1].w, h = bar.labels[1].h, x = bar.x + bar.labels[1].x, y = bar.y + bar.labels[1].y } )
+		local btn2 = g.ui.button.new("", { w = bar.labels[2].w, h = bar.labels[2].h, x = bar.x + bar.labels[2].x, y = bar.y + bar.labels[2].y } )
+		btn1.on_enter = function(btn) bar.labels[1].underline = true end
+		btn1.on_exit = function(btn) bar.labels[1].underline = false end
+		btn1.on_release = function(btn) g.vars.view.team_id = fixture.home.id; g.state.switch(g.states.club_overview) end
+		btn2.on_enter = function(btn) bar.labels[2].underline = true end
+		btn2.on_exit = function(btn) bar.labels[2].underline = false end
+		btn2.on_release = function(btn) g.vars.view.team_id = fixture.away.id; g.state.switch(g.states.club_overview) end
+		table.insert(self.buttons, btn1); table.insert(self.buttons, btn2)
+		table.insert(self.bars, bar)
 	end
+end
+
+function fixture_group:update(dt)
+	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
 function fixture_group:draw()
@@ -67,30 +66,17 @@ function fixture_group:draw()
 	love.graphics.setScissor(self.panel.x+g.skin.margin, self.panel.y+g.skin.margin, self.panel.w-g.skin.margin*2, self.panel.h-g.skin.margin*2)
 	for i=1, #self.bars do
 		local bar = self.bars[i]
-		love.graphics.setColorAlpha(bar.color, bar.alpha)
-		love.graphics.rectangle("fill", bar.x, bar.y, bar.w, bar.h)
-		love.graphics.setColorAlpha(g.skin.bars.color4, bar.alpha)
-		if not bar.header then love.graphics.roundrect("fill", bar.x + bar.w/2 - 30, bar.y + g.skin.margin, 60, bar.h - g.skin.margin * 2, 5) end
-		love.graphics.setColorAlpha(g.skin.bars.color2)
-		if bar.header then g.font.set(g.skin.bars.font[1]) else g.font.set(g.skin.bars.font[2]) end
-		for i=1, #bar.text do
-			local text = bar.text[i]
-			if not bar.header then
-				if text.font then g.font.set(text.font) else g.font.set(g.skin.bars.font[2]) end
-			end 
-			if text.align then
-				love.graphics.printf(text.text, bar.x + text.x, bar.y + text.y, text.w, text.align)
-			else
-				love.graphics.print(text.text, bar.x + text.x, bar.y + text.y)
-			end
-		end
-		for i=1, #bar.images do
-			local image = bar.images[i]
-			love.graphics.setColor(255, 255, 255, 255)
-			image:draw()
-		end
+		g.components.bar_draw.draw(bar)
 	end
 	love.graphics.setScissor()
+end
+
+function fixture_group:mousepressed(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(dt) end
+end
+
+function fixture_group:mousereleased(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(dt) end
 end
 
 setmetatable(fixture_group, {_call = function(_, ...) return fixture_group.new(...) end})

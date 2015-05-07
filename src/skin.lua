@@ -18,8 +18,8 @@ g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 13, 14, 24, 36,
 
 skin.colors = {
 	hex("090909ff"); -- Primary color used for navbar bg, etc
-	hex("a7dbd8ff");
-	hex("e0e4ccff");
+	hex("ffa523ff"); -- Highlight color for text
+	hex("4595ffff"); -- Players team highlight color
 	hex("f38630ff");
 	hex("fa6900ff");
 }

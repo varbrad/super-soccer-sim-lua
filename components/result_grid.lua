@@ -22,7 +22,7 @@ function result_grid:set(league)
 	local iy = math.floor(g.skin.bars.h/2 - g.skin.bars.img_size/2 + .5)
 	local column_width = math.floor(math.floor((self.w - g.skin.margin * 2) * .85 + .5) / #teams + .5)
 	local rest_width = math.floor(self.w - g.skin.margin * 2 - column_width * #teams + .5)
-	local header = { x = self.x + g.skin.margin, y = self.y + g.skin.margin, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, color = self.league.color3, alpha = g.skin.bars.alpha }
+	local header = { x = self.x + g.skin.margin, y = self.y + g.skin.margin, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, color = self.league.color2, alpha = g.skin.bars.alpha }
 	header.images = {}
 	local k = 1
 	for i=#teams, 1, -1 do
@@ -42,7 +42,7 @@ function result_grid:set(league)
 		local team = teams[i]
 		local bar = { x = self.x + g.skin.margin, y = self.y + g.skin.margin + i * g.skin.bars.h, w = self.w - g.skin.margin * 2, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
-		bar.rects = { { x = 0, y = 0, w = rest_width, h = bar.h, color = self.league.color3, alpha = g.skin.bars.alpha } }
+		bar.rects = { { x = 0, y = 0, w = rest_width, h = bar.h, color = self.league.color2, alpha = g.skin.bars.alpha } }
 		bar.rects[2] = { x = rest_width + (i-1) * column_width + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = g.skin.black, alpha = g.skin.bars.alpha}
 		bar.images = { g.image.new("logos/128/"..team.id..".png", {mipmap = true, x = rest_width - g.skin.margin - g.skin.bars.img_size, y = iy, w = g.skin.bars.img_size, h = g.skin.bars.img_size })}
 		bar.labels = { { text = team.short_name, x = 0, y = ty, w = rest_width - g.skin.margin * 2 - g.skin.bars.img_size, align="right", font = g.skin.bars.font[2], color = g.skin.bars.color2 }}

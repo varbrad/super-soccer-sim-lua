@@ -1,9 +1,9 @@
 ﻿id,long_name,short_name,level,flag,color1,color2,color3,level_up,level_up_boost_min,level_up_boost_max,level_down,level_down_boost_min,level_down_boost_max,promoted,relegated,playoffs,r_playoffs
 0,No League Assigned,No League Assigned,1,unassigned,ffffff,000000,,,,,,,,,,,
-1,Barclays Premier League,Premier League,1,en,050528,ffffff,,,,,2,-5,-1,,3,,
-2,Sky Bet Championship,Championship,2,en,002a67,ffffff,,1,0,5,3,-3,0,2,3,4,
-3,Sky Bet League One,League One,3,en,002A67,ffffff,,2,0,3,4,-2,0,2,4,4,
-4,Sky Bet League Two,League Two,4,en,002A67,ffffff,,3,0,2,7,-2,0,3,2,4,
-5,Bundesliga,Bundesliga,1,de,b60c0c,ffffff,,,,,,,,,2,,1
-6,Liga BBVA,La Liga,1,es,0c0cb6,ffffff,,,,,,,,,3,,
-7,Vanarama Conference,Conference,5,en,ec620a,ffffff,,4,0,2,,,,1,,4,
+1,Barclays Premier League,Premier League,1,en,ffffff,050528,,,,,2,-5,-1,,3,,
+2,Sky Bet Championship,Championship,2,en,ffffff,002a67,,1,0,5,3,-3,0,2,3,4,
+3,Sky Bet League One,League One,3,en,ffffff,002a67,,2,0,3,4,-2,0,2,4,4,
+4,Sky Bet League Two,League Two,4,en,ffffff,002a67,,3,0,2,7,-2,0,3,2,4,
+5,Bundesliga,Bundesliga,1,de,ffffff,b60c0c,,,,,,,,,2,,1
+6,Liga BBVA,La Liga,1,es,ffffff,004c92,,,,,,,,,3,,
+7,Vanarama Conference,Conference,5,en,ffffff,ec620a,,4,0,2,,,,1,,4,

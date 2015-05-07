@@ -2,6 +2,7 @@ local bd = {}
 
 function bd.draw(bar, ox, oy)
 	ox, oy = ox or 0, oy or 0
+	if bar.x + ox > g.width or bar.y + oy > g.height or bar.x + ox + bar.w < 0 or bar.y + oy + bar.h < 0 then return end
 	love.graphics.setColorAlpha(bar.color, bar.alpha)
 	love.graphics.rectangle("fill", bar.x + ox, bar.y + oy, bar.w, bar.h)
 	if bar.rects then
@@ -24,6 +25,9 @@ function bd.draw(bar, ox, oy)
 				love.graphics.printf(label.text, bar.x + label.x + ox, bar.y + label.y + oy, label.w, label.align)
 			else
 				love.graphics.print(label.text, bar.x + label.x + ox, bar.y + label.y + oy)
+			end
+			if label.underline==true then
+				love.graphics.rectangle("fill", bar.x + label.x + ox, bar.y + label.y + label.h + oy - 1, label.w, 1)
 			end
 		end
 	end

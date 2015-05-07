@@ -18,7 +18,9 @@ function league_overview:added()
 end
 
 function league_overview:update(dt)
-	
+	self.league_table:update(dt)
+	self.upcoming:update(dt)
+	self.results:update(dt)
 end
 
 function league_overview:draw()
@@ -48,6 +50,18 @@ function league_overview:keypressed(k, ir)
 			self:set_league()
 		end
 	end
+end
+
+function league_overview:mousepressed(x, y, b)
+	self.league_table:mousepressed(x, y, b)
+	self.upcoming:mousepressed(x, y, b)
+	self.results:mousepressed(x, y, b)
+end
+
+function league_overview:mousereleased(x, y, b)
+	self.league_table:mousereleased(x, y, b)
+	self.upcoming:mousereleased(x, y, b)
+	self.results:mousereleased(x, y, b)
 end
 
 return league_overview
