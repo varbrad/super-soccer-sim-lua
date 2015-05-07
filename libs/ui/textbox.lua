@@ -1,5 +1,6 @@
 local ui = 1
 local textbox = {}
+local utf8 = require "utf8"
 textbox.__index = textbox
 textbox.__type = "textbox"
 
@@ -27,7 +28,7 @@ function textbox:reset(settings)
 	self.w = settings.w or self.w or textbox.__defaultWidth
 	self.h = settings.h or self.h or textbox.__defaultHeight
 	self.visible, self.enabled = settings.visible, settings.enabled
-	self.hover, self.is_mousepressed = false, false
+	self.hover, self.focus = false, false
 	self:set_colors(settings.color1 or ui.__defaultColor1,
 					settings.color2 or ui.__defaultColor2,
 					settings.color3 or ui.__defaultColor3)
@@ -46,22 +47,12 @@ function textbox:set_colors(c1, c2, c3)
 	self.color3 = c3 or ui.__defaultColor3
 end
 
-function textbox:set_text(text)
-	self.text = text or ""
-end
-
-function textbox:set_events(enter, exit, click, release)
-	self.on_enter, self.on_exit, self.on_click, self.on_release = enter, exit, click, release
-end
-
 function textbox:update(dt)
 	if not self.enabled then return end
 	if not self.hover and ui.mx >= self.x and ui.my >= self.y and ui.mx < self.x + self.w and ui.my < self.y + self.h then
 		self.hover = true
-		if self.on_enter then self.on_enter(self) end
 	elseif self.hover and (ui.mx < self.x or ui.my < self.y or ui.mx >= self.x + self.w or ui.my >= self.y + self.h) then
 		self.hover = false
-		if self.on_exit then self.on_exit(self) end
 	end
 end
 
@@ -69,40 +60,48 @@ function textbox:draw(ox, oy, alpha)
 	if not self.visible then return end
 	ox, oy, alpha = ox or 0, oy or 0, alpha or 1
 	local x, y = self.x + ox, self.y + oy
-	--love.graphics.setScissor(x, y, self.w, self.h)
-	local c = {self.color3, self.color1, self.color3}
-	if self.hover then
-		c[1], c[2], c[3] = self.color2, self.color3, self.color2
-	end
-	ui.setColorAlpha(c[1], 255 * alpha)
-	ui.roundrect("fill", x, y, self.w, self.h, self.rounded)
-	ui.setColorAlpha(c[2], 255 * alpha)
-	ui.roundrect("fill", x+2, y+2, self.w-4, self.h-4, self.rounded)
+	love.graphics.setScissor(x, y, self.w, self.h)
+	local c = {self.color1, self.color2, self.color3}
 	ui.setColorAlpha(c[3], 255 * alpha)
-	local a = 1
-	if self.hover then a = 2 end
-	love.graphics.setFont(self.fonts[a])
+	ui.roundrect("fill", x, y, self.w, self.h, self.rounded)
+	ui.setColorAlpha(c[1], 255 * alpha)
+	ui.roundrect("fill", x+2, y+2, self.w-4, self.h-4, self.rounded)
+	local f, color = self.fonts[1], c[3]
+	if self.focus then f, color = self.fonts[2], c[2] end
+	ui.setColorAlpha(color, 255 * alpha)
+	love.graphics.setFont(f)
 	self.image:draw(ox, oy)
-	love.graphics.print(self.text, self.image.x + self.image.w + g.skin.margin, y + self.ty)
-	--love.graphics.setScissor()
+	love.graphics.print(self.text..(self.focus and "_" or ""), self.image.x + self.image.w + g.skin.margin, y + self.ty)
+	love.graphics.setScissor()
 end
 
 function textbox:mousepressed(x, y, b)
 	if not self.enabled then return end
-	if self.hover then
-		self.is_mousepressed = true
-		if self.on_click then self.on_click(self) end
-	else
-		self.is_mousepressed = false
+	if self.hover and not self.focus then
+		self.focus = true
+		self.text = ""
+	elseif not self.hover and self.focus then
+		self.focus = false
+		self.text = "Search"
 	end
 end
 
-function textbox:mousereleased(x, y, b)
-	if not self.enabled then return end
-	if self.hover and self.is_mousepressed then
-		if self.on_release then self.on_release(self) end
+function textbox:keypressed(k, ir)
+	if not self.focus then return end
+	if k=="backspace" and self.text~="" then
+		local byte_offset = utf8.offset(self.text, -1)
+		if byte_offset then
+			self.text = string.sub(self.text, 1, byte_offset - 1)
+		end
+	elseif k=="escape" then
+		self.focus = false
+		self.text = "Search"
 	end
-	self.is_mousepressed = false
+end
+
+function textbox:textinput(t)
+	if not self.focus then return end
+	self.text = self.text .. t
 end
 
 setmetatable(textbox, {_call = function(_, ...) return textbox.new(...) end})

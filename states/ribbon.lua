@@ -1,5 +1,6 @@
 local ribbon = {}
 ribbon.name = "Ribbon"
+local utf8 = require "utf8"
 
 function ribbon:init()
 	self.__z = 2
@@ -12,8 +13,8 @@ function ribbon:init()
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
 	self.infobox = g.ui.button.new()
-	self.searchbox = g.ui.textbox.new({ w = 400, h = g.skin.ribbon.h - g.skin.padding * 4, fonts = {g.font.get("italic", 14), g.font.get("regular", 14) }})
-	self.searchbox.x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin * 2 - 200 - 400 -- 200 - the width of the textbox
+	self.searchbox = g.ui.textbox.new({ w = 200, h = g.skin.ribbon.h - g.skin.padding * 4, fonts = {g.font.get("italic", 14), g.font.get("regular", 14) }})
+	self.searchbox.x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin * 2 - 200 - 200 -- 200 - the width of the textbox
 	self.searchbox.y = g.skin.ribbon.y + math.floor(g.skin.ribbon.h/2 - self.searchbox.h/2 + .5)
 	--
 	self.active_screen_type = nil
@@ -58,7 +59,7 @@ function ribbon:draw()
 	end
 	--
 	self.infobox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
-	self.searchbox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
+	self.searchbox:draw(0, 0, self.tween.alpha)
 	--
 	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
 	g.font.set(g.skin.ribbon.font[2])
@@ -67,14 +68,76 @@ function ribbon:draw()
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
 	love.graphics.rectangle("fill", g.skin.ribbon.x, g.skin.ribbon.y + g.skin.ribbon.h - g.skin.ribbon.border, g.skin.ribbon.w, g.skin.ribbon.border)
+	--
+	if self.searchbox.focus and self.search_list and self.searchbox.text~="" then
+		local matches = #self.search_list
+		if matches > 10 then matches = 10 end
+		love.graphics.setColor(self.colors[3])
+		love.graphics.rectangle("fill", self.searchbox.x, g.skin.ribbon.y + g.skin.ribbon.h - g.skin.ribbon.border, self.searchbox.w, matches * g.skin.small_bars.h + g.skin.ribbon.border)
+		for i=1, matches do
+			local c = { self.colors[1], self.colors[2] }
+			if i==self.search_index then c[1], c[2] = c[2], c[1] end
+			local x, y = self.searchbox.x + g.skin.ribbon.border, g.skin.ribbon.y + g.skin.ribbon.h - g.skin.ribbon.border + (i-1) * g.skin.small_bars.h
+			local match = self.search_list[i]
+			love.graphics.setColorAlpha(c[1], i%2==0 and 255 or 225)
+			love.graphics.rectangle("fill", x, y, self.searchbox.w - g.skin.ribbon.border * 2, g.skin.small_bars.h)
+			love.graphics.setColor(255, 255, 255)
+			match.image:draw(x + g.skin.margin, y + g.skin.small_bars.iy)
+			love.graphics.setColor(c[2])
+			g.font.set(g.skin.small_bars.font[2])
+			love.graphics.print(match.item.long_name, x + g.skin.margin * 2 + g.skin.small_bars.img_size, y + g.skin.small_bars.ty)
+		end
+	end
 end
 
 function ribbon:mousepressed(x, y, b)
 	self.infobox:mousepressed(x, y, b)
+	self.searchbox:mousepressed(x, y, b)
 end
 
 function ribbon:mousereleased(x, y, b)
 	self.infobox:mousereleased(x, y, b)
+end
+
+function ribbon:keypressed(k, ir)
+	self.searchbox:keypressed(k, ir)
+	if k=="return" and self.searchbox.focus and self.search_list and #self.search_list>0 then
+		local m = self.search_list[self.search_index].item
+		if m.__type=="team" then g.vars.view.team_id = m.id; g.state.switch(g.states.club_overview) end
+		if m.__type=="league" then g.vars.view.league_id = m.id; g.state.switch(g.states.league_overview) end
+	elseif (k=="up" or k=="down") and self.searchbox.focus and self.search_list and #self.search_list > 1 then
+		self.search_index = self.search_index + (k=="up" and -1 or 1)
+		if self.search_index < 1 then self.search_index = 1 elseif self.search_index > 10 then self.search_index = 10 end 
+	elseif k=="backspace" and self.searchbox.focus then
+		self:do_search()
+	end
+end
+
+function ribbon:textinput(t)
+	self.searchbox:textinput(t)
+	self:do_search()
+end
+
+function ribbon:do_search()
+	self.search_index = 1
+	if self.searchbox.focus then
+		local text = self.searchbox.text
+		self.search_list = {}
+		if utf8.len(text) < 3 then return end
+		for i=1, #g.db_manager.teams do
+			local t = g.db_manager.teams[i]
+			if string.find(string.lower(t.short_name), string.lower(text)) or string.find(string.lower(t.long_name), string.lower(text)) then
+				self.search_list[#self.search_list+1] = { item = t, image = g.image.new("logos/128/"..t.id..".png", {mipmap=true, w=g.skin.small_bars.img_size, h = g.skin.small_bars.img_size })}
+			end
+		end
+		for i=1, #g.db_manager.leagues do
+			local t = g.db_manager.leagues[i]
+			if string.find(string.lower(t.short_name), string.lower(text)) or string.find(string.lower(t.long_name), string.lower(text)) then
+				self.search_list[#self.search_list+1] = { item = t, image = g.image.new("logos/128/"..t.flag..t.level..".png", {mipmap=true, w=g.skin.small_bars.img_size, h = g.skin.small_bars.img_size })}
+			end
+		end
+		table.sort(self.search_list, function(a,b) return a.item.long_name < b.item.long_name end)
+	end
 end
 
 -- functions

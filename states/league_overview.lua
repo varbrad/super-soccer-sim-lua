@@ -39,6 +39,7 @@ function league_overview:set_league()
 end
 
 function league_overview:keypressed(k, ir)
+	if g.ribbon.searchbox.focus then return end
 	local old_id = g.vars.view.league_id
 	local id = old_id
 	if k=="left" then id = id - 1 end

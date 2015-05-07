@@ -28,10 +28,7 @@ function league_full_table:set_league()
 end
 
 function league_full_table:keypressed(k, ir)
-	if k=="1" then self.league_table:set(self.league, "small")
-	elseif k=="2" then self.league_table:set(self.league, "default")
-	elseif k=="3" then self.league_table:set(self.league, "full")
-	end
+	
 end
 
 function league_full_table:mousepressed(x, y, b)

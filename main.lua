@@ -59,7 +59,7 @@ function love.load(args)
 	g.vars.week = 1
 	g.vars.season = 2015
 	g.vars.player = {}
-	g.vars.player.team_id = 97
+	g.vars.player.team_id = 21
 	g.vars.view = {}
 	g.vars.view.league_id = 1
 	g.vars.view.team_id = 1
@@ -98,46 +98,47 @@ function love.draw()
 end
 
 function love.keypressed(k,ir)
-	if k=="escape" then
-		love.event.quit()
-	elseif k=="f1" then
-		g.state.switch(g.states.club_overview)
-	elseif k=="f2" then
-		g.state.switch(g.states.league_overview)
-	elseif k=="f3" then
-		g.state.switch(g.states.league_full_table)
-	elseif k=="f4" then
-		g.state.switch(g.states.league_result_grid)
-	elseif k=="f5" then
-		g.state.switch(g.states.league_past_winners)
-	elseif k=="f8" then
-		g.console:print(g.state.order(), g.skin.red)
-	elseif k=="f9" then
-		g.console:print(g.state.z_order(), g.skin.red)
-	elseif k=="return" then
-		if g.vars.week==52 then
-			g.console:print("NEW SEASON", g.skin.green)
-			g.db_manager.end_of_season()
-		end
-	elseif k==" " then
-		g.db_manager.advance_week()
-		g.state.refresh_all()
-	elseif k=="z" then
-		while g.vars.week~=52 do
+	if not g.ribbon.searchbox.focus then
+		if k=="escape" then
+			love.event.quit()
+		elseif k=="f1" then
+			g.state.switch(g.states.club_overview)
+		elseif k=="f2" then
+			g.state.switch(g.states.league_overview)
+		elseif k=="f3" then
+			g.state.switch(g.states.league_full_table)
+		elseif k=="f4" then
+			g.state.switch(g.states.league_result_grid)
+		elseif k=="f5" then
+			g.state.switch(g.states.league_past_winners)
+		elseif k=="f8" then
+			g.console:print(g.state.order(), g.skin.red)
+		elseif k=="f9" then
+			g.console:print(g.state.z_order(), g.skin.red)
+		elseif k=="return" then
+			if g.vars.week==52 then
+				g.console:print("NEW SEASON", g.skin.green)
+				g.db_manager.end_of_season()
+			end
+		elseif k==" " then
 			g.db_manager.advance_week()
+			g.state.refresh_all()
+		elseif k=="z" then
+			while g.vars.week~=52 do
+				g.db_manager.advance_week()
+			end
+			g.db_manager.end_of_season()
+			g.state.refresh_all()
+		elseif k=="b" then
+			local blues = g.db_manager.team_dict[21]
+			blues.def, blues.mid, blues.att = blues.def + 1, blues.mid + 1, blues.att + 1
+			g.console:print("Boosted Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
+		elseif k=="v" then
+			local blues = g.db_manager.team_dict[21]
+			blues.def, blues.mid, blues.att = blues.def - 1, blues.mid - 1, blues.att - 1
+			g.console:print("Dropped Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
 		end
-		g.db_manager.end_of_season()
-		g.state.refresh_all()
-	elseif k=="b" then
-		local blues = g.db_manager.team_dict[21]
-		blues.def, blues.mid, blues.att = blues.def + 1, blues.mid + 1, blues.att + 1
-		g.console:print("Boosted Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
-	elseif k=="v" then
-		local blues = g.db_manager.team_dict[21]
-		blues.def, blues.mid, blues.att = blues.def - 1, blues.mid - 1, blues.att - 1
-		g.console:print("Dropped Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
 	end
-	--
 	for i, state in g.state.states() do
 		if state.keypressed then state:keypressed(k,ir) end
 	end
@@ -152,6 +153,12 @@ end
 function love.mousereleased(x, y, b)
 	for i, state in g.state.states() do
 		if state.mousereleased then state:mousereleased(x, y, b) end
+	end
+end
+
+function love.textinput(t)
+	for i, state in g.state.states() do
+		if state.textinput then state:textinput(t) end
 	end
 end
 

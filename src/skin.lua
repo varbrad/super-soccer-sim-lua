@@ -41,6 +41,8 @@ skin.navbar = {
 	y = 0;
 	w = 52;
 	h = g.width;
+	border = 2;
+	alpha = 150;
 }
 
 skin.ribbon = {

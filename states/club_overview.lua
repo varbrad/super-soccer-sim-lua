@@ -38,6 +38,7 @@ function club_overview:set_team()
 end
 
 function club_overview:keypressed(k, ir)
+	if g.ribbon.searchbox.focus then return end
 	local id = g.vars.view.team_id
 	if k=="left" then id = id - 1 end
 	if k=="right" then id = id + 1 end
@@ -59,6 +60,10 @@ function club_overview:keypressed(k, ir)
 			g.vars.view.team_id = id
 			self:set_team()
 		end
+	end
+	if k=="l" then
+		g.vars.player.team_id = g.vars.view.team_id
+		g.state.refresh_all()
 	end
 end
 

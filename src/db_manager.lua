@@ -20,6 +20,7 @@ function dbm.load(teams, leagues)
 			team[k] = v
 			if team[k] == "" then team[k] = nil end
 		end
+		team.__type = "team"
 		if team.id then team.id = tonumber(team.id) end
 		if team.league_id then team.league_id = tonumber(team.league_id) else team.league_id = 0 end -- default league id to 0 if not present
 		dbm.teams[#dbm.teams+1] = team
@@ -35,6 +36,7 @@ function dbm.load(teams, leagues)
 			if league[k] == "" then league[k] = nil end
 		end
 		if league.id then league.id = tonumber(league.id) end
+		league.__type = "league"
 		league.teams = {}
 		league.history = {}
 		league.history.past_winners = {}
@@ -80,7 +82,7 @@ function dbm.load(teams, leagues)
 		if league.flag==nil then league.flag="" end
 		--
 		league.season = {}
-		if league.id == 0 then
+		if league.id == 0 or #league.teams==0 then
 			league.active = false
 			league.season.fixtures = {}
 		else
@@ -113,7 +115,7 @@ function dbm.end_of_season()
 			--
 			local total_teams = #team.league.teams
 			local old_id = team.league_id
-			if team.league.level_up~=-1 and final_pos <= promoted+1 then
+			if team.league.level_up~=-1 and (final_pos <= promoted or final_pos <= promoted + (team.league.playoffs > 0 and 1 or 0)) then
 				-- promoted
 				team.league_id = team.league.level_up
 				-- give this team a random boost to their stats (to help cope with the higher league!)
@@ -195,6 +197,7 @@ function dbm.format_position(p)
 end
 
 function dbm.generate_fixtures(league) -- Generates all league fixtures for a season
+	print("League is ", league.short_name, "teams = ",#league.teams)
 	local teams = league.teams
 	if #teams==0 then return {} end
 	-- First, shuffle the order of the teams in the league.data.teams array

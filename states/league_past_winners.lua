@@ -29,6 +29,8 @@ end
 function league_past_winners:set_league()
 	self.league = g.db_manager.league_dict[g.vars.view.league_id]
 	self.bars = {}
+	--
+	if not self.league.active then return end
 	local header = { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin, w = self.panel.w - g.skin.margin *2, h = g.skin.bars.h, color = self.league.color2, alpha = g.skin.bars.alpha }
 	local year_w = 300
 	local col_width = math.floor((header.w - year_w) / 3 + .5)
