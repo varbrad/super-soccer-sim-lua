@@ -32,25 +32,7 @@ function club_overview:set_team()
 	self.fixture_list:set(self.team)
 	self.league_table:set(self.team.league)
 	--
-	g.ribbon:reset()
-	--
-	g.ribbon:set_image("logos/128/"..self.team.id..".png")
-	g.ribbon:set_header(self.team.long_name)
-	g.ribbon:set_colors(self.team.color1, self.team.color2, self.team.color3)
-	--
-	local btn_settings = {}
-	btn_settings.w = "auto"
-	btn_settings.color1 = self.team.color1
-	btn_settings.color2 = self.team.color2
-	btn_settings.color3 = self.team.color3
-	btn_settings.image = g.image.new("logos/128/"..self.team.league.flag..self.team.league.level..".png", {mipmap=true, w=26, h=26})
-	btn_settings.underline = true
-	btn_settings.on_release = function() g.vars.view.league_id = self.team.league_id; g.state.swap(self, g.states.league_overview) end
-	g.ribbon:set_infobox(g.db_manager.format_position(self.team.season.stats.pos) .. " in " .. self.team.league.long_name, btn_settings)
-
-	-- Start positioning and tweens
-	g.ribbon:set_positions()
-	g.ribbon:start_tween()
+	g.ribbon:set_team(self.team)
 end
 
 function club_overview:keypressed(k, ir)

@@ -44,5 +44,7 @@ ui.button = require(folder.."ui.button")
 ui.button.init(ui)
 ui.panel = require(folder.."ui.panel")
 ui.panel.init(ui)
+ui.textbox = require(folder.."ui.textbox")
+ui.textbox.init(ui)
 
 return ui

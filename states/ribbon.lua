@@ -12,6 +12,11 @@ function ribbon:init()
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
 	self.infobox = g.ui.button.new()
+	self.searchbox = g.ui.textbox.new({ w = 400, h = g.skin.ribbon.h - g.skin.padding * 4, fonts = {g.font.get("italic", 14), g.font.get("regular", 14) }})
+	self.searchbox.x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin * 2 - 200 - 400 -- 200 - the width of the textbox
+	self.searchbox.y = g.skin.ribbon.y + math.floor(g.skin.ribbon.h/2 - self.searchbox.h/2 + .5)
+	--
+	self.active_screen_type = nil
 	--
 	g.console:log("ribbon:init")
 end
@@ -23,6 +28,7 @@ end
 function ribbon:update(dt)
 	self.timer.update(dt)
 	self.infobox:update(dt)
+	self.searchbox:update(dt)
 end
 
 function ribbon:draw()
@@ -50,12 +56,13 @@ function ribbon:draw()
 		love.graphics.setColor(255, 255, 255, 255 * self.tween.alpha)
 		g.image.draw(self.logo, self.tween.ox, self.tween.oy)
 	end
+	--
 	self.infobox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
+	self.searchbox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
 	--
 	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
 	g.font.set(g.skin.ribbon.font[2])
 	love.graphics.printf("Season: " .. g.vars.season .. "/" .. (g.vars.season + 1) .."\nWeek: " .. g.vars.week, g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin - 200, g.skin.ribbon.y + g.skin.margin, 200, "right")
-
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -95,6 +102,10 @@ function ribbon:set_infobox(text, settings)
 	self.infobox:reset(text, settings)
 end
 
+function ribbon:set_searchbox(settings)
+	self.searchbox:reset(settings)
+end
+
 function ribbon:set_positions()
 	if self.logo then
 		self.logo:resize(64, 64)
@@ -114,12 +125,47 @@ function ribbon:start_tween()
 	self.timer.tween(g.skin.ribbon.tween_time, self.tween, { ox = 0; oy = 0; alpha = 1; }, g.skin.ribbon.tween_type)
 end
 
+-- Sets active screentypes
+
 function ribbon:set_league(league)
+	self.active_screen_type = "league"
+	--
+	self:reset()
 	self:set_image("logos/128/"..league.flag..league.level..".png")
 	self:set_header(league.long_name)
 	self:set_colors(league.color1, league.color2, league.color3)
-	self.infobox:reset()
+	local ib = {}
+	ib.w = "auto"
+	ib.enabled = false
+	ib.image = g.image.new("flags/"..league.flag..".png")
+	ib.color1, ib.color2, ib.color3 = league.color1, league.color2, league.color3
+	self:set_infobox("", ib)
+	local sb = {}
+	sb.color1, sb.color2, sb.color3 = league.color1, league.color2, league.color3
+	self:set_searchbox(sb)
+	self:set_positions()
+	self:start_tween()
+end
+
+function ribbon:set_team(team)
+	self.active_screen_type = "team"
 	--
+	self:reset()
+	self:set_image("logos/128/"..team.id..".png")
+	self:set_header(team.long_name)
+	self:set_colors(team.color1, team.color2, team.color3)
+	local btn_settings = {}
+	btn_settings.w = "auto"
+	btn_settings.color1 = team.color1
+	btn_settings.color2 = team.color2
+	btn_settings.color3 = team.color3
+	btn_settings.image = g.image.new("logos/128/"..team.league.flag..team.league.level..".png", {mipmap=true, w=26, h=26})
+	btn_settings.underline = true
+	btn_settings.on_release = function() g.vars.view.league_id = team.league_id; g.state.switch(g.states.league_overview) end
+	self:set_infobox(g.db_manager.format_position(team.season.stats.pos) .. " in " .. team.league.long_name, btn_settings)
+	local sb = {}
+	sb.color1, sb.color2, sb.color3 = team.color1, team.color2, team.color3
+	self:set_searchbox(sb)
 	self:set_positions()
 	self:start_tween()
 end
@@ -129,7 +175,6 @@ function ribbon:reset()
 	self:set_header()
 	self:set_colors(g.skin.black, g.skin.white, g.skin.black)
 	self.infobox:reset()
-	--
 	self:set_positions()
 end
 
