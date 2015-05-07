@@ -107,7 +107,8 @@ function ribbon:keypressed(k, ir)
 		if m.__type=="league" then g.vars.view.league_id = m.id; g.state.switch(g.states.league_overview) end
 	elseif (k=="up" or k=="down") and self.searchbox.focus and self.search_list and #self.search_list > 1 then
 		self.search_index = self.search_index + (k=="up" and -1 or 1)
-		if self.search_index < 1 then self.search_index = 1 elseif self.search_index > 10 then self.search_index = 10 end
+		local max = #self.search_list > 10 and 10 or #self.search_list
+		if self.search_index < 1 then self.search_index = 1 elseif self.search_index > max then self.search_index = max end
 	elseif k=="backspace" and self.searchbox.focus then
 		self:do_search()
 	elseif not self.searchbox.focus then
