@@ -30,6 +30,7 @@ function love.load(args)
 		fixture_list = require "components.fixture_list";
 		league_table = require "components.league_table";
 		result_grid = require "components.result_grid";
+		teams_ribbon = require "components.teams_ribbon";
 	}
 	--
 	g.states = {

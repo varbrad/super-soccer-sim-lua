@@ -1,6 +1,6 @@
 local fixture_list = {}
 fixture_list.__index = fixture_list
-fixture_list.__type = "Component.FixtureGroup"
+fixture_list.__type = "Component.FixtureList"
 
 function fixture_list.new(x, y, w, h, team)
 	local fl = {}

@@ -39,28 +39,6 @@ end
 
 function club_overview:keypressed(k, ir)
 	if g.ribbon.searchbox.focus then return end
-	local id = g.vars.view.team_id
-	if k=="left" then id = id - 1 end
-	if k=="right" then id = id + 1 end
-	if k=="up" or k=="down" then
-		local diff = k=="up" and -1 or 1
-		local t_pos = self.team.season.stats.pos
-		for i=1, #self.team.league.teams do
-			local t = self.team.league.teams[i]
-			if t.season.stats.pos == t_pos + diff then
-				g.vars.view.team_id = t.id
-				self:set_team()
-				return
-			end
-		end
-	end
-	if k=="left" or k=="right" then
-		local t = g.db_manager.team_dict[id]
-		if t then
-			g.vars.view.team_id = id
-			self:set_team()
-		end
-	end
 	if k=="l" then
 		g.vars.player.team_id = g.vars.view.team_id
 		g.state.refresh_all()

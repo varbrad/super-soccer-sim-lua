@@ -107,9 +107,36 @@ function ribbon:keypressed(k, ir)
 		if m.__type=="league" then g.vars.view.league_id = m.id; g.state.switch(g.states.league_overview) end
 	elseif (k=="up" or k=="down") and self.searchbox.focus and self.search_list and #self.search_list > 1 then
 		self.search_index = self.search_index + (k=="up" and -1 or 1)
-		if self.search_index < 1 then self.search_index = 1 elseif self.search_index > 10 then self.search_index = 10 end 
+		if self.search_index < 1 then self.search_index = 1 elseif self.search_index > 10 then self.search_index = 10 end
 	elseif k=="backspace" and self.searchbox.focus then
 		self:do_search()
+	elseif not self.searchbox.focus then
+		if k=="up" or k=="down" or k=="left" or k=="right" then
+			if self.active_screen_type=="team" then
+				local old = g.vars.view.team_id
+				if k=="up" or k=="down" then
+					local lge = g.db_manager.team_dict[g.vars.view.team_id].league
+					local dy = k=="up" and -1 or 1
+					for i=1, #lge.teams do
+						if lge.teams[i].season.stats.pos == g.db_manager.team_dict[g.vars.view.team_id].season.stats.pos + dy then
+							g.vars.view.team_id = lge.teams[i].id
+							break
+						end
+					end
+				end
+				if k=="left" then g.vars.view.team_id = g.vars.view.team_id - 1 end
+				if k=="right" then g.vars.view.team_id = g.vars.view.team_id + 1 end
+				if not g.db_manager.team_dict[g.vars.view.team_id] then g.vars.view.team_id = old end
+			elseif self.active_screen_type=="league" then
+				local old = g.vars.view.league_id
+				if k=="up" then g.vars.view.league_id = g.db_manager.league_dict[g.vars.view.league_id].level_up end
+				if k=="down" then g.vars.view.league_id = g.db_manager.league_dict[g.vars.view.league_id].level_down end
+				if k=="left" then g.vars.view.league_id = g.vars.view.league_id - 1 end
+				if k=="right" then g.vars.view.league_id = g.vars.view.league_id + 1 end
+				if not g.db_manager.league_dict[g.vars.view.league_id] then g.vars.view.league_id = old end
+			end
+			g.state.refresh_all()
+		end
 	end
 end
 

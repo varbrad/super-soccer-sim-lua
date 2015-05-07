@@ -1,6 +1,6 @@
 local result_grid = {}
 result_grid.__index = result_grid
-result_grid.__type = "Component.FixtureGroup"
+result_grid.__type = "Component.ResultGrid"
 
 function result_grid.new(x, y, w, h, league)
 	local rg = {}
