@@ -81,6 +81,10 @@ function love.load(args)
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
+
+	-- The canvas object everything gets drawn to, in order to use alpha-based shaders.
+	-- This should never be drawn to or used anywhere else except main.lua
+	g.canvas = love.graphics.newCanvas()
 end
 
 function love.update(dt)
@@ -94,9 +98,15 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.setBlendMode("alpha")
+	love.graphics.setCanvas(g.canvas)
 	for i, state in g.state.states_z() do
 		if state.draw then state:draw() end
 	end
+	love.graphics.setCanvas()
+	love.graphics.setColor(255, 255, 255, 255)
+	--love.graphics.setShader for screen here
+	love.graphics.draw(g.canvas)
 end
 
 function love.keypressed(k,ir)
