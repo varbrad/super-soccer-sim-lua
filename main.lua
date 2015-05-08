@@ -15,10 +15,11 @@ function love.load(args)
 	love.filesystem.write("history.txt", "History of Birmingham City\n---------------------------------\n")
 	-- Libs
 	g.csv = require "libs.csv"
+	g.flux = require "libs.flux"
 	g.font = require "libs.font"
-	g.image = require "libs.image"
+	g.image = require "libs.image" 
 	g.state = require "libs.state"
-	g.timer = require "libs.timer"
+	--g.timer = require "libs.timer" -- Now replaced by flux (faster and auto-deletes still-running tweens)
 	g.ui = require "libs.ui"
 	-- Src
 	g.db_manager = require "src.db_manager"
@@ -83,7 +84,7 @@ function love.load(args)
 end
 
 function love.update(dt)
-	g.timer.update(dt)
+	g.flux.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)
 	--

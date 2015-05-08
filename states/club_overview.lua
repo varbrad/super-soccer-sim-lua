@@ -3,7 +3,6 @@ club_overview.name = "Club Overview"
 
 function club_overview:init()
 	self.__z = 1
-	self.timer = g.timer.new()
 	--
 	g.console:log("club_overview:init")
 end
@@ -17,7 +16,6 @@ function club_overview:added()
 end
 
 function club_overview:update(dt)
-	self.timer.update(dt)
 	self.league_table:update(dt)
 end
 
@@ -28,8 +26,6 @@ end
 
 function club_overview:set_team()
 	self.team = g.db_manager.team_dict[g.vars.view.team_id]
-	-- Clear any previous tweens on our timer
-	self.timer.clear()
 	self.fixture_list:set(self.team)
 	self.league_table:set(self.team.league)
 	self.league_table:highlight_team(self.team)

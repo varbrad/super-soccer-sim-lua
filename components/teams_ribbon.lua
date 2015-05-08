@@ -6,6 +6,7 @@ function teams_ribbon.new(x, y, w, h)
 	local rg = {}
 	setmetatable(rg, teams_ribbon)
 	rg.x, rg.y, rg.w, rg.h = x or 0, y or 0, w or 10, h or 10
+	rg.flux = g.flux.group()
 	rg.panel = g.ui.panel.new(rg.x, rg.y, rg.w, rg.h)
 	rg.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	rg:set()
@@ -31,15 +32,16 @@ function teams_ribbon:set(teams, sort)
 		table.insert(self.bar.images, img)
 		table.insert(self.bar.rects, rect)
 		local btn = g.ui.button.new("", { w = rect.w, h = rect.h, x = self.bar.x + rect.x, y = self.bar.y + rect.y })
-		btn.on_enter = function(btn) rect.alpha = g.skin.bars.alpha end
-		btn.on_exit = function(btn) rect.alpha = 0 end
-		btn.on_release = function(btn) g.vars.view.team_id = t.id; g.state.switch(g.states.club_overview) end
+		btn.on_enter = function() self.flux:to(rect, g.skin.tween.time, {alpha = g.skin.bars.alpha}) end
+		btn.on_exit = function() self.flux:to(rect, g.skin.tween.time, {alpha = 0}) end
+		btn.on_release = function() g.vars.view.team_id = t.id; g.state.switch(g.states.club_overview) end
 		table.insert(self.buttons, btn)
 	end
 end
 
 function teams_ribbon:update(dt)
 	for i=1, #self.buttons do self.buttons[i]:update(dt) end
+	self.flux:update(dt)
 end
 
 function teams_ribbon:draw()

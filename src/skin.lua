@@ -30,6 +30,11 @@ skin.tab = 22
 
 skin.darken = 0.8 -- 20% color reduction for darken
 
+skin.tween = {
+	time = .4;
+	type = "circout";
+}
+
 skin.console = {
 	font = { "console", 14 };
 	margin = skin.margin;
@@ -56,7 +61,7 @@ skin.ribbon = {
 	shadow_y = 2;
 	large_logo_alpha = 50;
 	tween_time = .4;
-	tween_type = "out-circ";
+	tween_type = "circout";
 	tween_ox = 0;
 	tween_oy = -20;
 	tween_alpha = 0;
@@ -110,6 +115,10 @@ skin.ui = {
 	panel = {
 		alpha = 110;
 	};
+	textbox = {
+		tween_type = "linear";
+		tween_time = 1;
+	}
 }
 
 return skin

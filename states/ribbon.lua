@@ -4,7 +4,7 @@ local utf8 = require "utf8"
 
 function ribbon:init()
 	self.__z = 2
-	self.timer = g.timer.new()
+	self.flux = g.flux:group() --self.timer = g.timer.new()
 	self.colors = { g.skin.black, g.skin.white, g.skin.red } -- First is bg, 2nd is text, 3rd is dark color
 	self.gradient = love.graphics.gradient({{220,220,220},{255,255,255}, direction = "h"})
 	self.gradient_w, self.gradient_h = g.skin.ribbon.w / self.gradient:getWidth(), (g.skin.ribbon.h - g.skin.ribbon.border) / self.gradient:getHeight()
@@ -27,7 +27,7 @@ function ribbon:added()
 end
 
 function ribbon:update(dt)
-	self.timer.update(dt)
+	self.flux:update(dt) --self.timer.update(dt)
 	self.infobox:update(dt)
 	self.searchbox:update(dt)
 end
@@ -213,7 +213,8 @@ end
 
 function ribbon:start_tween()
 	self.tween = { ox = g.skin.ribbon.tween_ox; oy = g.skin.ribbon.tween_oy; alpha = g.skin.ribbon.tween_alpha; }
-	self.timer.tween(g.skin.ribbon.tween_time, self.tween, { ox = 0; oy = 0; alpha = 1; }, g.skin.ribbon.tween_type)
+	self.flux:to(self.tween, g.skin.ribbon.tween_time, { ox = 0, oy = 0, alpha = 1 }):ease(g.skin.ribbon.tween_type)
+	--self.timer.tween(g.skin.ribbon.tween_time, self.tween, { ox = 0; oy = 0; alpha = 1; }, g.skin.ribbon.tween_type)
 end
 
 -- Sets active screentypes
