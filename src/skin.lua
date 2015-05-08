@@ -33,6 +33,8 @@ skin.darken = 0.8 -- 20% color reduction for darken
 skin.tween = {
 	time = .4;
 	type = "circout";
+	type_in = "circout";
+	type_out = "circin";
 }
 
 skin.console = {

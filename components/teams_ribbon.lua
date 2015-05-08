@@ -32,8 +32,8 @@ function teams_ribbon:set(teams, sort)
 		table.insert(self.bar.images, img)
 		table.insert(self.bar.rects, rect)
 		local btn = g.ui.button.new("", { w = rect.w, h = rect.h, x = self.bar.x + rect.x, y = self.bar.y + rect.y })
-		btn.on_enter = function() self.flux:to(rect, g.skin.tween.time, {alpha = g.skin.bars.alpha}) end
-		btn.on_exit = function() self.flux:to(rect, g.skin.tween.time, {alpha = 0}) end
+		btn.on_enter = function() self.flux:to(rect, g.skin.tween.time, {alpha = g.skin.bars.alpha}):ease(g.skin.tween.type_in) end
+		btn.on_exit = function() self.flux:to(rect, g.skin.tween.time, {alpha = 0}):ease(g.skin.tween.type_out) end
 		btn.on_release = function() g.vars.view.team_id = t.id; g.state.switch(g.states.club_overview) end
 		table.insert(self.buttons, btn)
 	end

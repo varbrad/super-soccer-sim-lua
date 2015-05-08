@@ -15,6 +15,7 @@ function textbox.new(settings)
 	local b = {}
 	setmetatable(b, textbox)
 	b.__settings = settings
+	b.flux = g.flux:group()
 	b:reset(settings)
 	return b
 end
@@ -45,9 +46,11 @@ function textbox:set_colors(c1, c2, c3)
 	self.color1 = c1 or ui.__defaultColor1
 	self.color2 = c2 or ui.__defaultColor2
 	self.color3 = c3 or ui.__defaultColor3
+	self.tween_color = {self.color3[1], self.color3[2], self.color3[3]}
 end
 
 function textbox:update(dt)
+	self.flux:update(dt)
 	if not self.enabled then return end
 	if not self.hover and ui.mx >= self.x and ui.my >= self.y and ui.mx < self.x + self.w and ui.my < self.y + self.h then
 		self.hover = true
@@ -68,7 +71,7 @@ function textbox:draw(ox, oy, alpha)
 	ui.roundrect("fill", x+2, y+2, self.w-4, self.h-4, self.rounded)
 	local f, color = self.fonts[1], c[3]
 	if self.focus then f, color = self.fonts[2], c[2] end
-	ui.setColorAlpha(color, 255 * alpha)
+	ui.setColorAlpha(self.tween_color, 255 * alpha)
 	love.graphics.setFont(f)
 	self.image:draw(ox, oy)
 	love.graphics.print(self.text..(self.focus and "_" or ""), self.image.x + self.image.w + g.skin.margin, y + self.ty)
@@ -80,9 +83,11 @@ function textbox:mousepressed(x, y, b)
 	if self.hover and not self.focus then
 		self.focus = true
 		self.text = ""
+		self.flux:to(self.tween_color, g.skin.tween.time, { self.color2[1], self.color2[2], self.color2[3] }):ease(g.skin.tween.type)
 	elseif not self.hover and self.focus then
 		self.focus = false
 		self.text = "Search"
+		self.flux:to(self.tween_color, g.skin.tween.time, { self.color3[1], self.color3[2], self.color3[3] }):ease(g.skin.tween.type)
 	end
 end
 
