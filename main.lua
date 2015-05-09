@@ -83,7 +83,8 @@ function love.load(args)
 	--
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
-
+	--
+	g.do_invert = false;
 	-- The canvas object everything gets drawn to, in order to use alpha-based shaders.
 	-- This should never be drawn to or used anywhere else except main.lua
 	g.canvas = love.graphics.newCanvas()
@@ -101,18 +102,16 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.setBlendMode("alpha")
 	love.graphics.setCanvas(g.canvas)
 	for i, state in g.state.states_z() do
 		if state.draw then state:draw() end
 	end
 	love.graphics.setCanvas()
+	if g.do_invert then
+		love.graphics.setShader(g.shaders.inverted)
+	end
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.draw(g.canvas)
-	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.setShader(g.shaders[2])
-	love.graphics.setBlendMode("subtractive")
-	love.graphics.rectangle("fill",0,0,g.width,g.height)
 	love.graphics.setShader()
 end
 
@@ -134,6 +133,8 @@ function love.keypressed(k,ir)
 			g.console:print(g.state.order(), g.skin.red)
 		elseif k=="f9" then
 			g.console:print(g.state.z_order(), g.skin.red)
+		elseif k=="f12" then
+			g.do_invert = not g.do_invert
 		elseif k=="return" then
 			if g.vars.week==52 then
 				g.console:print("NEW SEASON", g.skin.green)
