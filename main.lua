@@ -23,6 +23,7 @@ function love.load(args)
 	g.ui = require "libs.ui"
 	-- Src
 	g.db_manager = require "src.db_manager"
+	g.shaders = require "src.shaders"
 	g.skin = require "src.skin"
 	-- Load components
 	g.components = {
@@ -53,6 +54,7 @@ function love.load(args)
 	g.navbar = g.states.navbar
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
+	g.shaders.init()
 	--
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
@@ -88,6 +90,7 @@ function love.load(args)
 end
 
 function love.update(dt)
+	g.shaders.update(dt)
 	g.flux.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)
@@ -105,8 +108,12 @@ function love.draw()
 	end
 	love.graphics.setCanvas()
 	love.graphics.setColor(255, 255, 255, 255)
-	--love.graphics.setShader for screen here
 	love.graphics.draw(g.canvas)
+	love.graphics.setColor(255, 255, 255, 255)
+	love.graphics.setShader(g.shaders[2])
+	love.graphics.setBlendMode("subtractive")
+	love.graphics.rectangle("fill",0,0,g.width,g.height)
+	love.graphics.setShader()
 end
 
 function love.keypressed(k,ir)
