@@ -142,13 +142,13 @@ function love.keypressed(k,ir)
 			g.db_manager.end_of_season()
 			g.state.refresh_all()
 		elseif k=="b" then
-			local blues = g.db_manager.team_dict[21]
+			local blues = g.db_manager.team_dict[g.vars.player.team_id]
 			blues.def, blues.mid, blues.att = blues.def + 1, blues.mid + 1, blues.att + 1
-			g.console:print("Boosted Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
+			g.console:print("Boosted " .. blues.short_name .. " stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
 		elseif k=="v" then
-			local blues = g.db_manager.team_dict[21]
+			local blues = g.db_manager.team_dict[g.vars.player.team_id]
 			blues.def, blues.mid, blues.att = blues.def - 1, blues.mid - 1, blues.att - 1
-			g.console:print("Dropped Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
+			g.console:print("Dropped " .. blues.short_name .. " stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
 		end
 	end
 	for i, state in g.state.states() do

@@ -106,12 +106,6 @@ function dbm.end_of_season()
 			local promoted = team.league.promoted
 			local relegated = team.league.relegated
 			local final_pos = team.season.stats.pos
-			-- If winner of the prem, write to the history log
-			if team.id==21 then
-				local _season = g.vars.season.."/"..(g.vars.season+1)
-				local str = string.format("%12s | %-20s : %5s with %4i pts | (%3i, %3i, %3i)\n", _season, team.league.short_name, dbm.format_position(team.season.stats.pos), team.season.stats.pts, team.def, team.mid, team.att)
-				love.filesystem.append("history.txt", str)
-			end
 			--
 			local total_teams = #team.league.teams
 			local old_id = team.league_id
