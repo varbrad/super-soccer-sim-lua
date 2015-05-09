@@ -41,6 +41,8 @@ skin.console = {
 	font = { "console", 14 };
 	margin = skin.margin;
 	padding = skin.padding;
+	alpha = 225;
+	rounded = 9;
 }
 
 skin.navbar = {
@@ -87,11 +89,12 @@ skin.bars = {
 	alpha = 130;
 	color1 = hex("1a1a1aff");
 	color2 = hex("ffffffff");
-	color3 = hex("1f1f1fff");
+	color3 = hex("1d1d1dff");
 	color4 = hex("0a0a0aff");
 	font = { {"bold", 14}, {"regular", 13}, {"semibold", 14} };
 	img_size = 26;
-	column_size = 40;
+	column_size = 46;
+	border = 2;
 }
 skin.bars.iy = math.floor(skin.bars.h/2 - skin.bars.img_size/2 +.5);
 skin.bars.ty = math.floor(skin.bars.h/2 - g.font.height(skin.bars.font[1])/2 + .5);

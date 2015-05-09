@@ -68,6 +68,7 @@ function dbm.load(teams, leagues)
 		team.def = tonumber(team.def) or 50
 		team.history = {}
 		team.history.honours = {}
+		team.history.seasons = {}
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
@@ -106,11 +107,14 @@ function dbm.end_of_season()
 			local promoted = team.league.promoted
 			local relegated = team.league.relegated
 			local final_pos = team.season.stats.pos
+			local got_promoted = false
+			local got_relegated = false
 			--
 			local total_teams = #team.league.teams
 			local old_id = team.league_id
 			if team.league.level_up~=-1 and (final_pos <= promoted or final_pos <= promoted + (team.league.playoffs > 0 and 1 or 0)) then
 				-- promoted
+				got_promoted = true
 				team.league_id = team.league.level_up
 				-- give this team a random boost to their stats (to help cope with the higher league!)
 				local boost_min, boost_max = dbm.league_dict[old_id].level_up_boost_min, dbm.league_dict[old_id].level_up_boost_max
@@ -118,6 +122,7 @@ function dbm.end_of_season()
 				team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att +  r3
 			elseif team.league.level_down~=-1 and total_teams - final_pos < relegated then
 				-- relegated
+				got_relegated = true
 				team.league_id = team.league.level_down
 				-- give htis team a negative boost to lower their ability
 				local boost_min, boost_max = dbm.league_dict[old_id].level_down_boost_min, dbm.league_dict[old_id].level_down_boost_max
@@ -131,6 +136,15 @@ function dbm.end_of_season()
 			if team.def > 100 then team.def = 100 end
 			if team.mid > 100 then team.mid = 100 end
 			if team.att > 100 then team.att = 100 end
+			--
+			local compact_season = {}
+			compact_season.stats = team.season.stats
+			compact_season.league = team.league
+			if got_promoted then compact_season.promoted = true end
+			if got_relegated then compact_season.relegated = true end
+			compact_season.season = g.vars.season
+			table.insert(team.history.seasons, compact_season)
+			--
 		end
 	end
 	for i=1, #dbm.leagues do
@@ -258,7 +272,6 @@ function dbm.generate_fixtures(league) -- Generates all league fixtures for a se
 		local r = fixtures[i]
 		table.sort(r,function(a,b) return a.home.short_name < b.home.short_name end)
 	end
-	g.console:print("Generated "..#final_fixtures*games_per_week.." fixtures for "..league.short_name)
 	return final_fixtures
 end
 

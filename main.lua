@@ -36,6 +36,7 @@ function love.load(args)
 	--
 	g.states = {
 		background = require "states.background";
+		club_history = require "states.club_history";
 		club_overview = require "states.club_overview";
 		console = require "states.console";
 		league_full_table = require "states.league_full_table";
@@ -88,6 +89,7 @@ function love.load(args)
 end
 
 function love.update(dt)
+	if dt > 0.1 then g.console:print("Slowdown detected! (dt:"..tostring(dt)..")", g.skin.red) end
 	g.flux.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)
@@ -123,13 +125,14 @@ function love.keypressed(k,ir)
 			g.state.switch(g.states.league_result_grid)
 		elseif k=="f5" then
 			g.state.switch(g.states.league_past_winners)
+		elseif k=="f6" then
+			g.state.switch(g.states.club_history)
 		elseif k=="f8" then
 			g.console:print(g.state.order(), g.skin.red)
 		elseif k=="f9" then
 			g.console:print(g.state.z_order(), g.skin.red)
 		elseif k=="return" then
 			if g.vars.week==52 then
-				g.console:print("NEW SEASON", g.skin.green)
 				g.db_manager.end_of_season()
 			end
 		elseif k==" " then
