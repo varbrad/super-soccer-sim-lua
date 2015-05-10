@@ -14,7 +14,7 @@ end
 
 function result_grid:set(league)
 	self.league = league
-	self.bars = {}
+	self.bars, self.buttons = {}, {}
 	if league==nil then return end
 	local teams = league.teams
 	table.sort(teams, function(a,b) return a.short_name < b.short_name end)
@@ -46,7 +46,14 @@ function result_grid:set(league)
 		bar.rects[2] = { x = rest_width + (i-1) * column_width + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = g.skin.black, alpha = g.skin.bars.alpha}
 		bar.images = { g.image.new("logos/128/"..team.id..".png", {mipmap = true, x = rest_width - g.skin.margin - g.skin.bars.img_size, y = iy, w = g.skin.bars.img_size, h = g.skin.bars.img_size })}
 		local c = g.vars.player.team_id==team.id and g.skin.colors[3] or g.skin.bars.color2
-		bar.labels = { { text = team.short_name, x = 0, y = ty, w = rest_width - g.skin.margin * 2 - g.skin.bars.img_size, align="right", font = g.skin.bars.font[2], color = c }}
+		bar.labels = { { text = team.short_name, x = bar.images[1].x - g.skin.margin, y = ty, font = g.skin.bars.font[2], color = c }}
+		bar.labels[1].h, bar.labels[1].w = g.font.height(bar.labels[1].font), g.font.width(bar.labels[1].text, bar.labels[1].font)
+		bar.labels[1].x = bar.labels[1].x - bar.labels[1].w
+		local btn = g.ui.button.new("", { w = bar.labels[1].w, h = bar.labels[1].h, x = bar.x + bar.labels[1].x, y = bar.y + bar.labels[1].y } )
+		btn.on_enter = function(btn) bar.labels[1].underline = true end
+		btn.on_exit = function(btn) bar.labels[1].underline = false end
+		btn.on_release = function(btn) g.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
+		table.insert(self.buttons, btn)
 		for i=1, #team.season.fixtures do
 			local fix = team.season.fixtures[i]
 			if fix.home==team and fix.finished then
@@ -60,6 +67,10 @@ function result_grid:set(league)
 	end
 end
 
+function result_grid:update(dt)
+	for i=1, #self.buttons do self.buttons[i]:update(dt) end
+end
+
 function result_grid:draw()
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
@@ -68,6 +79,14 @@ function result_grid:draw()
 		g.components.bar_draw.draw(bar)
 	end
 	love.graphics.setScissor()
+end
+
+function result_grid:mousepressed(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+end
+
+function result_grid:mousereleased(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
 end
 
 setmetatable(result_grid, {_call = function(_, ...) return result_grid.new(...) end})

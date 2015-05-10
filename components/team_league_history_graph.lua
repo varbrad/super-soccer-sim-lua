@@ -24,18 +24,18 @@ function team_league_history_graph:set(team)
 	if self.team==nil then return end
 	local team_count = #self.team.league.teams
 	for i=1, team_count do
-		local y = lerp(top, bottom, (i-1) / (team_count-1))
+		local y = g.math.lerp(top, bottom, (i-1) / (team_count-1))
 		table.insert(self.lines, {left, y, left - g.skin.margin * 2, y})
 	end
 	local fix_count = team_count * 2 - 2
 	for i=1, fix_count do
-		local x = lerp(left, right, (i-1) / (fix_count-1))
+		local x = g.math.lerp(left, right, (i-1) / (fix_count-1))
 		table.insert(self.lines, {x, bottom, x, bottom + g.skin.margin * 2})
 	end
 	-- place points
 	for i=1, #self.team.season.past_pos do
 		local pos = self.team.season.past_pos[i]
-		local x, y = lerp(left, right, (i-1) / (fix_count-1)), lerp(top, bottom, (pos-1) / (team_count-1))
+		local x, y = g.math.lerp(left, right, (i-1) / (fix_count-1)), g.math.lerp(top, bottom, (pos-1) / (team_count-1))
 		local fix = self.team.season.fixtures[i]
 		local color = {255, 5, 5}
 		if fix.winner==self.team then color = {5, 255, 5} elseif fix.draw then color = {255, 165, 5} end

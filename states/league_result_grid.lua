@@ -16,6 +16,7 @@ function league_results_grid:added()
 end
 
 function league_results_grid:update(dt)
+	self.result_grid:update(dt)
 	self.league_table:update(dt)
 end
 
@@ -33,10 +34,12 @@ function league_results_grid:set_league()
 end
 
 function league_results_grid:mousepressed(x, y, b)
+	self.result_grid:mousepressed(x, y, b)
 	self.league_table:mousepressed(x, y, b)
 end
 
 function league_results_grid:mousereleased(x, y, b)
+	self.result_grid:mousereleased(x, y, b)
 	self.league_table:mousereleased(x, y, b)
 end
 

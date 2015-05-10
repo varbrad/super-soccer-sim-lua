@@ -80,7 +80,7 @@ function league_table:set(league, style)
 		btn.on_enter = function(btn) bar.labels[2].underline = true end
 		btn.on_exit = function(btn) bar.labels[2].underline = false end
 		btn.on_release = function(btn) g.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
-		self.buttons[#self.buttons+1] = btn
+		table.insert(self.buttons, btn)
 		local stats = team.season.stats
 		local x = bar.w - g.skin.margin - g.skin.bars.column_size
 		for i=1, #s_list do

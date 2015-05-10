@@ -14,7 +14,7 @@ function club_history:added()
 end
 
 function club_history:update(dt)
-	
+	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
 function club_history:draw()
@@ -34,7 +34,7 @@ end
 
 function club_history:set_team()
 	self.team = g.db_manager.team_dict[g.vars.view.team_id]
-	self.bars = {}
+	self.bars, self.buttons = {}, {}
 	--
 	if not self.team then return end
 	local header = { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin, w = self.panel.w - g.skin.margin *2, h = g.skin.bars.h, color = self.team.color1, alpha = g.skin.bars.alpha }
@@ -71,6 +71,14 @@ function club_history:set_team()
 		bar.rects[1] = { x = bar.labels[1].x, y = 0, w = bar.labels[1].w, h = g.skin.bars.h, color = self.team.color1, alpha = g.skin.bars.alpha }
 		bar.images[1] = g.image.new("logos/128/"..data.league.flag..data.league.level..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
 		bar.labels[2] = { text = data.league.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
+		bar.labels[2].w, bar.labels[2].h = g.font.width(bar.labels[2].text, bar.labels[2].font), g.font.height(bar.labels[2].font)
+		--
+		local btn = g.ui.button.new("", { w = bar.labels[2].w, h = bar.labels[2].h, x = bar.x + bar.labels[2].x, y = bar.y + bar.labels[2].y } )
+		btn.on_enter = function(btn) bar.labels[2].underline = true end
+		btn.on_exit = function(btn) bar.labels[2].underline = false end
+		btn.on_release = function(btn) g.vars.view.league_id = data.league.id; g.state.switch(g.states.league_overview) end
+		table.insert(self.buttons, btn)
+		--
 		bar.labels[3] = { text = g.db_manager.format_position(data.stats.pos), x = bar.labels[2].x + 200, w = 100, align = "center", y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 		local col = color_copy(bar.color)
 		local do_rect = false
@@ -108,6 +116,14 @@ function club_history:set_team()
 	end
 	--
 	g.ribbon:set_team(self.team)
+end
+
+function club_history:mousepressed(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+end
+
+function club_history:mousereleased(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
 end
 
 return club_history

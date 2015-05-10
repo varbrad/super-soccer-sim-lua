@@ -10,11 +10,11 @@ end
 function league_past_winners:added()
 	self.panel = g.ui.panel.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, g.skin.screen.h - g.skin.margin * 2)
 	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
-	self:set_league()
+	self:set()
 end
 
 function league_past_winners:update(dt)
-	
+	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
 function league_past_winners:draw()
@@ -26,9 +26,9 @@ function league_past_winners:draw()
 	love.graphics.setScissor()
 end
 
-function league_past_winners:set_league()
+function league_past_winners:set()
 	self.league = g.db_manager.league_dict[g.vars.view.league_id]
-	self.bars = {}
+	self.bars, self.buttons = {}, {}
 	--
 	if not self.league.active then return end
 	local header = { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin, w = self.panel.w - g.skin.margin *2, h = g.skin.bars.h, color = self.league.color2, alpha = g.skin.bars.alpha }
@@ -59,11 +59,38 @@ function league_past_winners:set_league()
 		bar.labels[2] = { text = data[1].team.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c1 }
 		bar.labels[3] = { text = data[2].team.long_name, x = bar.images[2].x + g.skin.margin * 2 + bar.images[2].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c2 }
 		bar.labels[4] = { text = data[3].team.long_name, x = bar.images[3].x + g.skin.margin * 2 + bar.images[3].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c3 }
+		g.font.set(bar.labels[2].font)
+		local fh = g.font.height()
+		bar.labels[2].h, bar.labels[3].h, bar.labels[4].h = fh, fh, fh
+		bar.labels[2].w, bar.labels[3].w, bar.labels[4].w = g.font.width(bar.labels[2].text), g.font.width(bar.labels[3].text), g.font.width(bar.labels[4].text)
+		local btn1 = g.ui.button.new("", { w = bar.labels[2].w, h = bar.labels[2].h, x = bar.x + bar.labels[2].x, y = bar.y + bar.labels[2].y } )
+		local btn2 = g.ui.button.new("", { w = bar.labels[3].w, h = bar.labels[3].h, x = bar.x + bar.labels[3].x, y = bar.y + bar.labels[3].y } )
+		local btn3 = g.ui.button.new("", { w = bar.labels[4].w, h = bar.labels[4].h, x = bar.x + bar.labels[4].x, y = bar.y + bar.labels[4].y } )
+		btn1.on_enter = function(btn) bar.labels[2].underline = true end
+		btn1.on_exit = function(btn) bar.labels[2].underline = false end
+		btn1.on_release = function(btn) g.vars.view.team_id = data[1].team.id; g.state.switch(g.states.club_overview) end
+		btn2.on_enter = function(btn) bar.labels[3].underline = true end
+		btn2.on_exit = function(btn) bar.labels[3].underline = false end
+		btn2.on_release = function(btn) g.vars.view.team_id = data[2].team.id; g.state.switch(g.states.club_overview) end
+		btn3.on_enter = function(btn) bar.labels[4].underline = true end
+		btn3.on_exit = function(btn) bar.labels[4].underline = false end
+		btn3.on_release = function(btn) g.vars.view.team_id = data[3].team.id; g.state.switch(g.states.club_overview) end
+		table.insert(self.buttons, btn1)
+		table.insert(self.buttons, btn2)
+		table.insert(self.buttons, btn3)
 		table.insert(self.bars, bar)
 		k = k + 1
 	end
 	--
 	g.ribbon:set_league(self.league)
+end
+
+function league_past_winners:mousepressed(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+end
+
+function league_past_winners:mousereleased(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
 end
 
 return league_past_winners
