@@ -45,7 +45,8 @@ function result_grid:set(league)
 		bar.rects = { { x = 0, y = 0, w = rest_width, h = bar.h, color = self.league.color2, alpha = g.skin.bars.alpha } }
 		bar.rects[2] = { x = rest_width + (i-1) * column_width + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = g.skin.black, alpha = g.skin.bars.alpha}
 		bar.images = { g.image.new("logos/128/"..team.id..".png", {mipmap = true, x = rest_width - g.skin.margin - g.skin.bars.img_size, y = iy, w = g.skin.bars.img_size, h = g.skin.bars.img_size })}
-		bar.labels = { { text = team.short_name, x = 0, y = ty, w = rest_width - g.skin.margin * 2 - g.skin.bars.img_size, align="right", font = g.skin.bars.font[2], color = g.skin.bars.color2 }}
+		local c = g.vars.player.team_id==team.id and g.skin.colors[3] or g.skin.bars.color2
+		bar.labels = { { text = team.short_name, x = 0, y = ty, w = rest_width - g.skin.margin * 2 - g.skin.bars.img_size, align="right", font = g.skin.bars.font[2], color = c }}
 		for i=1, #team.season.fixtures do
 			local fix = team.season.fixtures[i]
 			if fix.home==team and fix.finished then

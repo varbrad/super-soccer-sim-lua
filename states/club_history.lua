@@ -73,8 +73,10 @@ function club_history:set_team()
 		bar.labels[2] = { text = data.league.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
 		bar.labels[3] = { text = g.db_manager.format_position(data.stats.pos), x = bar.labels[2].x + 200, w = 100, align = "center", y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 		local col = color_copy(bar.color)
+		local do_rect = false
 		if data.promoted then col[2] = col[2] + 70 elseif data.relegated then col[1] = col[1] + 50 end
-		if data.promoted or data.relegated then	bar.rects[2] = { x = bar.rects[1].x + bar.rects[1].w, y = 0, w = bar.w - bar.rects[1].w, h =g.skin.bars.h, color = col, alpha = g.skin.bars.alpha } end
+		if not data.promoted and data.stats.pos==1 then col[1], col[2] = col[1] + 190, col[2] + 130; do_rect = true end
+		if data.promoted or data.relegated or do_rect then	bar.rects[2] = { x = bar.rects[1].x + bar.rects[1].w, y = 0, w = bar.w - bar.rects[1].w, h =g.skin.bars.h, color = col, alpha = g.skin.bars.alpha } end
 		bar.rects[#bar.rects+1] = { x = bar.labels[3].x, y = 0, w = bar.labels[3].w, h = g.skin.bars.h, color = bar.color, alpha = g.skin.bars.alpha }
 		--
 		bar.labels[4] = { text = tostring(data.stats.p), x = g.skin.margin + bar.labels[3].x + bar.labels[3].w, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }

@@ -12,7 +12,6 @@ function love.load(args)
 	love.graphics.setLineStyle("smooth")
 	-- Write current os.time to a store file
 	love.filesystem.write("store", os.time())
-	love.filesystem.write("history.txt", "History of Birmingham City\n---------------------------------\n")
 	-- Libs
 	g.csv = require "libs.csv"
 	g.flux = require "libs.flux"
@@ -31,6 +30,7 @@ function love.load(args)
 		fixture_list = require "components.fixture_list";
 		league_table = require "components.league_table";
 		result_grid = require "components.result_grid";
+		team_league_pos_graph = require "components.team_league_pos_graph";
 		teams_ribbon = require "components.teams_ribbon";
 	}
 	--
@@ -89,7 +89,7 @@ function love.load(args)
 end
 
 function love.update(dt)
-	if dt > 0.1 then g.console:print("Slowdown detected! (dt:"..tostring(dt)..")", g.skin.red) end
+	if dt > 0.15 then g.console:print("Slowdown detected! (dt:"..tostring(dt)..")", g.skin.red) end
 	g.flux.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)

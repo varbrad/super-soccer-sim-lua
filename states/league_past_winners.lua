@@ -54,9 +54,11 @@ function league_past_winners:set_league()
 		bar.images[1] = g.image.new("logos/128/"..data[1].team.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
 		bar.images[2] = g.image.new("logos/128/"..data[2].team.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w + col_width, y = g.skin.bars.iy})
 		bar.images[3] = g.image.new("logos/128/"..data[3].team.id..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w + col_width * 2, y = g.skin.bars.iy})
-		bar.labels[2] = { text = data[1].team.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
-		bar.labels[3] = { text = data[2].team.long_name, x = bar.images[2].x + g.skin.margin * 2 + bar.images[2].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
-		bar.labels[4] = { text = data[3].team.long_name, x = bar.images[3].x + g.skin.margin * 2 + bar.images[3].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
+		local c1, c2, c3 = g.vars.player.team_id==data[1].team.id, g.vars.player.team_id==data[2].team.id, g.vars.player.team_id==data[3].team.id
+		c1, c2, c3 = c1 and g.skin.colors[3] or g.skin.bars.color2, c2 and g.skin.colors[3] or g.skin.bars.color2, c3 and g.skin.colors[3] or g.skin.bars.color2
+		bar.labels[2] = { text = data[1].team.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c1 }
+		bar.labels[3] = { text = data[2].team.long_name, x = bar.images[2].x + g.skin.margin * 2 + bar.images[2].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c2 }
+		bar.labels[4] = { text = data[3].team.long_name, x = bar.images[3].x + g.skin.margin * 2 + bar.images[3].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c3 }
 		table.insert(self.bars, bar)
 		k = k + 1
 	end
