@@ -108,7 +108,7 @@ function love.draw()
 	end
 	love.graphics.setCanvas()
 	if g.do_invert then
-		love.graphics.setShader(g.shaders.wavy)
+		love.graphics.setShader(g.shaders.inverted)
 	end
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.draw(g.canvas)

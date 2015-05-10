@@ -3,7 +3,6 @@
 extern vec2 iResolution;
 extern number iGlobalTime;
 
-
 const int NUM_STEPS = 8;
 const float PI	 	= 3.1415;
 const float EPSILON	= 1e-3;
@@ -159,10 +158,10 @@ float heightMapTracing(vec3 ori, vec3 dir, out vec3 p) {
 
 // main
 vec4 effect( vec4 l_color, Image l_texture, vec2 l_tc, vec2 l_sc ) {
-	vec2 uv = fragCoord.xy / iResolution.xy;
+	vec2 uv = l_sc.xy / iResolution.xy;
     uv = uv * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;    
-    float time = iGlobalTime * 0.3 + iMouse.x*0.01;
+    float time = iGlobalTime * 0.3;
         
     // ray
     vec3 ang = vec3(sin(time*3.0)*0.1,sin(time)*0.2+0.3,time);    
@@ -184,5 +183,8 @@ vec4 effect( vec4 l_color, Image l_texture, vec2 l_tc, vec2 l_sc ) {
     	pow(smoothstep(0.0,-0.05,dir.y),0.3));
         
     // post
-	fragColor = vec4(pow(color,vec3(0.75)), 1.0);
+    vec3 final = vec3(pow(color,vec3(0.75)));
+    vec4 pixel = Texel(l_texture, l_tc);
+    final *=  pixel;
+	return vec4(final, 1.0);
 }
