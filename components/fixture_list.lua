@@ -15,6 +15,7 @@ end
 function fixture_list:set(team)
 	self.team = team
 	self.bars = {}
+	self.buttons = {}
 	local col1, col2 = self.team and self.team.color1 or g.skin.small_bars.color1, self.team and self.team.color2 or g.skin.small_bars.color2
 	local ty = math.floor(g.skin.small_bars.h/2 - g.font.height(g.skin.small_bars.font[1])/2 + .5)
 	local iy = math.floor(g.skin.small_bars.h/2 - g.skin.small_bars.img_size/2 + .5)
@@ -40,6 +41,12 @@ function fixture_list:set(team)
 		if at_home=="H" then bar.rects[1] = { x = bar.labels[3].x, y = 0, w = bar.labels[3].w, h = bar.h, color = self.team.color1, alpha = g.skin.small_bars.alpha } end
 		bar.images[1] = g.image.new("logos/128/"..opponent.id..".png", {mipmap=true, x = bar.labels[3].x + bar.labels[3].w + g.skin.margin, y = iy, w = g.skin.small_bars.img_size, h = g.skin.small_bars.img_size})
 		bar.labels[4] = { text = opponent.short_name, x = bar.images[1].x + bar.images[1].w + g.skin.margin, y = ty, font = g.skin.small_bars.font[2], color = opponent.id==g.vars.player.team_id and g.skin.colors[3] or g.skin.small_bars.color2 }
+		bar.labels[4].h, bar.labels[4].w = g.font.height(bar.labels[4].font), g.font.width(bar.labels[4].text, bar.labels[4].font)
+		local btn = g.ui.button.new("", { w = bar.labels[4].w, h = bar.labels[4].h, x = bar.x + bar.labels[4].x, y = bar.y + bar.labels[4].y } )
+		btn.on_enter = function(btn) bar.labels[4].underline = true end
+		btn.on_exit = function(btn) bar.labels[4].underline = false end
+		btn.on_release = function(btn) g.vars.view.team_id = opponent.id; g.state.switch(g.states.club_overview) end
+		self.buttons[#self.buttons+1] = btn
 		if fixture.finished then
 			local team_score = fixture.home==self.team and fixture.home_score or fixture.away_score
 			local opp_score = fixture.home==self.team and fixture.away_score or fixture.home_score
@@ -55,6 +62,10 @@ function fixture_list:set(team)
 	end
 end
 
+function fixture_list:update(dt)
+	for i=1, #self.buttons do self.buttons[i]:update(dt) end
+end
+
 function fixture_list:draw()
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
@@ -63,6 +74,14 @@ function fixture_list:draw()
 		g.components.bar_draw.draw(bar)
 	end
 	love.graphics.setScissor()
+end
+
+function fixture_list:mousepressed(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+end
+
+function fixture_list:mousereleased(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
 end
 
 setmetatable(fixture_list, {_call = function(_, ...) return fixture_list.new(...) end})

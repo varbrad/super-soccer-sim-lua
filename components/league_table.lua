@@ -75,6 +75,7 @@ function league_table:set(league, style)
 			{ text = pos..".", x = g.skin.margin, y = g.skin.bars.ty, w = 30, align = "right", font = g.skin.bars.font[3], color = g.skin.bars.color2 };
 			{ text = team.short_name, x = g.skin.margin * 5 + 30 + g.skin.bars.img_size, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = team_name_color, w = g.font.width(team.short_name, g.skin.bars.font[2]), h = g.font.height(g.skin.bars.font[2]) };
 		}
+		bar.rects = {}
 		local btn = g.ui.button.new("", { w = bar.labels[2].w, h = bar.labels[2].h, x = bar.x + bar.labels[2].x, y = bar.y + bar.labels[2].y } )
 		btn.on_enter = function(btn) bar.labels[2].underline = true end
 		btn.on_exit = function(btn) bar.labels[2].underline = false end
@@ -87,6 +88,9 @@ function league_table:set(league, style)
 			if type(item)=="string" then
 				local stat = stats[string.lower(item)]
 				if (item == "GD" or item == "AGD" or item == "HGD") and stat > 0 then stat = "+" .. stat end
+				if item == "Pts" or item == "HPts" or item == "APts" then
+					table.insert(bar.rects, { x = x, y = 0, w = g.skin.bars.column_size, h = g.skin.bars.h, color = bar.color, alpha = g.skin.bars.alpha })
+				end
 				table.insert(bar.labels, { text = stat, x = x, y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2, w = g.skin.bars.column_size, align = "center" })
 				x = x - g.skin.margin - g.skin.bars.column_size
 			elseif type(item)=="number" then

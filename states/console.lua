@@ -21,8 +21,8 @@ end
 function console:draw()
 	if self.visible==false then return end
 	local pm = g.skin.console.padding + g.skin.console.margin
-	love.graphics.setColor(0, 0, 0, 150)
-	love.graphics.rectangle("fill", g.skin.console.margin, g.skin.console.margin, g.width - g.skin.console.margin*2, g.height - g.skin.console.margin*2)
+	love.graphics.setColor(0, 0, 0, g.skin.console.alpha)
+	love.graphics.roundrect("fill", g.skin.console.margin, g.skin.console.margin, g.width - g.skin.console.margin*2, g.height - g.skin.console.margin*2, g.skin.console.rounded)
 	love.graphics.setColor(255, 255, 255, 255)
 	g.font.set(g.skin.console.font)
 	local y = g.height - g.skin.console.margin - g.skin.console.padding - g.font.height()
@@ -39,8 +39,9 @@ function console:draw()
 	arr[3] = string.format("Current FPS: %s", love.timer.getFPS())
 	arr[4] = string.format("RAM: %i MB", collectgarbage("count")/1024)
 	arr[5] = string.format("VRAM: %.2f MB", stats.texturememory/1024/1024)
-	arr[6] = string.format("Loaded Images: %s (0x%x)", stats.images, stats.images)
-	arr[7] = string.format("Loaded Fonts: %s (0x%x)", stats.fonts, stats.fonts)
+	arr[6] = string.format("Draw Calls: %i", stats.drawcalls)
+	arr[7] = string.format("Loaded Images: %s (0x%x)", stats.images, stats.images)
+	arr[8] = string.format("Loaded Fonts: %s (0x%x)", stats.fonts, stats.fonts)
 	love.graphics.setColor(255, 255, 255, 255)
 	for i=1, #arr do
 		love.graphics.print(arr[i], pm, pm + (i-1)*g.font.height())
