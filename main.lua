@@ -23,6 +23,7 @@ function love.load(args)
 	g.ui = require "libs.ui"
 	-- Src
 	g.db_manager = require "src.db_manager"
+	g.math = require "src.math"
 	g.shaders = require "src.shaders"
 	g.skin = require "src.skin"
 	-- Load components
@@ -32,12 +33,14 @@ function love.load(args)
 		fixture_list = require "components.fixture_list";
 		league_table = require "components.league_table";
 		result_grid = require "components.result_grid";
+		team_league_history_graph = require "components.team_league_history_graph";
 		team_league_pos_graph = require "components.team_league_pos_graph";
 		teams_ribbon = require "components.teams_ribbon";
 	}
 	--
 	g.states = {
 		background = require "states.background";
+		club_history = require "states.club_history";
 		club_overview = require "states.club_overview";
 		console = require "states.console";
 		league_full_table = require "states.league_full_table";
@@ -78,6 +81,7 @@ function love.load(args)
 	g.mouse.x = -1
 	g.mouse.y = -1
 	g.mouse.cursor = {}
+	g.mouse.cursor.current = "arrow"
 	g.mouse.cursor.arrow = love.mouse.getSystemCursor("arrow")
 	g.mouse.cursor.hand = love.mouse.getSystemCursor("hand")
 	love.mouse.setCursor(g.mouse.cursor.arrow)
@@ -85,7 +89,6 @@ function love.load(args)
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
 	--
-	g.do_invert = false;
 	-- The canvas object everything gets drawn to, in order to use alpha-based shaders.
 	-- This should never be drawn to or used anywhere else except main.lua
 	g.canvas = love.graphics.newCanvas()
@@ -96,24 +99,35 @@ function love.update(dt)
 	g.flux.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)
+	g.ui.button.active_hover = nil
 	--
 	for i, state in g.state.states() do
 		if state.update then state:update(dt) end
+	end
+	--
+	if g.mouse.cursor.current~="hand" and g.ui.button.active_hover then
+		love.mouse.setCursor(g.mouse.cursor.hand)
+		g.mouse.cursor.current = "hand"
+	elseif g.mouse.cursor.current~="arrow" and g.ui.button.active_hover==nil then
+		love.mouse.setCursor(g.mouse.cursor.arrow)
+		g.mouse.cursor.current = "arrow"
 	end
 end
 
 function love.draw()
 	love.graphics.setCanvas(g.canvas)
 	for i, state in g.state.states_z() do
-		if state.draw then state:draw() end
+		if state~=g.console and state.draw then state:draw() end
 	end
 	love.graphics.setCanvas()
-	if g.do_invert then
-		love.graphics.setShader(g.shaders.wavy)
+	if g.console.visible then
+		love.graphics.setShader(g.shaders.pixelate)
 	end
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.draw(g.canvas)
 	love.graphics.setShader()
+	love.graphics.setCanvas()
+	if g.console.draw then g.console:draw() end
 end
 
 function love.keypressed(k,ir)
@@ -121,8 +135,10 @@ function love.keypressed(k,ir)
 		if k=="escape" then
 			love.event.quit()
 		elseif k=="f1" then
+			g.vars.view.team_id = g.vars.player.team_id
 			g.state.switch(g.states.club_overview)
 		elseif k=="f2" then
+			g.vars.view.league_id = g.db_manager.team_dict[g.vars.player.team_id].league_id
 			g.state.switch(g.states.league_overview)
 		elseif k=="f3" then
 			g.state.switch(g.states.league_full_table)
@@ -130,12 +146,12 @@ function love.keypressed(k,ir)
 			g.state.switch(g.states.league_result_grid)
 		elseif k=="f5" then
 			g.state.switch(g.states.league_past_winners)
-		elseif k=="f8" then
+		elseif k=="f6" then
+			g.state.switch(g.states.club_history)
+		elseif k=="f10" then
 			g.console:print(g.state.order(), g.skin.red)
-		elseif k=="f9" then
+		elseif k=="f11" then
 			g.console:print(g.state.z_order(), g.skin.red)
-		elseif k=="f12" then
-			g.do_invert = not g.do_invert
 		elseif k=="return" then
 			if g.vars.week==52 then
 				g.console:print("NEW SEASON", g.skin.green)
@@ -151,13 +167,13 @@ function love.keypressed(k,ir)
 			g.db_manager.end_of_season()
 			g.state.refresh_all()
 		elseif k=="b" then
-			local blues = g.db_manager.team_dict[21]
-			blues.def, blues.mid, blues.att = blues.def + 1, blues.mid + 1, blues.att + 1
-			g.console:print("Boosted Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
+			local _team = g.db_manager.team_dict[g.vars.player.team_id]
+			_team.def, _team.mid, _team.att = _team.def + 1, _team.mid + 1, _team.att + 1
+			g.console:print(_team.short_name .. " boosted to " .. _team.def .. ", " .. _team.mid .. ", " .. _team.att)
 		elseif k=="v" then
-			local blues = g.db_manager.team_dict[21]
-			blues.def, blues.mid, blues.att = blues.def - 1, blues.mid - 1, blues.att - 1
-			g.console:print("Dropped Blues stats to "..blues.def..", "..blues.mid..", "..blues.att, g.skin.blue)
+			local _team = g.db_manager.team_dict[g.vars.player.team_id]
+			_team.def, _team.mid, _team.att = _team.def - 1, _team.mid - 1, _team.att - 1
+			g.console:print(_team.short_name .. " reduced to " .. _team.def .. ", " .. _team.mid .. ", " .. _team.att)
 		end
 	end
 	for i, state in g.state.states() do

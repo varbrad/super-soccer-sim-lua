@@ -2,6 +2,7 @@ local ui = 1
 local button = {}
 button.__index = button
 button.__type = "button"
+button.active_hover = nil
 
 button.__defaultWidth = 120
 button.__defaultHeight = 34
@@ -85,12 +86,15 @@ end
 
 function button:update(dt)
 	if not self.enabled then return end
-	if not self.hover and ui.mx >= self.x and ui.my >= self.y and ui.mx < self.x + self.w and ui.my < self.y + self.h then
-		self.hover = true
-		if self.on_enter then self.on_enter(self) end
-	elseif self.hover and (ui.mx < self.x or ui.my < self.y or ui.mx >= self.x + self.w or ui.my >= self.y + self.h) then
+	if self.hover and (ui.mx < self.x or ui.my < self.y or ui.mx >= self.x + self.w or ui.my >= self.y + self.h) then
 		self.hover = false
 		if self.on_exit then self.on_exit(self) end
+	elseif ui.mx >= self.x and ui.my >= self.y and ui.mx < self.x + self.w and ui.my < self.y + self.h then
+		if not self.hover then
+			self.hover = true
+			if self.on_enter then self.on_enter(self) end
+		end
+		button.active_hover = self
 	end
 end
 
@@ -120,7 +124,7 @@ function button:draw(ox, oy, alpha)
 end
 
 function button:mousepressed(x, y, b)
-	if not self.enabled then return end
+	if not self.enabled or b~="l" then return end
 	if self.hover then
 		self.is_mousepressed = true
 		if self.on_click then self.on_click(self) end
@@ -130,7 +134,7 @@ function button:mousepressed(x, y, b)
 end
 
 function button:mousereleased(x, y, b)
-	if not self.enabled then return end
+	if not self.enabled or b~="l" then return end
 	if self.hover and self.is_mousepressed then
 		if self.on_release then self.on_release(self) end
 	end

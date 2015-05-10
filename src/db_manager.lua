@@ -140,6 +140,8 @@ function dbm.end_of_season()
 			local compact_season = {}
 			compact_season.stats = team.season.stats
 			compact_season.league = team.league
+			compact_season.league_team_count = #team.league.teams
+			compact_season.team_relative_pos = (team.season.stats.pos-1) / (#team.league.teams-1)
 			if got_promoted then compact_season.promoted = true end
 			if got_relegated then compact_season.relegated = true end
 			compact_season.season = g.vars.season
@@ -323,7 +325,11 @@ function dbm.sort_standard(a,b)
 	elseif a.gd < b.gd then return false
 	elseif a.gf > b.gf then return true
 	elseif a.gf < b.gf then return false
-	else return c.short_name < d.short_name end
+	else return dbm.sort_name(c, d) end
+end
+
+function dbm.sort_name(a,b)
+	return string.lower(a.short_name) < string.lower(b.short_name)
 end
 
 function dbm.shuffle(t)

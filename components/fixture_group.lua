@@ -72,11 +72,11 @@ function fixture_group:draw()
 end
 
 function fixture_group:mousepressed(x, y, b)
-	for i=1, #self.buttons do self.buttons[i]:mousepressed(dt) end
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
 end
 
 function fixture_group:mousereleased(x, y, b)
-	for i=1, #self.buttons do self.buttons[i]:mousereleased(dt) end
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
 end
 
 setmetatable(fixture_group, {_call = function(_, ...) return fixture_group.new(...) end})

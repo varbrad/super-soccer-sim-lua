@@ -41,7 +41,7 @@ skin.console = {
 	font = { "console", 14 };
 	margin = skin.margin;
 	padding = skin.padding;
-	alpha = 225;
+	alpha = 155;
 	rounded = 9;
 }
 

@@ -1,12 +1,10 @@
-local team_league_pos_graph = {}
-team_league_pos_graph.__index = team_league_pos_graph
-team_league_pos_graph.__type = "Component.TeamLeaguePosGraph"
+local team_league_history_graph = {}
+team_league_history_graph.__index = team_league_history_graph
+team_league_history_graph.__type = "Component.TeamLeagueHistoryGraph"
 
-local function lerp(a,b,t) return (1-t)*a + t*b end
-
-function team_league_pos_graph.new(x, y, w, h)
+function team_league_history_graph.new(x, y, w, h)
 	local t = {}
-	setmetatable(t, team_league_pos_graph)
+	setmetatable(t, team_league_history_graph)
 	t.x, t.y, t.w, t.h = x or 0, y or 0, w or 10, h or 10
 	t.panel = g.ui.panel.new(t.x, t.y, t.w, t.h)
 	t.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
@@ -14,7 +12,7 @@ function team_league_pos_graph.new(x, y, w, h)
 	return t
 end
 
-function team_league_pos_graph:set(team)
+function team_league_history_graph:set(team)
 	self.team = team
 	local graph_h = self.h - g.skin.margin * 4
 	local graph_w = self.w - g.skin.margin * 4
@@ -45,7 +43,7 @@ function team_league_pos_graph:set(team)
 	end
 end
 
-function team_league_pos_graph:draw()
+function team_league_history_graph:draw()
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
 	-- Draw lines first
@@ -71,6 +69,6 @@ function team_league_pos_graph:draw()
 	love.graphics.setScissor()
 end
 
-setmetatable(team_league_pos_graph, {_call = function(_, ...) return team_league_pos_graph.new(...) end})
+setmetatable(team_league_history_graph, {_call = function(_, ...) return team_league_history_graph.new(...) end})
 
-return team_league_pos_graph
+return team_league_history_graph

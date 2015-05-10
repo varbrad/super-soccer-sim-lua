@@ -17,7 +17,7 @@ function teams_ribbon:set(teams, sort)
 	self.teams, self.text = teams, text
 	self.bar, self.buttons = {}, {}
 	if teams==nil then return end
-	if sort then table.sort(teams, function(a,b) return a.short_name < b.short_name end) end
+	if sort then table.sort(self.teams, g.db_manager.sort_name) end
 	self.bar = { x = self.x + g.skin.margin, y = self.y + g.skin.margin, w = self.w - g.skin.margin * 2, h = self.h - g.skin.margin * 2, color = g.skin.bars.color1, alpha = g.skin.bars.alpha }
 	local working_area = self.w - g.skin.margin * 2
 	local columns = math.floor(working_area / #teams + .5)

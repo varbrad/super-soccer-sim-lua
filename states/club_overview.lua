@@ -21,7 +21,6 @@ end
 function club_overview:update(dt)
 	self.fixture_list:update(dt)
 	self.league_table:update(dt)
-	self.league_graph:update(dt)
 end
 
 function club_overview:draw()
