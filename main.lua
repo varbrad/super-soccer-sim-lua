@@ -35,6 +35,7 @@ function love.load(args)
 		result_grid = require "components.result_grid";
 		team_league_history_graph = require "components.team_league_history_graph";
 		team_league_pos_graph = require "components.team_league_pos_graph";
+		team_stat_box = require "components.team_stat_box";
 		teams_ribbon = require "components.teams_ribbon";
 	}
 	--
@@ -47,6 +48,7 @@ function love.load(args)
 		league_overview = require "states.league_overview";
 		league_past_winners = require "states.league_past_winners";
 		league_result_grid = require "states.league_result_grid";
+		league_stats = require "states.league_stats";
 		league_summary = require "states.league_summary";
 		navbar = require "states.navbar";
 		overview = require "states.overview";
@@ -147,6 +149,8 @@ function love.keypressed(k,ir)
 		elseif k=="f5" then
 			g.state.switch(g.states.league_past_winners)
 		elseif k=="f6" then
+			g.state.switch(g.states.league_stats)
+		elseif k=="f7" then
 			g.state.switch(g.states.club_history)
 		elseif k=="f10" then
 			g.console:print(g.state.order(), g.skin.red)
