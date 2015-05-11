@@ -8,7 +8,7 @@ function love.conf(t)
 	t.window.fullscreentype = "desktop"
 
 	t.window.vsync = true
-	t.window.msaa = 8
+	t.window.fsaa = 8
 	
 	-- Disable unneeded modules
 	t.modules.joystick = false

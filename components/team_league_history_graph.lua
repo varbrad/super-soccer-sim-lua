@@ -16,41 +16,80 @@ function team_league_history_graph:set(team)
 	self.team = team
 	local graph_h = self.h - g.skin.margin * 4
 	local graph_w = self.w - g.skin.margin * 4
-	local top, left, bottom, right = g.skin.margin * 4, g.skin.margin * 4, self.h - g.skin.margin * 4, self.w - g.skin.margin * 4
+	local top, left, bottom, right = g.skin.margin * 4, g.skin.margin * 4 + g.skin.bars.img_size, self.h - g.skin.margin * 4, self.w - g.skin.margin * 4
 	self.lines = {}
 	self.points = {}
+	self.rects = {}
+	self.images = {}
 	table.insert(self.lines, {left, top, left, bottom})
 	table.insert(self.lines, {left, bottom, right, bottom})
 	if self.team==nil then return end
-	local team_count = #self.team.league.teams
-	for i=1, team_count do
-		local y = g.math.lerp(top, bottom, (i-1) / (team_count-1))
-		table.insert(self.lines, {left, y, left - g.skin.margin * 2, y})
-	end
-	local fix_count = team_count * 2 - 2
-	for i=1, fix_count do
-		local x = g.math.lerp(left, right, (i-1) / (fix_count-1))
+	local seasons_to_show = #self.team.history.seasons
+	if seasons_to_show > 20 then seasons_to_show = 20 end
+	local seasons = self.team.history.seasons
+	local seasons_c = #seasons; if seasons_c > seasons_to_show then seasons_c = seasons_to_show end
+	if seasons_c < 1 then return end
+	-- Draw bottom notches
+	for i=1, seasons_c do
+		local x = g.math.lerp(right, left, (i-1) / (seasons_to_show-1))
 		table.insert(self.lines, {x, bottom, x, bottom + g.skin.margin * 2})
 	end
-	-- place points
-	for i=1, #self.team.season.past_pos do
-		local pos = self.team.season.past_pos[i]
-		local x, y = g.math.lerp(left, right, (i-1) / (fix_count-1)), g.math.lerp(top, bottom, (pos-1) / (team_count-1))
-		local fix = self.team.season.fixtures[i]
-		local color = {255, 5, 5}
-		if fix.winner==self.team then color = {5, 255, 5} elseif fix.draw then color = {255, 165, 5} end
-		table.insert(self.points, {x = x, y = y, color = color})
+	--
+	local unique_divisions = {}
+	local league_list = {}
+	local top_level = 999
+	for i = #seasons - seasons_c + 1, #seasons do
+		unique_divisions[seasons[i].league] = true
+		league_list[seasons[i].league.level] = seasons[i].league
+		if seasons[i].league.level < top_level then top_level = seasons[i].league.level end
 	end
+	local ud = 0; for i, v in pairs(unique_divisions) do ud = ud + 1 end; unique_divisions = ud
+	-- unique_divisions now has the number of divisions, and top_level is the highest level reached
+	--
+	local split_h = (bottom - top) / unique_divisions
+	if unique_divisions > 1 then
+		local split_w = 1 / unique_divisions
+		for i = 1, unique_divisions - 1 do
+			if i%2~=0 then
+				local y = g.math.lerp(top, bottom, split_w * i)
+				table.insert(self.rects, {x = left, y = y, w = right-left, h = split_h, color = g.skin.bars.color3 })
+			end
+		end
+	end
+	for i=1, unique_divisions do
+		local lge = league_list[top_level + (i-1)]
+		local y = g.math.lerp(top, bottom, (i-1) / unique_divisions)
+		y = y + split_h/2 - g.skin.bars.img_size/2
+		table.insert(self.images, g.image.new("logos/128/"..lge.flag..lge.level..".png",
+					{mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 2, y = y }))
+	end
+	--
+	for i = 1, seasons_c do
+		local season = seasons[#seasons-i+1] -- Recent season to oldest
+		local x = g.math.lerp(right, left, (i-1) / (seasons_to_show-1))
+		local league_level = season.league.level - top_level
+		local sy = g.math.lerp(top, bottom, (1/unique_divisions) * league_level)
+		local oy = g.math.lerp(0, split_h, season.team_relative_pos)
+		local y = sy + oy
+		local c = g.skin.colors[4]
+		if not season.promoted and oy==0 then c = {190, 130, 5} elseif season.promoted then c = {5, 195, 5} elseif season.relegated then c = {195, 5, 5} end
+		table.insert(self.points, {x = x, y = y, color = c})
+	end
+	--
 end
 
 function team_league_history_graph:draw()
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
 	-- Draw lines first
-	love.graphics.setColorAlpha(g.skin.bars.color2, g.skin.bars.alpha)
-	love.graphics.setLineWidth(1)
+	love.graphics.setLineWidth(2)
+	for i=1, #self.rects do
+		local rect = self.rects[i]
+		love.graphics.rectangle("fill", self.x + rect.x, self.y + rect.y, rect.w, rect.h)
+	end
 	for i=1, #self.lines do
 		local line = self.lines[i]
+		if line.color then love.graphics.setColorAlpha(line.color, g.skin.bars.alpha) else love.graphics.setColorAlpha(g.skin.bars.color2, g.skin.bars.alpha) end
 		love.graphics.line(self.x + line[1], self.y + line[2], self.x + line[3], self.y + line[4])
 	end
 	if #self.points > 1 then
@@ -62,8 +101,13 @@ function team_league_history_graph:draw()
 	end
 	for i=1, #self.points do
 		local point = self.points[i]
-		love.graphics.setColorAlpha(point.color, g.skin.bars.alpha)
+		love.graphics.setColorAlpha(point.color, 255)
 		love.graphics.circle("fill", self.x + point.x, self.y + point.y, 6, 4)
+	end
+	for i=1, #self.images do
+		local image = self.images[i]
+		love.graphics.setColor(255, 255, 255, 255)
+		image:draw(self.x, self.y)
 	end
 	--
 	love.graphics.setScissor()

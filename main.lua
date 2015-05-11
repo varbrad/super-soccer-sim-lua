@@ -181,6 +181,10 @@ function love.keypressed(k,ir)
 	end
 end
 
+function love.keyreleased(k)
+	
+end
+
 function love.mousepressed(x, y, b)
 	for i, state in g.state.states() do
 		if state.mousepressed then state:mousepressed(x, y, b) end

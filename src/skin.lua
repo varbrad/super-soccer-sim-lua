@@ -20,7 +20,7 @@ skin.colors = {
 	hex("090909ff"); -- Primary color used for navbar bg, etc
 	hex("ffa523ff"); -- Highlight color for text
 	hex("4595ffff"); -- Players team highlight color
-	hex("f38630ff");
+	hex("c3c3c3ff"); -- Mid-Grey - Used by the pips on team_history_graph
 	hex("fa6900ff");
 }
 

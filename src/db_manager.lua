@@ -40,6 +40,7 @@ function dbm.load(teams, leagues)
 		league.teams = {}
 		league.history = {}
 		league.history.past_winners = {}
+		league.level = tonumber(league.level) or 0
 		league.level_up = tonumber(league.level_up) or -1
 		league.level_up_boost_min = tonumber(league.level_up_boost_min) or 0
 		league.level_up_boost_max = tonumber(league.level_up_boost_max) or 0
@@ -72,6 +73,8 @@ function dbm.load(teams, leagues)
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
+		team.season.season = g.vars.season
+		team.season.league = team.league
 	end
 	g.console:print("All teams fully processed", g.skin.green)
 	-- Now process league data
@@ -140,8 +143,10 @@ function dbm.end_of_season()
 			local compact_season = {}
 			compact_season.stats = team.season.stats
 			compact_season.league = team.league
+			compact_season.promoted = got_promoted
+			compact_season.relegated = got_relegated
 			compact_season.league_team_count = #team.league.teams
-			compact_season.team_relative_pos = (team.season.stats.pos-1) / (#team.league.teams-1)
+			compact_season.team_relative_pos = (team.season.stats.pos-1) / #team.league.teams
 			if got_promoted then compact_season.promoted = true end
 			if got_relegated then compact_season.relegated = true end
 			compact_season.season = g.vars.season
@@ -162,6 +167,8 @@ function dbm.end_of_season()
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
+		team.season.season = g.vars.season
+		team.season.league = team.league
 	end
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
