@@ -35,7 +35,6 @@ function love.load(args)
 		result_grid = require "components.result_grid";
 		team_league_history_graph = require "components.team_league_history_graph";
 		team_league_pos_graph = require "components.team_league_pos_graph";
-		team_stat_box = require "components.team_stat_box";
 		teams_ribbon = require "components.teams_ribbon";
 	}
 	--

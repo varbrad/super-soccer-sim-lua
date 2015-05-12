@@ -2,10 +2,10 @@ local team_league_history_graph = {}
 team_league_history_graph.__index = team_league_history_graph
 team_league_history_graph.__type = "Component.TeamLeagueHistoryGraph"
 
-function team_league_history_graph.new(x, y, w, h)
+function team_league_history_graph.new(x, y, w, h, max_seasons)
 	local t = {}
 	setmetatable(t, team_league_history_graph)
-	t.x, t.y, t.w, t.h = x or 0, y or 0, w or 10, h or 10
+	t.x, t.y, t.w, t.h, t.max_seasons = x or 0, y or 0, w or 10, h or 10, max_seasons or 10
 	t.panel = g.ui.panel.new(t.x, t.y, t.w, t.h)
 	t.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	t:set()
@@ -25,7 +25,7 @@ function team_league_history_graph:set(team)
 	table.insert(self.lines, {left, bottom, right, bottom})
 	if self.team==nil then return end
 	local seasons_to_show = #self.team.history.seasons
-	if seasons_to_show > 20 then seasons_to_show = 20 end
+	if seasons_to_show > self.max_seasons then seasons_to_show = self.max_seasons end
 	local seasons = self.team.history.seasons
 	local seasons_c = #seasons; if seasons_c > seasons_to_show then seasons_c = seasons_to_show end
 	if seasons_c < 1 then return end
