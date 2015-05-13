@@ -31,8 +31,8 @@ skin.tab = 22
 skin.darken = 0.8 -- 20% color reduction for darken
 
 skin.tween = {
-	time = .4;
-	type = "circout";
+	time = .5;
+	type = "sineout";
 	type_in = "circout";
 	type_out = "circin";
 	delay = 3;

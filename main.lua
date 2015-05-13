@@ -156,7 +156,7 @@ function g.continue_function()
 end
 
 function love.keypressed(k,ir)
-	if not g.ribbon.searchbox.focus then
+	if g.in_game and not g.ribbon.searchbox.focus then
 		if k=="escape" then
 			love.event.quit()
 		elseif k=="f1" then

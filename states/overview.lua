@@ -20,6 +20,7 @@ function overview:added()
 	g.state.add(g.states.ribbon)
 	g.state.add(g.states.club_overview)
 	g.state.remove(self)
+	g.in_game = true
 end
 
 function overview:update(dt)
@@ -28,7 +29,8 @@ end
 
 function overview:draw()
 	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.print("Loading", g.width/2, g.height/2)
+	g.font.set("bold", 48)
+	love.graphics.print("Loading", g.skin.margin, g.skin.margin)
 end
 
 return overview

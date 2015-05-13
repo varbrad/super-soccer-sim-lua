@@ -14,6 +14,7 @@ end
 function navbar:set()
 	local team = g.db_manager.team_dict[g.vars.player.team_id]
 	self.buttons = {}
+	if team==nil then return end
 	self.color1, self.color2 = team.color3, team.color1
 	local btn_w = g.skin.navbar.w - g.skin.navbar.border - g.skin.margin * 2
 	local btn_x = math.floor((g.skin.navbar.w-g.skin.navbar.border)/2 - btn_w/2 + .5)
