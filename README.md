@@ -12,8 +12,8 @@ Ultimately, the codebase for the project got very messy (it was my first Lua gam
 + **F5** - League Past Winners
 + **F6** - League Stats (Currently blank)
 + **F7** - Team History
-+ **Space** - Advance the Week
-+ **Enter** - End Season (Week must be 52)
++ **F12** - Take a Screenshot (Saved in %AppData%/SuperSoccerSim/screenshots)
++ **Space** - Advance the Week (Continue into next season if week is 52)
 + **z** - Skip to next season (Will simulate rest of current season)
 + **l** - Sets current team as active team (Must be on Team Overview screen)
 + **Up-Down** - Cycles through teams and leagues - Up & down league position, Up & down league pyramid

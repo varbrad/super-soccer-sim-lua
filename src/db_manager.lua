@@ -182,12 +182,8 @@ function dbm.end_of_season()
 		local team = dbm.teams[i]
 		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
 	end
-	g.console:print("Season "..g.vars.season.."/"..(g.vars.season+1).." finished.", g.skin.blue)
 	g.vars.week = 1
 	g.vars.season = g.vars.season + 1
-	g.console:print("New Season generated", g.skin.green)
-	g.console:hr()
-	g.state.refresh_all()
 end
 
 -- Calculates average strengths of teams in league

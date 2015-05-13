@@ -35,6 +35,7 @@ skin.tween = {
 	type = "circout";
 	type_in = "circout";
 	type_out = "circin";
+	delay = 3;
 }
 
 skin.console = {
@@ -44,6 +45,24 @@ skin.console = {
 	alpha = 155;
 	rounded = 9;
 }
+
+skin.notification = {
+	x = g.width - 340;
+	y = g.height - 100;
+	dx = 0;
+	dy = -100;
+	w = 340;
+	h = 100;
+	font = { {"bold", 14}, {"regular", 14} };
+	color1 = hex("0a0a0aff");
+	color2 = hex("ffffffff");
+	color3 = hex("0f0f0fff");
+	alpha = 225;
+	dalpha = 215;
+	img_size = 100 - skin.margin * 2;
+}
+skin.notification.iy = math.floor(skin.notification.h/2 - skin.notification.img_size/2 + .5)
+skin.notification.ty = math.floor(skin.notification.h/2 - g.font.height(skin.notification.font[1])/2 + .5)
 
 skin.navbar = {
 	x = 0;

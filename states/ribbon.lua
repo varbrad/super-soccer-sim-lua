@@ -1,6 +1,5 @@
 local ribbon = {}
 ribbon.name = "Ribbon"
-local utf8 = require "utf8"
 
 function ribbon:init()
 	self.__z = 2
@@ -14,8 +13,10 @@ function ribbon:init()
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
 	self.infobox = g.ui.button.new()
 	self.searchbox = g.ui.textbox.new({ w = 200, h = g.skin.ribbon.h - g.skin.padding * 4, fonts = {g.font.get("italic", 14), g.font.get("regular", 14) }})
-	self.searchbox.x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin * 2 - 200 - 200 -- 200 - the width of the textbox
+	self.searchbox.x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin * 2 - 200 - 200 - 200 -- 200 - the width of the textbox
 	self.searchbox.y = g.skin.ribbon.y + math.floor(g.skin.ribbon.h/2 - self.searchbox.h/2 + .5)
+	self.continue = g.ui.button.new("Continue", { x = g.skin.ribbon.x + g.skin.ribbon.w - 200, y = g.skin.ribbon.y, w = 200, h = g.skin.ribbon.h - g.skin.ribbon.border })
+	self.continue:set_events(nil, nil, nil, g.continue_function)
 	--
 	self.active_screen_type = nil
 	--
@@ -30,6 +31,7 @@ function ribbon:update(dt)
 	self.flux:update(dt) --self.timer.update(dt)
 	self.infobox:update(dt)
 	self.searchbox:update(dt)
+	self.continue:update(dt)
 end
 
 function ribbon:draw()
@@ -61,9 +63,11 @@ function ribbon:draw()
 	self.infobox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
 	self.searchbox:draw(0, 0, self.tween.alpha)
 	--
+	self.continue:draw(0, 0, self.tween.alpha)
+	--
 	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
 	g.font.set(g.skin.ribbon.font[2])
-	love.graphics.printf("Season: " .. g.vars.season .. "/" .. (g.vars.season + 1) .."\nWeek: " .. g.vars.week, g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin - 200, g.skin.ribbon.y + g.skin.margin, 200, "right")
+	love.graphics.printf("Season: " .. g.vars.season .. "/" .. (g.vars.season + 1) .."\nWeek: " .. g.vars.week, g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin - 400, g.skin.ribbon.y + g.skin.margin + 12, 200, "center")
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -93,10 +97,12 @@ end
 function ribbon:mousepressed(x, y, b)
 	self.infobox:mousepressed(x, y, b)
 	self.searchbox:mousepressed(x, y, b)
+	self.continue:mousepressed(x, y, b)
 end
 
 function ribbon:mousereleased(x, y, b)
 	self.infobox:mousereleased(x, y, b)
+	self.continue:mousereleased(x, y, b)
 end
 
 function ribbon:keypressed(k, ir)
@@ -151,7 +157,7 @@ function ribbon:do_search()
 	if self.searchbox.focus then
 		local text = self.searchbox.text
 		self.search_list = {}
-		if utf8.len(text) < 3 then return end
+		if g.utf8.len(text) < 3 then return end
 		for i=1, #g.db_manager.teams do
 			local t = g.db_manager.teams[i]
 			if string.find(string.lower(t.short_name), string.lower(text)) or string.find(string.lower(t.long_name), string.lower(text)) then
@@ -235,6 +241,7 @@ function ribbon:set_league(league)
 	local sb = {}
 	sb.color1, sb.color2, sb.color3 = league.color1, league.color2, league.color3
 	self:set_searchbox(sb)
+	self.continue:set_colors(league.color2, league.color3, league.color3)
 	self:set_positions()
 	self:start_tween()
 end
@@ -258,6 +265,7 @@ function ribbon:set_team(team)
 	local sb = {}
 	sb.color1, sb.color2, sb.color3 = team.color1, team.color2, team.color3
 	self:set_searchbox(sb)
+	self.continue:set_colors(team.color3, team.color2, team.color3)
 	self:set_positions()
 	self:start_tween()
 end

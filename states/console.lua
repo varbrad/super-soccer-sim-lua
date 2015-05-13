@@ -4,7 +4,7 @@ console.name = "Console"
 local data = {}
 
 function console:init()
-	self.__z = 999
+	self.__z = 99
 	self.visible = false
 	--
 	g.console:log("console:init")

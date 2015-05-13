@@ -21,6 +21,7 @@ function love.load(args)
 	g.state = require "libs.state"
 	--g.timer = require "libs.timer" -- Now replaced by flux (faster and auto-deletes still-running tweens)
 	g.ui = require "libs.ui"
+	g.utf8 = require "utf8"
 	-- Src
 	g.db_manager = require "src.db_manager"
 	g.math = require "src.math"
@@ -50,6 +51,7 @@ function love.load(args)
 		league_stats = require "states.league_stats";
 		league_summary = require "states.league_summary";
 		navbar = require "states.navbar";
+		notification = require "states.notification";
 		overview = require "states.overview";
 		ribbon = require "states.ribbon";
 	}
@@ -57,6 +59,7 @@ function love.load(args)
 	g.console = g.states.console
 	g.ribbon = g.states.ribbon
 	g.navbar = g.states.navbar
+	g.notification = g.states.notification
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	g.shaders.init()
@@ -73,10 +76,12 @@ function love.load(args)
 	g.vars.view.league_id = 1
 	g.vars.view.team_id = 1
 	--
-	g.state.add(g.states.background)
-	g.state.add(g.states.console)
+	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2
+	g.state.add(g.states.notification) -- z = 8 
+	g.state.add(g.states.console) -- z = 9
 	--
-	g.state.add(g.states.overview)
+	g.state.add(g.states.overview) -- z = 1
+	-- All screens should be z = 1
 	--
 	g.mouse = {}
 	g.mouse.x = -1
@@ -129,6 +134,25 @@ function love.draw()
 	love.graphics.setShader()
 	love.graphics.setCanvas()
 	if g.console.draw then g.console:draw() end
+	--
+	if g.take_screenshot then
+		local screenshot = love.graphics.newScreenshot()
+		love.filesystem.createDirectory("screenshots")
+		local ostime = os.time()
+		screenshot:encode("screenshots/" .. ostime .. ".jpg")
+		g.take_screenshot = false
+		g.notification:new("Screenshot Saved\n("..ostime..".jpg)", g.image.new(screenshot))
+	end
+end
+
+function g.continue_function()
+	if g.vars.week==52 then
+		g.db_manager.end_of_season()
+		g.notification:new("New Season!", g.image.new("logos/128/"..g.vars.player.team_id..".png", {mipmap=true}))
+	else
+		g.db_manager.advance_week()
+	end
+	g.state.refresh_all()
 end
 
 function love.keypressed(k,ir)
@@ -155,14 +179,10 @@ function love.keypressed(k,ir)
 			g.console:print(g.state.order(), g.skin.red)
 		elseif k=="f11" then
 			g.console:print(g.state.z_order(), g.skin.red)
-		elseif k=="return" then
-			if g.vars.week==52 then
-				g.console:print("NEW SEASON", g.skin.green)
-				g.db_manager.end_of_season()
-			end
+		elseif k=="f12" then
+			g.take_screenshot = true
 		elseif k==" " then
-			g.db_manager.advance_week()
-			g.state.refresh_all()
+			g.ribbon.continue.on_release()
 		elseif k=="z" then
 			while g.vars.week~=52 do
 				g.db_manager.advance_week()
