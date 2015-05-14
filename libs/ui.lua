@@ -22,6 +22,7 @@ function ui.roundrect(mode, x, y, w, h, tl, tr, bl, br)
 end
 
 function ui.setColorAlpha(c, a)
+	c[1], c[2], c[3] = c[1] or 255, c[2] or 255, c[3] or 255
 	love.graphics.setColor(c[1], c[2], c[3], a)
 end
 

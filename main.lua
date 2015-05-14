@@ -1,7 +1,6 @@
 g = {}
 --
 function love.load(args)
-	print(args, #args, args[-1])
 	g.version = require "version" -- Game version!
 	-- Standard setup stuff
 	g.width, g.height, g.flags = love.window.getMode()
@@ -23,10 +22,11 @@ function love.load(args)
 	g.ui = require "libs.ui"
 	g.utf8 = require "utf8"
 	-- Src
+	-- Load skin first
+	g.skin = require "src.skin"
 	g.db_manager = require "src.db_manager"
 	g.math = require "src.math"
 	g.shaders = require "src.shaders"
-	g.skin = require "src.skin"
 	-- Load components
 	g.components = {
 		bar_draw = require "components.bar_draw";
@@ -43,6 +43,7 @@ function love.load(args)
 		background = require "states.background";
 		club_history = require "states.club_history";
 		club_overview = require "states.club_overview";
+		club_select = require "states.club_select";
 		console = require "states.console";
 		league_full_table = require "states.league_full_table";
 		league_overview = require "states.league_overview";
@@ -67,14 +68,7 @@ function love.load(args)
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
 	--
-	g.vars = {}
-	g.vars.week = 1
-	g.vars.season = 2015
-	g.vars.player = {}
-	g.vars.player.team_id = 21
-	g.vars.view = {}
-	g.vars.view.league_id = 1
-	g.vars.view.team_id = 1
+	
 	--
 	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2
 	g.state.add(g.states.notification) -- z = 8 
@@ -158,7 +152,10 @@ end
 function love.keypressed(k,ir)
 	if g.in_game and not g.ribbon.searchbox.focus then
 		if k=="escape" then
-			love.event.quit()
+			g.state.pop()
+			g.state.remove(g.states.navbar)
+			g.state.remove(g.states.ribbon)
+			g.state.add(g.states.overview)
 		elseif k=="f1" then
 			g.vars.view.team_id = g.vars.player.team_id
 			g.state.switch(g.states.club_overview)
@@ -198,6 +195,8 @@ function love.keypressed(k,ir)
 			_team.def, _team.mid, _team.att = _team.def - 1, _team.mid - 1, _team.att - 1
 			g.console:print(_team.short_name .. " reduced to " .. _team.def .. ", " .. _team.mid .. ", " .. _team.att)
 		end
+	elseif not g.in_game then
+		if k=="escape" then love.event.quit() end
 	end
 	for i, state in g.state.states() do
 		if state.keypressed then state:keypressed(k,ir) end
@@ -229,6 +228,7 @@ end
 -- New functions
 function love.graphics.hexToRgb(hex)
 	if hex==nil then return nil end
+	hex = tostring(hex)
 	return { tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6)), tonumber("0x"..hex:sub(7,8)) }
 end
 

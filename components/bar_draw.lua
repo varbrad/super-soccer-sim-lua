@@ -20,7 +20,11 @@ function bd.draw(bar, ox, oy)
 		for i=1, #bar.labels do
 			local label = bar.labels[i]
 			g.font.set(label.font)
-			love.graphics.setColorAlpha(label.color, label.alpha or 255)
+			if label.color==nil then
+				love.graphics.setColorAlpha(bar.label_color, label.alpha or 255)
+			else
+				love.graphics.setColorAlpha(label.color, label.alpha or 255)
+			end
 			if label.align then
 				love.graphics.printf(label.text, bar.x + label.x + ox, bar.y + label.y + oy, label.w, label.align)
 			else

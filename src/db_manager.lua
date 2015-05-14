@@ -7,84 +7,131 @@ dbm.team_dict = {}
 dbm.leagues = {}
 dbm.league_dict = {}
 
+-- First value is default key, 2nd is default value if field is empty, 3rd is function to run on entry if not empty, 4th is function to run on previous value, 5th is the key of previous value
+local team_defaults = {
+	{ "league_id", 0 };
+	{ "color1", g.skin.black, hex };
+	{ "color2", g.skin.white, hex };
+	{ "color3", nil, hex, love.graphics.darken, "color1" };
+	{ "att", 50 };
+	{ "mid", 50 };
+	{ "def", 50 };
+}
+
+local team_not_a_number = {
+	"color1", "color2", "color3"
+}
+
+local league_defaults = {
+	{ "color1", g.skin.black, hex };
+	{ "color2", g.skin.white, hex };
+	{ "color3", nil, hex, love.graphics.darken, "color1" };
+	{ "level", 0 };
+	{ "level_up", -1 };
+	{ "level_down", -1 };
+	{ "level_up_boost_min", 0 };
+	{ "level_up_boost_max", 0 };
+	{ "level_down_boost_min", 0 };
+	{ "level_down_boost_max", 0 };
+	{ "flag", "" };
+	{ "promoted", 0 };
+	{ "playoffs", 0 };
+	{ "relegated", 0 };
+	{ "r_playoffs", 0 };
+}
+
+local league_not_a_number = {
+	"color1", "color2", "color3"
+}
+
+function dbm.unload()
+	dbm.teams = {}
+	dbm.team_dict = {}
+	dbm.leagues = {}
+	dbm.league_dict = {}
+end
+
 -- Paths to the teams and leagues .csv files
-function dbm.load(teams, leagues)
-	local team_file = love.filesystem.read(teams)
-	local league_file = love.filesystem.read(leagues)
-	teams = g.csv.use(team_file, { header = true } )
-	leagues = g.csv.use(league_file, { header = true } )
+-- Load will only load in the data 'as-is'
+function dbm.load(team_path, league_path)
+	local team_file = love.filesystem.read(team_path)
+	local league_file = love.filesystem.read(league_path)
+	local teams = g.csv.use(team_file, { header = true } )
+	local leagues = g.csv.use(league_file, { header = true })
 	--
 	for fields in teams:lines() do
 		local team = {}
 		for k, v in pairs(fields) do
-			team[k] = v
-			if team[k] == "" then team[k] = nil end
+			local num = tonumber(v)
+			for i=1, #team_not_a_number do if k==team_not_a_number[i] then num=nil end end
+			team[k] = num and num or tostring(v)
+			if team[k]=="" then team[k]=nil end
 		end
 		team.__type = "team"
-		if team.id then team.id = tonumber(team.id) end
-		if team.league_id then team.league_id = tonumber(team.league_id) else team.league_id = 0 end -- default league id to 0 if not present
-		dbm.teams[#dbm.teams+1] = team
+		for i=1, #team_defaults do
+			local def = team_defaults[i]
+			-- First value is default key, 2nd is default value if field is empty, 3rd is function to run on entry if not empty, 4th is function to run on previous value, 5th is the key of previous value
+			if team[def[1]] and def[3] then team[def[1]] = def[3](team[def[1]])
+			elseif team[def[1]]==nil and def[4] and def[5] then team[def[1]] = def[4](team[def[5]])
+			else team[def[1]] = team[def[1]] or def[2] end
+		end
+		table.insert(dbm.teams, team)
 		dbm.team_dict[team.id] = team
 	end
-	-- Teams initial load in complete
-	g.console:print(#dbm.teams .. " teams loaded from db", g.skin.blue)
 	--
 	for fields in leagues:lines() do
 		local league = {}
 		for k, v in pairs(fields) do
-			league[k] = v
-			if league[k] == "" then league[k] = nil end
+			local num = tonumber(v)
+			for i=1, #league_not_a_number do if k==league_not_a_number[i] then num=nil end end
+			league[k] = num and num or tostring(v)
+			if league[k]=="" then league[k]=nil end
 		end
-		if league.id then league.id = tonumber(league.id) end
+		for i=1, #league_defaults do
+			local def = league_defaults[i]
+			if league[def[1]] and def[3] then league[def[1]] = def[3](league[def[1]])
+			elseif league[def[1]]==nil and def[4] and def[5] then league[def[1]] = def[4](league[def[5]])
+			else league[def[1]] = league[def[1]] or def[2] end
+		end
 		league.__type = "league"
-		league.teams = {}
-		league.history = {}
-		league.history.past_winners = {}
-		league.level = tonumber(league.level) or 0
-		league.level_up = tonumber(league.level_up) or -1
-		league.level_up_boost_min = tonumber(league.level_up_boost_min) or 0
-		league.level_up_boost_max = tonumber(league.level_up_boost_max) or 0
-		league.level_down = tonumber(league.level_down) or -1
-		league.level_down_boost_min = tonumber(league.level_down_boost_min) or 0
-		league.level_down_boost_max = tonumber(league.level_down_boost_max) or 0
-		league.promoted = tonumber(league.promoted) or 0
-		league.relegated = tonumber(league.relegated) or 0
-		league.playoffs = tonumber(league.playoffs) or 0
-		league.r_playoffs = tonumber(league.r_playoffs) or 0
-		dbm.leagues[#dbm.leagues+1] = league
+		table.insert(dbm.leagues, league)
 		dbm.league_dict[league.id] = league
 	end
-	-- Leagues initial load complete
-	g.console:print(#dbm.leagues .. " leagues loaded from db", g.skin.blue)
-	-- Now need to process data and link everything together
-		for i=1, #dbm.teams do
+	-- basic processing
+	for i=1, #dbm.leagues do
+		local league = dbm.leagues[i]
+		league.teams = {}
+		league.history = { past_winners = {} }
+	end
+	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
+		team.history = { honours = {}, seasons = {} }
 		team.league = dbm.league_dict[team.league_id]
 		table.insert(team.league.teams, team)
-		team.color1 = hex(team.color1) or g.skin.black
-		team.color2 = hex(team.color2) or g.skin.white
-		team.color3 = hex(team.color3) or love.graphics.darken(team.color1)
-		team.att = tonumber(team.att) or 50
-		team.mid = tonumber(team.mid) or 50
-		team.def = tonumber(team.def) or 50
-		team.history = {}
-		team.history.honours = {}
-		team.history.seasons = {}
+	end
+end
+
+function dbm.begin()
+	g.vars = {}
+	g.vars.week = 1
+	g.vars.season = 2015
+	g.vars.player = {}
+	g.vars.player.team_id = 1
+	g.vars.view = {}
+	g.vars.view.league_id = 1
+	g.vars.view.team_id = 1
+	-- Now need to process data and link everything together
+	for i=1, #dbm.teams do
+		local team = dbm.teams[i]
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
 		team.season.season = g.vars.season
 		team.season.league = team.league
 	end
-	g.console:print("All teams fully processed", g.skin.green)
 	-- Now process league data
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
-		league.color1 = hex(league.color1) or g.skin.black
-		league.color2 = hex(league.color2) or g.skin.white
-		league.color3 = hex(league.color3) or love.graphics.darken(league.color1)
-		if league.flag==nil then league.flag="" end
-		--
 		league.season = {}
 		if league.id == 0 or #league.teams==0 then
 			league.active = false
@@ -95,7 +142,7 @@ function dbm.load(teams, leagues)
 		end
 		dbm.sort_league(league)
 	end
-	g.console:print("All leagues fully processed", g.skin.green)
+	--
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
 		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
@@ -210,7 +257,6 @@ function dbm.format_position(p)
 end
 
 function dbm.generate_fixtures(league) -- Generates all league fixtures for a season
-	print("League is ", league.short_name, "teams = ",#league.teams)
 	local teams = league.teams
 	if #teams==0 then return {} end
 	-- First, shuffle the order of the teams in the league.data.teams array
@@ -333,6 +379,10 @@ end
 
 function dbm.sort_name(a,b)
 	return string.lower(a.short_name) < string.lower(b.short_name)
+end
+
+function dbm.sort_long_name(a, b)
+	return string.lower(a.long_name) < string.lower(b.long_name)
 end
 
 function dbm.shuffle(t)
