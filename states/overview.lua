@@ -34,7 +34,7 @@ function overview:added()
 	--
 	new_game.on_release = function(btn)
 		g.db_manager.load("db/teams.csv", "db/leagues.csv")
-		g.state.switch(g.states.club_select)
+		g.state.switch(g.states.new_game)
 	end
 	load_game.on_release = function(btn) --[[load the game]] end
 	settings.on_release = function(btn) --[[do somet]] end

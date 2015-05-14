@@ -4,8 +4,15 @@ console.name = "Console"
 local data = {}
 
 function console:init()
-	self.__z = 99
+	self.__z = 9
 	self.visible = false
+	self.game_identity = love.filesystem.getIdentity()
+	self.user_directory = love.filesystem.getUserDirectory()
+	self.symlinks_enabled = love.filesystem.areSymlinksEnabled()
+	self.appdata_directory = love.filesystem.getAppdataDirectory()
+	self.save_directory = love.filesystem.getSaveDirectory()
+	self.source_directory = love.filesystem.getSourceBaseDirectory()
+	self.is_fused = love.filesystem.isFused()
 	--
 	g.console:log("console:init")
 end
@@ -42,9 +49,22 @@ function console:draw()
 	arr[6] = string.format("Draw Calls: %i", stats.drawcalls)
 	arr[7] = string.format("Loaded Images: %s (0x%x)", stats.images, stats.images)
 	arr[8] = string.format("Loaded Fonts: %s (0x%x)", stats.fonts, stats.fonts)
+
+	local arr2 = {}
+	arr2[1] = "Game Identity: " .. self.game_identity
+	arr2[2] = "User Directory: " .. self.user_directory
+	arr2[3] = "Symlinks Enabled: " .. tostring(self.symlinks_enabled)
+	arr2[4] = "AppData Dir: " .. self.appdata_directory
+	arr2[5] = "Save Dir: " .. self.save_directory
+	arr2[6] = "Source Dir: " .. self.source_directory
+	arr2[7] = "Is Game Fused? - " .. tostring(self.is_fused)
+
 	love.graphics.setColor(255, 255, 255, 255)
 	for i=1, #arr do
 		love.graphics.print(arr[i], pm, pm + (i-1)*g.font.height())
+	end
+	for i=1, #arr2 do
+		love.graphics.print(arr2[i], g.width - pm - 600, pm + (i-1)*g.font.height())
 	end
 end
 

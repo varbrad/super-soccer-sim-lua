@@ -26,9 +26,9 @@ function bd.draw(bar, ox, oy)
 				love.graphics.setColorAlpha(label.color, label.alpha or 255)
 			end
 			if label.align then
-				love.graphics.printf(label.text, bar.x + label.x + ox, bar.y + label.y + oy, label.w, label.align)
+				love.graphics.printf(label.text, math.floor(bar.x + label.x + ox + .5), math.floor(bar.y + label.y + oy + .5), label.w, label.align)
 			else
-				love.graphics.print(label.text, bar.x + label.x + ox, bar.y + label.y + oy)
+				love.graphics.print(label.text, math.floor(bar.x + label.x + ox + .5), math.floor(bar.y + label.y + oy + .5))
 			end
 			if label.underline==true then
 				love.graphics.rectangle("fill", bar.x + label.x + ox, bar.y + label.y + label.h + oy - 1, label.w, 1)

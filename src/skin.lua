@@ -17,9 +17,9 @@ g.font.new("bold", "assets/fonts/opensans/bold.ttf",			{12, 13, 14, 24, 36, 48})
 g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 13, 14, 24, 36, 48, 96})
 
 skin.colors = {
-	hex("090909ff"); -- Primary color used for navbar bg, etc
+	hex("3f2f7fff"); -- Primary bar used for default headers
 	hex("ffa523ff"); -- Highlight color for text
-	hex("4595ffff"); -- Players team highlight color
+	hex("4595ffff"); -- Players team highlight color & selected bars
 	hex("c3c3c3ff"); -- Mid-Grey - Used by the pips on team_history_graph
 	hex("fa6900ff");
 }
@@ -27,6 +27,7 @@ skin.colors = {
 skin.margin = 4
 skin.padding = 8
 skin.tab = 22
+skin.rounded = 5
 
 skin.darken = 0.8 -- 20% color reduction for darken
 

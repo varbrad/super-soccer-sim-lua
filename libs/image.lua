@@ -5,8 +5,8 @@ image.__type = "Image"
 local cache = {}
 
 function image.new(path, settings)
-	if type(path)=="string" then path = "assets/images/" .. path end
 	settings = settings or {}
+	if not settings.absolute and type(path)=="string" then path = "assets/images/" .. path end
 	--
 	local i = {}
 	setmetatable(i, image)

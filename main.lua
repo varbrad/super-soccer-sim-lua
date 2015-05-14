@@ -43,7 +43,6 @@ function love.load(args)
 		background = require "states.background";
 		club_history = require "states.club_history";
 		club_overview = require "states.club_overview";
-		club_select = require "states.club_select";
 		console = require "states.console";
 		league_full_table = require "states.league_full_table";
 		league_overview = require "states.league_overview";
@@ -52,6 +51,7 @@ function love.load(args)
 		league_stats = require "states.league_stats";
 		league_summary = require "states.league_summary";
 		navbar = require "states.navbar";
+		new_game = require "states.new_game";
 		notification = require "states.notification";
 		overview = require "states.overview";
 		ribbon = require "states.ribbon";
@@ -68,15 +68,6 @@ function love.load(args)
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
 	--
-	
-	--
-	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2
-	g.state.add(g.states.notification) -- z = 8 
-	g.state.add(g.states.console) -- z = 9
-	--
-	g.state.add(g.states.overview) -- z = 1
-	-- All screens should be z = 1
-	--
 	g.mouse = {}
 	g.mouse.x = -1
 	g.mouse.y = -1
@@ -92,6 +83,12 @@ function love.load(args)
 	-- The canvas object everything gets drawn to, in order to use alpha-based shaders.
 	-- This should never be drawn to or used anywhere else except main.lua
 	g.canvas = love.graphics.newCanvas()
+	--
+	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2
+	g.state.add(g.states.notification) -- z = 8 
+	g.state.add(g.states.console) -- z = 9
+	g.state.add(g.states.overview) -- z = 1
+	-- All screens should be z = 1
 end
 
 function love.update(dt)
@@ -152,7 +149,7 @@ end
 function love.keypressed(k,ir)
 	if g.in_game and not g.ribbon.searchbox.focus then
 		if k=="escape" then
-			g.state.pop()
+			g.state.pop() -- Remove the current screen
 			g.state.remove(g.states.navbar)
 			g.state.remove(g.states.ribbon)
 			g.state.add(g.states.overview)
@@ -172,12 +169,6 @@ function love.keypressed(k,ir)
 			g.state.switch(g.states.league_stats)
 		elseif k=="f7" then
 			g.state.switch(g.states.club_history)
-		elseif k=="f10" then
-			g.console:print(g.state.order(), g.skin.red)
-		elseif k=="f11" then
-			g.console:print(g.state.z_order(), g.skin.red)
-		elseif k=="f12" then
-			g.take_screenshot = true
 		elseif k==" " then
 			g.ribbon.continue.on_release()
 		elseif k=="z" then
@@ -197,6 +188,13 @@ function love.keypressed(k,ir)
 		end
 	elseif not g.in_game then
 		if k=="escape" then love.event.quit() end
+	end
+	if k=="f10" then
+		g.console:print(g.state.order(), g.skin.red)
+	elseif k=="f11" then
+		g.console:print(g.state.z_order(), g.skin.red)
+	elseif k=="f12" then
+		g.take_screenshot = true
 	end
 	for i, state in g.state.states() do
 		if state.keypressed then state:keypressed(k,ir) end

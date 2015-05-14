@@ -6,6 +6,10 @@ dbm.teams = {}
 dbm.team_dict = {}
 dbm.leagues = {}
 dbm.league_dict = {}
+dbm.nations = {}
+dbm.nation_dict = {}
+
+dbm.nation_data = require "db.nations"
 
 -- First value is default key, 2nd is default value if field is empty, 3rd is function to run on entry if not empty, 4th is function to run on previous value, 5th is the key of previous value
 local team_defaults = {
@@ -49,6 +53,8 @@ function dbm.unload()
 	dbm.team_dict = {}
 	dbm.leagues = {}
 	dbm.league_dict = {}
+	dbm.nations = {}
+	dbm.nation_dict = {}
 end
 
 -- Paths to the teams and leagues .csv files
@@ -100,6 +106,19 @@ function dbm.load(team_path, league_path)
 	-- basic processing
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
+		-- Add this league to its nation table
+		if dbm.nation_dict[league.flag] then
+			local nation = dbm.nation_dict[league.flag]
+			table.insert(nation.leagues, league)
+		elseif league.id~=0 then -- The nation dict does not exist
+			local nation = {}
+			nation.flag = league.flag
+			nation.data = dbm.nation_data[nation.flag]
+			nation.name = nation.data.name
+			nation.leagues = { league }
+			table.insert(dbm.nations, nation)
+			dbm.nation_dict[league.flag] = nation
+		end
 		league.teams = {}
 		league.history = { past_winners = {} }
 	end
@@ -109,17 +128,19 @@ function dbm.load(team_path, league_path)
 		team.league = dbm.league_dict[team.league_id]
 		table.insert(team.league.teams, team)
 	end
+	-- Sort nations by alphabetic
+	table.sort(dbm.nations, function(a,b) return string.lower(a.name) < string.lower(b.name) end)
 end
 
-function dbm.begin()
+function dbm.begin(team_id)
 	g.vars = {}
 	g.vars.week = 1
 	g.vars.season = 2015
 	g.vars.player = {}
-	g.vars.player.team_id = 1
+	g.vars.player.team_id = team_id
 	g.vars.view = {}
-	g.vars.view.league_id = 1
-	g.vars.view.team_id = 1
+	g.vars.view.league_id = dbm.team_dict[team_id].league.id
+	g.vars.view.team_id = team_id
 	-- Now need to process data and link everything together
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
