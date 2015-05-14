@@ -15,7 +15,7 @@ function club_overview:added()
 	self.fixture_list = g.components.fixture_list.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, split_w, height)
 	self.league_table = g.components.league_table.new(self.fixture_list.x + self.fixture_list.w + g.skin.margin, self.fixture_list.y, middle, height, nil, "small")
 	self.league_graph = g.components.team_league_pos_graph.new(self.league_table.x + self.league_table.w + g.skin.margin, self.fixture_list.y, split_w, split_h)
-	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h)
+	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h, 20)
 	self:set_team()
 end
 

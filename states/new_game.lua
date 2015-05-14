@@ -73,8 +73,10 @@ function new_game:set_nation(nation)
 		if b.nation then
 			if b.nation == nation then
 				b.color = b.color2
+				b.labels[1].font = g.skin.bars.font[1]
 			else
 				b.color = b.color1
+				b.labels[1].font = g.skin.bars.font[2]
 			end
 		end
 	end
@@ -114,8 +116,10 @@ function new_game:set_league(league)
 		if b.league then
 			if b.league == league then
 				b.color = b.color2
+				b.labels[1].font = g.skin.bars.font[1]
 			else
 				b.color = b.color1
+				b.labels[1].font = g.skin.bars.font[2]
 			end
 		end
 	end
@@ -154,8 +158,10 @@ function new_game:set_team(team)
 		if b.team then
 			if b.team == team then
 				b.color = b.color2
+				b.labels[1].font = g.skin.bars.font[1]
 			else
 				b.color = b.color1
+				b.labels[1].font = g.skin.bars.font[2]
 			end
 		end
 	end
@@ -194,7 +200,7 @@ function new_game:set_team(team)
 	bar.rects = { name_rect, r1, r2, r3, r4, def_rect, mid_rect, att_rect, ovr_rect }
 	bar.images = { logo }
 	--
-	local btn = g.ui.button.new("Start Game as " .. name.text, { x = bar.x + g.skin.margin, w = bar.w - g.skin.margin * 2, h = g.skin.bars.h * 2, underline = true })
+	local btn = g.ui.button.new("Start Game as " .. name.text, { x = bar.x + g.skin.margin, w = bar.w - g.skin.margin * 2, h = g.skin.bars.h * 2, font = g.font.get(g.skin.bold) })
 	btn.overview = true
 	btn.y = bar.y + bar.h - g.skin.margin - btn.h
 	btn:set_colors(team.color2, team.color1, team.color3)

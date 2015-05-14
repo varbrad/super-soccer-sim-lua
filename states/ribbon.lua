@@ -12,19 +12,18 @@ function ribbon:init()
 	self.large_logo = nil
 	self.tween = { ox = 0; oy = 0; alpha = 1; }
 	self.infobox = g.ui.button.new()
-	self.searchbox = g.ui.textbox.new({ w = 200, h = g.skin.ribbon.h - g.skin.padding * 4, fonts = {g.font.get("italic", 14), g.font.get("regular", 14) }})
-	self.searchbox.x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin * 2 - 200 - 200 - 200 -- 200 - the width of the textbox
-	self.searchbox.y = g.skin.ribbon.y + math.floor(g.skin.ribbon.h/2 - self.searchbox.h/2 + .5)
-	self.continue = g.ui.button.new("Continue", { x = g.skin.ribbon.x + g.skin.ribbon.w - 200, y = g.skin.ribbon.y, w = 200, h = g.skin.ribbon.h - g.skin.ribbon.border })
+	self.continue = g.ui.button.new("Continue", { x = g.skin.ribbon.x + g.skin.ribbon.w - g.skin.ribbon.continue_w, y = g.skin.ribbon.y, w = g.skin.ribbon.continue_w, h = g.skin.ribbon.h - g.skin.ribbon.border, font = g.font.get(g.skin.bold) })
 	self.continue:set_events(nil, nil, nil, g.continue_function)
-	--
-	self.active_screen_type = nil
+	self.searchbox = g.ui.textbox.new({ w = g.skin.ribbon.searchbox_w, h = g.font.height("italic", 14) + g.skin.margin * 4, fonts = {g.font.get("italic", 14), g.font.get("bold", 14) }})
+	self.searchbox.x = self.continue.x - g.skin.margin - g.skin.ribbon.searchbox_w -- 200 - the width of the textbox
+	self.searchbox.y = g.skin.ribbon.y + g.skin.ribbon.h - g.skin.ribbon.border - g.skin.margin - self.searchbox.h
 	--
 	g.console:log("ribbon:init")
 end
 
 function ribbon:added()
-
+	self.active_screen_type = nil -- Used for navigating with arrow keys the teams and leagues
+	self.tabs = {} -- tabs is the list of tabs we can click
 end
 
 function ribbon:update(dt)
@@ -32,6 +31,7 @@ function ribbon:update(dt)
 	self.infobox:update(dt)
 	self.searchbox:update(dt)
 	self.continue:update(dt)
+	for i=1, #self.tabs do self.tabs[i]:update(dt) end
 end
 
 function ribbon:draw()
@@ -62,12 +62,14 @@ function ribbon:draw()
 	--
 	self.infobox:draw(self.tween.ox, self.tween.oy, self.tween.alpha)
 	self.searchbox:draw(0, 0, self.tween.alpha)
-	--
 	self.continue:draw(0, 0, self.tween.alpha)
 	--
+	for i=1, #self.tabs do self.tabs[i]:draw(0, 0, self.tween.alpha) end
+	--
 	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
-	g.font.set(g.skin.ribbon.font[2])
-	love.graphics.printf("Season: " .. g.vars.season .. "/" .. (g.vars.season + 1) .."\nWeek: " .. g.vars.week, g.skin.ribbon.x + g.skin.ribbon.w - g.skin.margin - 400, g.skin.ribbon.y + g.skin.margin + 12, 200, "center")
+	g.font.set("regular", 14)
+	love.graphics.printf("Season " .. g.vars.season .. "/" .. (g.vars.season+1), self.searchbox.x + g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "left")
+	love.graphics.printf("Week " .. g.vars.week, self.searchbox.x + self.searchbox.w/2 - g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "right")
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -98,11 +100,13 @@ function ribbon:mousepressed(x, y, b)
 	self.infobox:mousepressed(x, y, b)
 	self.searchbox:mousepressed(x, y, b)
 	self.continue:mousepressed(x, y, b)
+	for i=1, #self.tabs do self.tabs[i]:mousepressed(x, y, b) end
 end
 
 function ribbon:mousereleased(x, y, b)
 	self.infobox:mousereleased(x, y, b)
 	self.continue:mousereleased(x, y, b)
+	for i=1, #self.tabs do self.tabs[i]:mousereleased(x, y, b) end
 end
 
 function ribbon:keypressed(k, ir)
@@ -140,7 +144,7 @@ function ribbon:keypressed(k, ir)
 				if k=="down" then g.vars.view.league_id = g.db_manager.league_dict[g.vars.view.league_id].level_down end
 				if k=="left" then g.vars.view.league_id = g.vars.view.league_id - 1 end
 				if k=="right" then g.vars.view.league_id = g.vars.view.league_id + 1 end
-				if not g.db_manager.league_dict[g.vars.view.league_id] then g.vars.view.league_id = old end
+				if not g.db_manager.league_dict[g.vars.view.league_id] or g.db_manager.league_dict[g.vars.view.league_id].active==false then g.vars.view.league_id = old end
 			end
 			g.state.refresh_all()
 		end
@@ -203,6 +207,42 @@ function ribbon:set_searchbox(settings)
 	self.searchbox:reset(settings)
 end
 
+function ribbon:set_tabs()
+	self.tabs = {}
+	local cur_screen = g.state.active()
+	local active_group = nil
+	-- Find which group of tabs this belongs to
+	for i=1, #g.screen_groups do
+		local group = g.screen_groups[i]
+		-- Is this cur_screen in the group?
+		for i=1, #group do
+			local screen = group[i]
+			if screen.name == cur_screen.name then
+				active_group = group
+				break
+			end
+		end
+	end
+	--
+	if not active_group then return end
+	local x, y = self.searchbox.x - g.skin.margin - g.skin.ribbon.tab_w, self.searchbox.y
+	local w, h = g.skin.ribbon.tab_w, self.searchbox.h
+	g.console:log(#active_group)
+	for i=#active_group, 1, -1 do
+		local screen = active_group[i]
+		local btn = g.ui.button.new(screen.name, { x = x, y = y, w = w, h = h })
+		if screen==cur_screen then
+			btn:set_colors(self.colors[2], self.colors[1], self.colors[3])
+			btn.enabled = false
+		else
+			btn:set_colors(self.colors[1], self.colors[2], self.colors[3])
+			btn.on_release = function(b) g.state.swap(cur_screen, screen) end
+		end
+		table.insert(self.tabs, btn)
+		x = x - g.skin.margin - w
+	end
+end
+
 function ribbon:set_positions()
 	if self.logo then
 		self.logo:resize(64, 64)
@@ -227,7 +267,6 @@ end
 
 function ribbon:set_league(league)
 	self.active_screen_type = "league"
-	--
 	self:reset()
 	self:set_image("logos/128/"..league.flag..league.level..".png")
 	self:set_header(league.long_name)
@@ -237,18 +276,19 @@ function ribbon:set_league(league)
 	ib.enabled = false
 	ib.image = g.image.new("flags/"..league.flag..".png")
 	ib.color1, ib.color2, ib.color3 = league.color1, league.color2, league.color3
-	self:set_infobox("", ib)
+	self:set_infobox(g.db_manager.nation_dict[league.flag].name, ib)
 	local sb = {}
 	sb.color1, sb.color2, sb.color3 = league.color1, league.color2, league.color3
 	self:set_searchbox(sb)
 	self.continue:set_colors(league.color2, league.color3, league.color3)
+	--
+	self:set_tabs()
 	self:set_positions()
 	self:start_tween()
 end
 
 function ribbon:set_team(team)
 	self.active_screen_type = "team"
-	--
 	self:reset()
 	self:set_image("logos/128/"..team.id..".png")
 	self:set_header(team.long_name)
@@ -266,6 +306,8 @@ function ribbon:set_team(team)
 	sb.color1, sb.color2, sb.color3 = team.color1, team.color2, team.color3
 	self:set_searchbox(sb)
 	self.continue:set_colors(team.color3, team.color2, team.color3)
+	--
+	self:set_tabs()
 	self:set_positions()
 	self:start_tween()
 end
@@ -275,6 +317,7 @@ function ribbon:reset()
 	self:set_header()
 	self:set_colors(g.skin.black, g.skin.white, g.skin.black)
 	self.infobox:reset()
+	self.tabs = {}
 	self:set_positions()
 end
 

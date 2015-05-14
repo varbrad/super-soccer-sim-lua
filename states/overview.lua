@@ -37,7 +37,9 @@ function overview:added()
 		g.state.switch(g.states.new_game)
 	end
 	load_game.on_release = function(btn) --[[load the game]] end
-	settings.on_release = function(btn) --[[do somet]] end
+	settings.on_release = function(btn)
+		g.state.switch(g.states.settings)
+	end
 	exit.on_release = function(btn) love.event.quit() end
 	--
 	self.custom_buttons = {} -- What will be drawn (not used in update, mousepressed/released)

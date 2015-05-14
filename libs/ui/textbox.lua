@@ -35,7 +35,7 @@ function textbox:reset(settings)
 					settings.color3 or ui.__defaultColor3)
 	self.fonts = settings.fonts or self.fonts or ui.__defaultFont
 	self.ty = math.floor(self.h/2 - self.fonts[1]:getHeight()/2 + .5)
-	self.rounded = math.floor(self.h/2 - 1.5)
+	self.rounded = 3
 	local iy = math.floor(self.h/2 - 8 + .5)
 	self.image = g.image.new("misc/search.png", {mipmap=true, w = 16, h = 16, x = self.x + iy, y = self.y + iy })
 	self.underline = settings.underline or false

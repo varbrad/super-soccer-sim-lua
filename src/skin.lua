@@ -17,7 +17,7 @@ g.font.new("bold", "assets/fonts/opensans/bold.ttf",			{12, 13, 14, 24, 36, 48})
 g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 13, 14, 24, 36, 48, 96})
 
 skin.colors = {
-	hex("3f2f7fff"); -- Primary bar used for default headers
+	hex("1a5a9fff"); -- Primary bar used for default headers
 	hex("ffa523ff"); -- Highlight color for text
 	hex("4595ffff"); -- Players team highlight color & selected bars
 	hex("c3c3c3ff"); -- Mid-Grey - Used by the pips on team_history_graph
@@ -30,6 +30,10 @@ skin.tab = 22
 skin.rounded = 5
 
 skin.darken = 0.8 -- 20% color reduction for darken
+
+--
+skin.header = {"bold", 48}
+skin.bold = {"bold", 14}
 
 skin.tween = {
 	time = .5;
@@ -89,6 +93,11 @@ skin.ribbon = {
 	tween_ox = 0;
 	tween_oy = -20;
 	tween_alpha = 0;
+	--
+	continue_w = 140;
+	searchbox_w = 260;
+	--
+	tab_w = 140;
 }
 
 skin.screen = {

@@ -55,6 +55,12 @@ function love.load(args)
 		notification = require "states.notification";
 		overview = require "states.overview";
 		ribbon = require "states.ribbon";
+		settings = require "states.settings";
+	}
+	--
+	g.screen_groups = {
+		{ g.states.club_overview, g.states.club_history };
+		{ g.states.league_overview, g.states.league_full_table, g.states.league_result_grid, g.states.league_past_winners };
 	}
 	-- Common alliases for states
 	g.console = g.states.console
@@ -67,6 +73,9 @@ function love.load(args)
 	--
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
+	--
+	g.settings = {}
+	g.settings.screenshot_format = "jpg"
 	--
 	g.mouse = {}
 	g.mouse.x = -1
@@ -128,11 +137,12 @@ function love.draw()
 	--
 	if g.take_screenshot then
 		local screenshot = love.graphics.newScreenshot()
+		local format = g.settings.screenshot_format
 		love.filesystem.createDirectory("screenshots")
 		local ostime = os.time()
-		screenshot:encode("screenshots/" .. ostime .. ".jpg")
+		screenshot:encode("screenshots/" .. ostime .. "." .. format)
 		g.take_screenshot = false
-		g.notification:new("Screenshot Saved\n("..ostime..".jpg)", g.image.new(screenshot))
+		g.notification:new("Screenshot Saved\n("..ostime.."." .. format .. ")", g.image.new(screenshot))
 	end
 end
 

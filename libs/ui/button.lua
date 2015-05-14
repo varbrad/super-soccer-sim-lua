@@ -79,8 +79,8 @@ function button:position()
 			self.tx = self.tx + self.image.w + ui.__defaultMargin
 			_w = _w + self.image.w + ui.__defaultMargin
 		end
-		local _ox = math.floor(self.w/2 - _w/2 +.5) - ui.__defaultMargin/2
-		self.ix, self.tx = self.ix + _ox, self.tx + _ox
+		local _ox = math.floor(self.w/2 - _w/2 +.5)
+		self.ix, self.tx = self.ix + _ox - ui.__defaultMargin/2, self.tx + _ox - ui.__defaultMargin
 	end
 end
 
