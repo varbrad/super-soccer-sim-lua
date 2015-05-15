@@ -31,6 +31,8 @@ function bd.draw(bar, ox, oy)
 				love.graphics.print(label.text, math.floor(bar.x + label.x + ox + .5), math.floor(bar.y + label.y + oy + .5))
 			end
 			if label.underline==true then
+				if label.h == nil then label.h = g.font.height(label.font) end
+				if label.w == nil then label.w = g.font.width(label.text, label.font) end
 				love.graphics.rectangle("fill", bar.x + label.x + ox, bar.y + label.y + label.h + oy - 1, label.w, 1)
 			end
 		end

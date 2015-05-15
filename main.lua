@@ -85,7 +85,7 @@ function love.load(args)
 	g.mouse.cursor.arrow = love.mouse.getSystemCursor("arrow")
 	g.mouse.cursor.hand = love.mouse.getSystemCursor("hand")
 	love.mouse.setCursor(g.mouse.cursor.arrow)
-	--
+	--`
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
 	--

@@ -49,7 +49,7 @@ function new_game:set()
 		local btn = g.ui.button.new("", { x = math.floor(bar.x + .5), y = math.floor(bar.y + .5), w = math.floor(bar.w + .5), h = math.floor(bar.h + .5)})
 		btn.visible = false
 		btn.nation = nation
-		btn.on_release = function(b)
+		btn.on_click = function(b)
 			self:set_nation(b.nation)
 		end
 		--
@@ -101,7 +101,7 @@ function new_game:set_nation(nation)
 		local btn = g.ui.button.new("", { x = math.floor(bar.x + .5), y = math.floor(bar.y + .5), w = math.floor(bar.w + .5), h = math.floor(bar.h + .5)})
 		btn.visible = false
 		btn.league = lge
-		btn.on_release = function(b)
+		btn.on_click = function(b)
 			self:set_league(b.league)
 		end
 		--
@@ -143,7 +143,7 @@ function new_game:set_league(league)
 		local btn = g.ui.button.new("", { x = math.floor(bar.x + .5), y = math.floor(bar.y + .5), w = math.floor(bar.w + .5), h = math.floor(bar.h + .5)})
 		btn.visible = false
 		btn.team = team
-		btn.on_release = function(b)
+		btn.on_click = function(b)
 			self:set_team(b.team)
 		end
 		--
@@ -255,7 +255,9 @@ function new_game:draw()
 end
 
 function new_game:mousepressed(x, y, b)
-	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+	for i=1, #self.buttons do 
+		if self.buttons[i] then self.buttons[i]:mousepressed(x, y, b) end
+	end
 end
 
 function new_game:mousereleased(x, y, b)
