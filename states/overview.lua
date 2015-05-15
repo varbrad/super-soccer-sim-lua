@@ -72,6 +72,10 @@ function overview:draw()
 	end
 end
 
+function overview:keypressed(k, ir)
+	if k=="escape" then print("Quit from Overview"); love.event.quit() end
+end
+
 function overview:mousepressed(x, y, b)
 	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
 end

@@ -50,6 +50,7 @@ function love.load(args)
 		league_result_grid = require "states.league_result_grid";
 		league_stats = require "states.league_stats";
 		league_summary = require "states.league_summary";
+		msgbox = require "states.msgbox";
 		navbar = require "states.navbar";
 		new_game = require "states.new_game";
 		notification = require "states.notification";
@@ -60,13 +61,14 @@ function love.load(args)
 	--
 	g.screen_groups = {
 		{ g.states.club_overview, g.states.club_history };
-		{ g.states.league_overview, g.states.league_full_table, g.states.league_result_grid, g.states.league_past_winners };
+		{ g.states.league_overview, g.states.league_stats, g.states.league_result_grid, g.states.league_past_winners, g.states.league_summary };
 	}
 	-- Common alliases for states
 	g.console = g.states.console
 	g.ribbon = g.states.ribbon
 	g.navbar = g.states.navbar
 	g.notification = g.states.notification
+	g.msgbox = g.states.msgbox
 	--
 	love.graphics.setBackgroundColor(g.skin.colors[1])
 	g.shaders.init()
@@ -94,6 +96,7 @@ function love.load(args)
 	g.canvas = love.graphics.newCanvas()
 	--
 	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2
+	g.state.add(g.states.msgbox) -- z = 7
 	g.state.add(g.states.notification) -- z = 8 
 	g.state.add(g.states.console) -- z = 9
 	g.state.add(g.states.overview) -- z = 1
@@ -157,62 +160,20 @@ function g.continue_function()
 end
 
 function love.keypressed(k,ir)
-	if g.in_game and not g.ribbon.searchbox.focus then
-		if k=="escape" then
-			g.state.pop() -- Remove the current screen
-			g.state.remove(g.states.navbar)
-			g.state.remove(g.states.ribbon)
-			g.state.add(g.states.overview)
-		elseif k=="f1" then
-			g.vars.view.team_id = g.vars.player.team_id
-			g.state.switch(g.states.club_overview)
-		elseif k=="f2" then
-			g.vars.view.league_id = g.db_manager.team_dict[g.vars.player.team_id].league_id
-			g.state.switch(g.states.league_overview)
-		elseif k=="f3" then
-			g.state.switch(g.states.league_full_table)
-		elseif k=="f4" then
-			g.state.switch(g.states.league_result_grid)
-		elseif k=="f5" then
-			g.state.switch(g.states.league_past_winners)
-		elseif k=="f6" then
-			g.state.switch(g.states.league_stats)
-		elseif k=="f7" then
-			g.state.switch(g.states.club_history)
-		elseif k==" " then
-			g.ribbon.continue.on_release()
-		elseif k=="z" then
-			while g.vars.week~=52 do
-				g.db_manager.advance_week()
-			end
-			g.db_manager.end_of_season()
-			g.state.refresh_all()
-		elseif k=="b" then
-			local _team = g.db_manager.team_dict[g.vars.player.team_id]
-			_team.def, _team.mid, _team.att = _team.def + 1, _team.mid + 1, _team.att + 1
-			g.console:print(_team.short_name .. " boosted to " .. _team.def .. ", " .. _team.mid .. ", " .. _team.att)
-		elseif k=="v" then
-			local _team = g.db_manager.team_dict[g.vars.player.team_id]
-			_team.def, _team.mid, _team.att = _team.def - 1, _team.mid - 1, _team.att - 1
-			g.console:print(_team.short_name .. " reduced to " .. _team.def .. ", " .. _team.mid .. ", " .. _team.att)
-		end
-	elseif not g.in_game then
-		if k=="escape" then love.event.quit() end
+	-- Ensure to check if searchbox is focused in each state keypressed function (if it has one)
+	for i, state in g.state.states() do
+		if state.keypressed then state:keypressed(k,ir) end
 	end
+	-- Run these commands regardless of what the heck is going on!
+	-- Probably should be F1 thru F12 keys only, as nothing else cares about those
 	if k=="f10" then
 		g.console:print(g.state.order(), g.skin.red)
+		g.console:print("Active State: " .. g.state.active().name, g.skin.green)
 	elseif k=="f11" then
 		g.console:print(g.state.z_order(), g.skin.red)
 	elseif k=="f12" then
 		g.take_screenshot = true
 	end
-	for i, state in g.state.states() do
-		if state.keypressed then state:keypressed(k,ir) end
-	end
-end
-
-function love.keyreleased(k)
-	
 end
 
 function love.mousepressed(x, y, b)

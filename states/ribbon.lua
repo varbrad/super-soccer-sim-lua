@@ -122,7 +122,14 @@ function ribbon:keypressed(k, ir)
 	elseif k=="backspace" and self.searchbox.focus then
 		self:do_search()
 	elseif not self.searchbox.focus then
-		if k=="up" or k=="down" or k=="left" or k=="right" then
+		if k=="escape" then
+			g.state.pop()
+			g.state.remove(g.states.ribbon)
+			g.state.remove(g.states.navbar)
+			g.state.add(g.states.overview)
+		elseif k==" " then
+			self.continue.on_release()
+		elseif k=="up" or k=="down" or k=="left" or k=="right" then
 			if self.active_screen_type=="team" then
 				local old = g.vars.view.team_id
 				if k=="up" or k=="down" then

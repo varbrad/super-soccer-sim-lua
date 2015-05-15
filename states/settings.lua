@@ -42,6 +42,12 @@ function settings:draw()
 	for i=1, #self.buttons do self.buttons[i]:draw() end
 end
 
+function settings:keypressed(k, ir)
+	if k=="escape" then
+		g.state.switch(g.states.overview)
+	end
+end
+
 function settings:mousepressed(x, y, b)
 	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
 end

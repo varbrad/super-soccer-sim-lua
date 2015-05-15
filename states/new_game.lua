@@ -206,10 +206,11 @@ function new_game:set_team(team)
 	btn:set_colors(team.color2, team.color1, team.color3)
 	btn.on_release = function(b)
 		g.db_manager.begin(team.id)
+		g.state.pop()
 		g.state.add(g.states.navbar)
 		g.state.add(g.states.ribbon)
 		g.state.add(g.states.club_overview)
-		g.state.remove(self)
+		print(g.state.active().name)
 		g.in_game = true
 	end
 	table.insert(self.buttons, btn)
@@ -252,6 +253,10 @@ function new_game:draw()
 	self.panel:draw()
 	for i=1, #self.bars do g.components.bar_draw.draw(self.bars[i]) end
 	for i=1, #self.buttons do self.buttons[i]:draw() end
+end
+
+function new_game:keypressed(k, ir)
+	if k=="escape" or k=="backspace" then g.state.switch(g.states.overview) end
 end
 
 function new_game:mousepressed(x, y, b)
