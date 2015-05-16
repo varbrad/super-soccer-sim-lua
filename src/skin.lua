@@ -25,6 +25,7 @@ skin.colors = {
 }
 
 skin.margin = 4
+skin.img_margin = skin.margin * 3
 skin.padding = 8
 skin.tab = 22
 skin.rounded = 5
@@ -122,7 +123,7 @@ skin.bars = {
 	color4 = hex("0a0a0aff");
 	font = { {"bold", 14}, {"regular", 13}, {"semibold", 14} };
 	img_size = 26;
-	column_size = 46;
+	column_size = 40;
 	border = 2;
 }
 skin.bars.iy = math.floor(skin.bars.h/2 - skin.bars.img_size/2 +.5);

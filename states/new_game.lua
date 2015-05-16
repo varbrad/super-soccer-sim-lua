@@ -210,7 +210,6 @@ function new_game:set_team(team)
 		g.state.add(g.states.navbar)
 		g.state.add(g.states.ribbon)
 		g.state.add(g.states.club_overview)
-		print(g.state.active().name)
 		g.in_game = true
 	end
 	table.insert(self.buttons, btn)

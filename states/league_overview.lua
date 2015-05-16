@@ -15,7 +15,7 @@ function league_overview:added()
 	local split_w = math.floor(g.skin.screen.w/2 - g.skin.margin * 1.5 +.5)
 	local split_rest_h = math.floor(rest_h/2 - g.skin.margin * .5 + .5)
 	self.teams_ribbon = g.components.teams_ribbon.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, team_ribbon_h)
-	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, self.teams_ribbon.y + self.teams_ribbon.h + g.skin.margin, split_w, rest_h, nil, "default")
+	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, self.teams_ribbon.y + self.teams_ribbon.h + g.skin.margin, split_w, rest_h)
 	self.upcoming = g.components.fixture_group.new(g.skin.screen.x + g.skin.margin * 2 + self.league_table.w, self.league_table.y, split_w, split_rest_h) 
 	self.results = g.components.fixture_group.new(self.upcoming.x, self.upcoming.y + self.upcoming.h + g.skin.margin, self.upcoming.w, self.upcoming.h)
 	self:set_league()
@@ -38,7 +38,7 @@ end
 function league_overview:set_league()
 	self.league = g.db_manager.league_dict[g.vars.view.league_id]
 	self.teams_ribbon:set(self.league.teams, true)
-	self.league_table:set(self.league)
+	self.league_table:set(self.league, "default")
 	self.upcoming:set(self.league, g.vars.week, false)
 	self.results:set(self.league, g.vars.week-1, true)
 	--

@@ -13,7 +13,7 @@ function club_overview:added()
 	local split_h = math.floor(g.skin.screen.h/2 - g.skin.margin * 1.5 + .5)
 	local middle = g.skin.screen.w - g.skin.margin * 4 - split_w * 2
 	self.fixture_list = g.components.fixture_list.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, split_w, height)
-	self.league_table = g.components.league_table.new(self.fixture_list.x + self.fixture_list.w + g.skin.margin, self.fixture_list.y, middle, height, nil, "small")
+	self.league_table = g.components.league_table.new(self.fixture_list.x + self.fixture_list.w + g.skin.margin, self.fixture_list.y, middle, height)
 	self.league_graph = g.components.team_league_pos_graph.new(self.league_table.x + self.league_table.w + g.skin.margin, self.fixture_list.y, split_w, split_h)
 	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h, 20)
 	self:set_team()
@@ -34,8 +34,7 @@ end
 function club_overview:set_team()
 	self.team = g.db_manager.team_dict[g.vars.view.team_id]
 	self.fixture_list:set(self.team)
-	self.league_table:set(self.team.league)
-	self.league_table:highlight_team(self.team)
+	self.league_table:set(self.team.league, "small")
 	self.league_graph:set(self.team)
 	self.history_graph:set(self.team)
 	--
