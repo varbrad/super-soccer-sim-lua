@@ -259,7 +259,7 @@ function new_game:keypressed(k, ir)
 end
 
 function new_game:mousepressed(x, y, b)
-	for i=1, #self.buttons do 
+	for i=1, #self.buttons do
 		if self.buttons[i] then self.buttons[i]:mousepressed(x, y, b) end
 	end
 end

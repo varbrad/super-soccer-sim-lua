@@ -38,7 +38,7 @@ skin.bold = {"bold", 14}
 
 skin.tween = {
 	time = .5;
-	type = "sineout";
+	type = "quartout";
 	type_in = "circout";
 	type_out = "circin";
 	delay = 3;
