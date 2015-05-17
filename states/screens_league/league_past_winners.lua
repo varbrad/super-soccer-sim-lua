@@ -27,7 +27,7 @@ function league_past_winners:draw()
 end
 
 function league_past_winners:set()
-	self.league = g.db_manager.league_dict[g.vars.view.league_id]
+	self.league = g.engine.league_dict[g.vars.view.league_id]
 	self.bars, self.buttons = {}, {}
 	--
 	if not self.league.active then return end

@@ -13,7 +13,7 @@ function league_stats:added()
 end
 
 function league_stats:set()
-	self.league = g.db_manager.league_dict[g.vars.view.league_id]
+	self.league = g.engine.league_dict[g.vars.view.league_id]
 	--
 	self.custom_table:set(self.league, "full")
 	--

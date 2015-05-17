@@ -2,9 +2,9 @@ local dbm = {}
 
 local hex = love.graphics.hexToRgb
 
-dbm.teams = {}
-dbm.team_dict = {}
-dbm.leagues = {}
+dbm.teams = {} -- An array of all teams
+dbm.team_dict = {} -- A dict of all teams, key is team_id
+dbm.leagues = {} -- ditto as above for rest
 dbm.league_dict = {}
 dbm.nations = {}
 dbm.nation_dict = {}
@@ -112,8 +112,8 @@ function dbm.load(team_path, league_path)
 			table.insert(nation.leagues, league)
 		elseif league.id~=0 then -- The nation dict does not exist
 			local nation = {}
-			nation.flag = league.flag
-			nation.data = dbm.nation_data[nation.flag]
+			nation.code = league.flag
+			nation.data = dbm.nation_data[nation.code]
 			nation.name = nation.data.name
 			nation.leagues = { league }
 			table.insert(dbm.nations, nation)
@@ -130,6 +130,31 @@ function dbm.load(team_path, league_path)
 	end
 	-- Sort nations by alphabetic
 	table.sort(dbm.nations, function(a,b) return string.lower(a.name) < string.lower(b.name) end)
+end
+
+function dbm.save_game()
+	local data = {}
+	data.teams, data.team_dict = dbm.teams, dbm.team_dict
+	data.leagues, data.league_dict = dbm.leagues, dbm.league_dict
+	data.nations, data.nation_dict = dbm.nations, dbm.nation_dict
+	data.vars = g.vars
+	love.filesystem.createDirectory("save")
+	love.filesystem.write("save/savefile", g.serpent.dump(data))
+	g.console:print("Save finished!")
+end
+
+function dbm.load_game()
+	local data = love.filesystem.read("save/savefile")
+	local ok, parsed = g.serpent.load(data)
+	dbm.teams, dbm.team_dict = parsed.teams, parsed.team_dict
+	dbm.leagues, dbm.league_dict = parsed.leagues, parsed.league_dict
+	dbm.nations, dbm.nation_dict = parsed.nations, parsed.nation_dict
+	g.vars = parsed.vars
+	g.state.pop()
+	g.state.add(g.states.navbar)
+	g.state.add(g.states.ribbon)
+	g.state.add(g.states.club_overview)
+	g.in_game = true
 end
 
 function dbm.begin(team_id)

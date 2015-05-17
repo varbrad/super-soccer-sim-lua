@@ -36,7 +36,7 @@ function league_overview:draw()
 end
 
 function league_overview:set_league()
-	self.league = g.db_manager.league_dict[g.vars.view.league_id]
+	self.league = g.engine.league_dict[g.vars.view.league_id]
 	self.teams_ribbon:set(self.league.teams, true)
 	self.league_table:set(self.league, "default")
 	self.upcoming:set(self.league, g.vars.week, false)

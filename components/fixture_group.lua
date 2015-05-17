@@ -33,8 +33,8 @@ function fixture_group:set(league, round, is_results)
 		bar.labels = {
 			{ text = fixture.home.short_name, w = g.font.width(fixture.home.short_name, g.skin.bars.font[2]), h = g.font.height(g.skin.bars.font[2]), x = math.floor(bar.w / 2 - 30 - g.skin.margin * 2 - g.skin.bars.img_size - g.font.width(fixture.home.short_name, g.skin.bars.font[2]) + .5), y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c1 };
 			{ text = fixture.away.short_name, w = g.font.width(fixture.away.short_name, g.skin.bars.font[2]), h = g.font.height(g.skin.bars.font[2]), x = math.floor(bar.w / 2 + 30 + g.skin.margin * 2 + g.skin.bars.img_size + .5), y = g.skin.bars.ty, font = g.skin.bars.font[2], color = c2 };
-			{ text = g.db_manager.format_position(fixture.home.season.stats.pos), x = g.skin.margin, y = g.skin.bars.ty, w = 50, align = "center", font = g.skin.bars.font[2], color = g.skin.bars.color2 };
-			{ text = g.db_manager.format_position(fixture.away.season.stats.pos), x = bar.w - g.skin.margin - 50, y = g.skin.bars.ty, w = 50, align = "center", font = g.skin.bars.font[2], color = g.skin.bars.color2 };
+			{ text = g.engine.format_position(fixture.home.season.stats.pos), x = g.skin.margin, y = g.skin.bars.ty, w = 50, align = "center", font = g.skin.bars.font[2], color = g.skin.bars.color2 };
+			{ text = g.engine.format_position(fixture.away.season.stats.pos), x = bar.w - g.skin.margin - 50, y = g.skin.bars.ty, w = 50, align = "center", font = g.skin.bars.font[2], color = g.skin.bars.color2 };
 			{ text = fixture.finished and fixture.home_score.." - "..fixture.away_score or "v", x = math.floor(bar.w / 2 - 30), y = g.skin.bars.ty, w = 60, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 };
 		}
 		bar.images = {

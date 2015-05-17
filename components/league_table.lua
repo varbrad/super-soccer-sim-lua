@@ -32,7 +32,7 @@ function league_table:set(league, style_type, pre_sort, sortable)
 	self.bars, self.buttons = {}, {}
 	if not league or not style then return end
 	-- Sort the league table for maximum goodness if pre_sort==true
-	if pre_sort then g.db_manager.sort_league(league) end
+	if pre_sort then g.engine.sort_league(league) end
 	local header = self:get_header(league, style, sortable) -- Gets the header and sets the sorting button functions
 	--
 	local x, y, w, h = self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, g.skin.bars.h
@@ -42,18 +42,7 @@ function league_table:set(league, style_type, pre_sort, sortable)
 		local bar = { x = x, y = y + i * h, w = w, h = h, alpha = g.skin.bars.alpha }
 		bar.labels, bar.rects, bar.images = {}, {}, {}
 		bar.team = team
-		bar.color = i%2==0 and color_copy(g.skin.bars.color1) or color_copy(g.skin.bars.color3)
-		bar.label_color = g.skin.bars.color2
-		-- Colorise promotion/relegation bars
-		if league.promoted >= pos or pos==1 then
-			bar.color[2] = bar.color[2] + 70
-		elseif league.promoted + league.playoffs >= pos then
-			bar.color[1], bar.color[2] = bar.color[1] + 70, bar.color[2] + 35
-		elseif league.relegated > #league.teams - pos then
-			bar.color[1] = bar.color[1] + 70
-		elseif league.relegated + league.r_playoffs > #league.teams - pos then
-			bar.color[1] = bar.color[1] + 50
-		end
+		self:color_bar(bar, team, team.league, i)
 		-- Standard 3 #, logo and name
 		local w = g.skin.bars.column_size
 		local iw, ih = g.skin.bars.img_size, g.skin.bars.img_size
@@ -210,7 +199,7 @@ function league_table:sort_bars(criteria, descending)
 	-- Do tweening magic here! Dont reset the bars!
 	local bars = self.bars
 	-- So now we need to sort the actual data in the self.teams object to the criteria
-	table.sort(self.league, g.db_manager.sort_league) -- First standard sort to not get ridiculous changing
+	table.sort(self.league, g.engine.sort_league) -- First standard sort to not get ridiculous changing
 	if criteria~="pos" then
 		table.sort(self.teams, function(a, b) if a.season.stats[criteria] < b.season.stats[criteria] then return descending elseif a.season.stats[criteria] > b.season.stats[criteria] then return not descending elseif a.season.stats.pos < b.season.stats.pos then return not descending else return descending end end)
 	else
@@ -224,8 +213,25 @@ function league_table:sort_bars(criteria, descending)
 		if not bar.header then
 			local index = lookup[bar.team.id]
 			local new_y = self.y + g.skin.margin + index * g.skin.bars.h
+			self:color_bar(bar, bar.team, bar.team.league, index)
 			self.flux:to(bar, g.skin.tween.time, { y = new_y }):ease(g.skin.tween.type)
 		end
+	end
+end
+
+function league_table:color_bar(bar, team, league, i)
+	local pos = team.season.stats.pos
+	bar.color = i%2==0 and color_copy(g.skin.bars.color1) or color_copy(g.skin.bars.color3)
+	bar.label_color = g.skin.bars.color2
+	-- Colorise promotion/relegation bars
+	if league.promoted >= pos or pos==1 then
+		bar.color[2] = bar.color[2] + 70
+	elseif league.promoted + league.playoffs >= pos then
+		bar.color[1], bar.color[2] = bar.color[1] + 70, bar.color[2] + 35
+	elseif league.relegated > #league.teams - pos then
+		bar.color[1] = bar.color[1] + 70
+	elseif league.relegated + league.r_playoffs > #league.teams - pos then
+		bar.color[1] = bar.color[1] + 50
 	end
 end
 

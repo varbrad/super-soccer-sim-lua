@@ -11,7 +11,6 @@ function love.load(args)
 	love.graphics.setLineStyle("smooth")
 	-- Write current os.time to a store file
 	love.filesystem.write("store", os.time())
-	love.filesystem.write("history.txt", "History of Birmingham City\n---------------------------------\n")
 	-- Libs
 	g.csv = require "libs.csv"
 	g.flux = require "libs.flux"
@@ -25,7 +24,8 @@ function love.load(args)
 	-- Src
 	-- Load skin first
 	g.skin = require "src.skin"
-	g.db_manager = require "src.db_manager"
+	g.database = require "src.database"
+	g.engine = require "src.engine"
 	g.math = require "src.math"
 	g.shaders = require "src.shaders"
 	-- Load components
@@ -41,16 +41,19 @@ function love.load(args)
 	}
 	--
 	g.states = {
+		club_history = require "states.screens_club.club_history";
+		club_overview = require "states.screens_club.club_overview";
+		--
+		league_full_table = require "states.screens_league.league_full_table";
+		league_overview = require "states.screens_league.league_overview";
+		league_past_winners = require "states.screens_league.league_past_winners";
+		league_result_grid = require "states.screens_league.league_result_grid";
+		league_stats = require "states.screens_league.league_stats";
+		league_summary = require "states.screens_league.league_summary";
+		--
 		background = require "states.background";
-		club_history = require "states.club_history";
-		club_overview = require "states.club_overview";
 		console = require "states.console";
-		league_full_table = require "states.league_full_table";
-		league_overview = require "states.league_overview";
-		league_past_winners = require "states.league_past_winners";
-		league_result_grid = require "states.league_result_grid";
-		league_stats = require "states.league_stats";
-		league_summary = require "states.league_summary";
+		database_select = require "states.database_select";
 		msgbox = require "states.msgbox";
 		navbar = require "states.navbar";
 		new_game = require "states.new_game";
@@ -152,10 +155,10 @@ end
 
 function g.continue_function()
 	if g.vars.week==52 then
-		g.db_manager.end_of_season()
+		g.engine.end_of_season()
 		g.notification:new("New Season!", g.image.new("logos/128/"..g.vars.player.team_id..".png", {mipmap=true}))
 	else
-		g.db_manager.advance_week()
+		g.engine.advance_week()
 	end
 	g.state.refresh_all()
 end
@@ -167,7 +170,11 @@ function love.keypressed(k,ir)
 	end
 	-- Run these commands regardless of what the heck is going on!
 	-- Probably should be F1 thru F12 keys only, as nothing else cares about those
-	if k=="f10" then
+	if k=="f8" then
+		g.engine.save_game()
+	elseif k=="f9" then
+		g.engine.load_game()
+	elseif k=="f10" then
 		g.console:print(g.state.order(), g.skin.red)
 		g.console:print("Active State: " .. g.state.active().name, g.skin.green)
 	elseif k=="f11" then
@@ -199,7 +206,7 @@ end
 function love.graphics.hexToRgb(hex)
 	if hex==nil then return nil end
 	hex = tostring(hex)
-	return { tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6)), tonumber("0x"..hex:sub(7,8)) }
+	return { tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6)), tonumber("0x"..hex:sub(7,8)) or 255 }
 end
 
 function love.graphics.darken(color)

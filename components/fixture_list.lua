@@ -50,7 +50,7 @@ function fixture_list:set(team)
 		if fixture.finished then
 			local team_score = fixture.home==self.team and fixture.home_score or fixture.away_score
 			local opp_score = fixture.home==self.team and fixture.away_score or fixture.home_score
-			bar.labels[5] = { text = g.db_manager.format_position(self.team.season.past_pos[i]), x = self.w - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 60, align = "center" }
+			bar.labels[5] = { text = g.engine.format_position(self.team.season.past_pos[i]), x = self.w - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 60, align = "center" }
 			bar.labels[6] = { text = team_score.."\t-\t"..opp_score, x = bar.labels[5].x - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 60, align = "center" }
 			--
 			local image_string, image_color = "misc/draw_icon.png", {255, 165, 5, g.skin.small_bars.alpha}

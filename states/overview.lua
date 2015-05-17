@@ -13,7 +13,6 @@ function overview:added()
 	self.panel = g.ui.panel.new(x, y, w, h)
 	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	--
-	g.db_manager.unload()
 	g.in_game = false
 	--
 	self.buttons = {}
@@ -33,8 +32,7 @@ function overview:added()
 	table.insert(self.buttons, exit)
 	--
 	new_game.on_release = function(btn)
-		g.db_manager.load("db/teams.csv", "db/leagues.csv")
-		g.state.switch(g.states.new_game)
+		g.state.switch(g.states.database_select)
 	end
 	load_game.on_release = function(btn) --[[load the game]] end
 	settings.on_release = function(btn)

@@ -36,7 +36,7 @@ local function color_copy(c)
 end
 
 function club_history:set_team()
-	self.team = g.db_manager.team_dict[g.vars.view.team_id]
+	self.team = g.engine.team_dict[g.vars.view.team_id]
 	self.bars, self.buttons = {}, {}
 	--
 	if not self.team then return end
@@ -89,7 +89,7 @@ function club_history:set_team()
 		btn.on_release = function(btn) g.vars.view.league_id = data.league.id; g.state.switch(g.states.league_overview) end
 		table.insert(self.buttons, btn)
 		--
-		bar.labels[3] = { text = g.db_manager.format_position(data.stats.pos), x = bar.labels[2].x + 200, w = 100, align = "center", y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2 }
+		bar.labels[3] = { text = g.engine.format_position(data.stats.pos), x = bar.labels[2].x + 200, w = 100, align = "center", y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 		local col = color_copy(bar.color)
 		local do_rect = false
 		if i<iter or not show_current_season then

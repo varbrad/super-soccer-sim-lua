@@ -33,15 +33,15 @@ function new_game:set()
 		table.insert(self.bars, bar)
 	end
 	--
-	for i=1, #g.db_manager.nations do
-		local nation = g.db_manager.nations[i]
+	for i=1, #g.database.nation_list do
+		local nation = g.database.nation_list[i]
 		local bar = { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin + i * g.skin.bars.h, w = split_w, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.nation = nation
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
 		bar.color1, bar.color2 = bar.color, g.skin.colors[3]
-		local flag_img = g.image.new("flags/"..nation.flag..".png")
+		local flag_img = g.image.new("flags/"..nation.code..".png")
 		flag_img.y = math.floor(bar.h/2 - flag_img.h/2 + .5); flag_img.x = flag_img.y
-		local name = { text = nation.name, x = flag_img.x * 2 + flag_img.w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
+		local name = { text = nation.short_name, x = flag_img.x * 2 + flag_img.w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
 		name.w, name.h = g.font.width(name.text, name.font), g.font.height(name.font)
 		bar.images = { flag_img }
 		bar.labels = { name }
@@ -127,7 +127,7 @@ function new_game:set_league(league)
 	self:remove_team_bars()
 	self:remove_team_overview()
 	--
-	table.sort(league.teams, g.db_manager.sort_long_name)
+	table.sort(league.teams, g.engine.sort_long_name)
 	--
 	for i=1, #league.teams do
 		local team = league.teams[i]
@@ -205,7 +205,7 @@ function new_game:set_team(team)
 	btn.y = bar.y + bar.h - g.skin.margin - btn.h
 	btn:set_colors(team.color2, team.color1, team.color3)
 	btn.on_release = function(b)
-		g.db_manager.begin(team.id)
+		g.engine.begin(team.id)
 		g.state.pop()
 		g.state.add(g.states.navbar)
 		g.state.add(g.states.ribbon)

@@ -12,7 +12,7 @@ function navbar:added()
 end
 
 function navbar:set()
-	local team = g.db_manager.team_dict[g.vars.player.team_id]
+	local team = g.engine.team_dict[g.vars.player.team_id]
 	self.buttons = {}
 	if team==nil then return end
 	self.color1, self.color2 = team.color3, team.color1

@@ -1,0 +1,5 @@
+﻿<columns units="px">
+  <column name="id" type="Number" format="G" nulltext="-" alignment="Center" />
+  <column name="nation_code" type="Text" alignment="Center" />
+  <column name="short_name" type="Text" />
+</columns>
