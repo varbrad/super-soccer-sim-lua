@@ -16,6 +16,7 @@ function love.load(args)
 	g.flux = require "libs.flux"
 	g.font = require "libs.font"
 	g.image = require "libs.image"
+	g.ser = require "libs.ser"
 	g.serpent = require "libs.serpent"
 	g.state = require "libs.state"
 	--g.timer = require "libs.timer" -- Now replaced by flux (faster and auto-deletes still-running tweens)
@@ -166,9 +167,9 @@ function love.keypressed(k,ir)
 	-- Run these commands regardless of what the heck is going on!
 	-- Probably should be F1 thru F12 keys only, as nothing else cares about those
 	if k=="f8" then
-		g.engine.save_game()
+		g.database.save_game()
 	elseif k=="f9" then
-		g.engine.load_game()
+		g.database.load_game()
 	elseif k=="f10" then
 		g.console:print(g.state.order(), g.skin.red)
 		g.console:print("Active State: " .. g.state.active().name, g.skin.green)

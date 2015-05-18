@@ -279,12 +279,12 @@ function database.save_game()
 	for i=1, #data.nation_list do data.nation_list[i].refs = nil end
 	--
 	love.filesystem.createDirectory("save")
-	love.filesystem.write("save/savefile", g.serpent.dump(data))
-	love.filesystem.write("save/pretty", g.serpent.block(data))
+	-- Using Ser because it is a LOT faster than Serpent.
+	love.filesystem.write("save/savedata1.data", g.ser(data))
 	-- Re-process the data to get the refs back!
 	database.process()
 	--
-	g.notification:new("Game Saved!", nil)
+	g.notification:new("Game Saved!")
 end
 
 function database.build_dict()
