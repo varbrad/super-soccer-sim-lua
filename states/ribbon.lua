@@ -68,8 +68,8 @@ function ribbon:draw()
 	--
 	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
 	g.font.set("regular", 14)
-	love.graphics.printf("Season " .. g.vars.season .. "/" .. (g.vars.season+1), self.searchbox.x + g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "left")
-	love.graphics.printf("Week " .. g.vars.week, self.searchbox.x + self.searchbox.w/2 - g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "right")
+	love.graphics.printf("Season " .. g.database.vars.season .. "/" .. (g.database.vars.season+1), self.searchbox.x + g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "left")
+	love.graphics.printf("Week " .. g.database.vars.week, self.searchbox.x + self.searchbox.w/2 - g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "right")
 	--
 	love.graphics.setScissor()
 	love.graphics.setColor(self.colors[3])
@@ -113,8 +113,8 @@ function ribbon:keypressed(k, ir)
 	self.searchbox:keypressed(k, ir)
 	if k=="return" and self.searchbox.focus and self.search_list and #self.search_list>0 then
 		local m = self.search_list[self.search_index].item
-		if m.__type=="team" then g.vars.view.team_id = m.id; g.state.switch(g.states.club_overview) end
-		if m.__type=="league" then g.vars.view.league_id = m.id; g.state.switch(g.states.league_overview) end
+		if m.__type=="team" then g.database.vars.view.team_id = m.id; g.state.switch(g.states.club_overview) end
+		if m.__type=="league" then g.database.vars.view.league_id = m.id; g.state.switch(g.states.league_overview) end
 	elseif (k=="up" or k=="down") and self.searchbox.focus and self.search_list and #self.search_list > 1 then
 		self.search_index = self.search_index + (k=="up" and -1 or 1)
 		local max = #self.search_list > 10 and 10 or #self.search_list
@@ -131,27 +131,27 @@ function ribbon:keypressed(k, ir)
 			self.continue.on_release()
 		elseif k=="up" or k=="down" or k=="left" or k=="right" then
 			if self.active_screen_type=="team" then
-				local old = g.vars.view.team_id
+				local old = g.database.vars.view.team_id
 				if k=="up" or k=="down" then
-					local lge = g.engine.team_dict[g.vars.view.team_id].league
+					local lge = g.engine.team_dict[g.database.vars.view.team_id].league
 					local dy = k=="up" and -1 or 1
 					for i=1, #lge.teams do
-						if lge.teams[i].season.stats.pos == g.engine.team_dict[g.vars.view.team_id].season.stats.pos + dy then
-							g.vars.view.team_id = lge.teams[i].id
+						if lge.teams[i].season.stats.pos == g.engine.team_dict[g.database.vars.view.team_id].season.stats.pos + dy then
+							g.database.vars.view.team_id = lge.teams[i].id
 							break
 						end
 					end
 				end
-				if k=="left" then g.vars.view.team_id = g.vars.view.team_id - 1 end
-				if k=="right" then g.vars.view.team_id = g.vars.view.team_id + 1 end
-				if not g.engine.team_dict[g.vars.view.team_id] then g.vars.view.team_id = old end
+				if k=="left" then g.database.vars.view.team_id = g.database.vars.view.team_id - 1 end
+				if k=="right" then g.database.vars.view.team_id = g.database.vars.view.team_id + 1 end
+				if not g.engine.team_dict[g.database.vars.view.team_id] then g.database.vars.view.team_id = old end
 			elseif self.active_screen_type=="league" then
-				local old = g.vars.view.league_id
-				if k=="up" then g.vars.view.league_id = g.engine.league_dict[g.vars.view.league_id].level_up end
-				if k=="down" then g.vars.view.league_id = g.engine.league_dict[g.vars.view.league_id].level_down end
-				if k=="left" then g.vars.view.league_id = g.vars.view.league_id - 1 end
-				if k=="right" then g.vars.view.league_id = g.vars.view.league_id + 1 end
-				if not g.engine.league_dict[g.vars.view.league_id] or g.engine.league_dict[g.vars.view.league_id].active==false then g.vars.view.league_id = old end
+				local old = g.database.vars.view.league_id
+				if k=="up" then g.database.vars.view.league_id = g.engine.league_dict[g.database.vars.view.league_id].level_up end
+				if k=="down" then g.database.vars.view.league_id = g.engine.league_dict[g.database.vars.view.league_id].level_down end
+				if k=="left" then g.database.vars.view.league_id = g.database.vars.view.league_id - 1 end
+				if k=="right" then g.database.vars.view.league_id = g.database.vars.view.league_id + 1 end
+				if not g.engine.league_dict[g.database.vars.view.league_id] or g.engine.league_dict[g.database.vars.view.league_id].active==false then g.database.vars.view.league_id = old end
 			end
 			g.state.refresh_all()
 		end
@@ -283,7 +283,7 @@ function ribbon:set_league(league)
 	ib.enabled = false
 	ib.image = g.image.new("flags/"..league.flag..".png")
 	ib.color1, ib.color2, ib.color3 = league.color1, league.color2, league.color3
-	self:set_infobox(g.engine.nation_dict[league.flag].name, ib)
+	self:set_infobox(g.database.get_nation(league.flag).short_name, ib)
 	local sb = {}
 	sb.color1, sb.color2, sb.color3 = league.color1, league.color2, league.color3
 	self:set_searchbox(sb)
@@ -295,6 +295,7 @@ function ribbon:set_league(league)
 end
 
 function ribbon:set_team(team)
+	local league = g.database.get_league(team.league_id)
 	self.active_screen_type = "team"
 	self:reset()
 	self:set_image("logos/128/"..team.id..".png")
@@ -305,10 +306,10 @@ function ribbon:set_team(team)
 	btn_settings.color1 = team.color1
 	btn_settings.color2 = team.color2
 	btn_settings.color3 = team.color3
-	btn_settings.image = g.image.new("logos/128/"..team.league.flag..team.league.level..".png", {mipmap=true, w=26, h=26})
+	btn_settings.image = g.image.new("logos/128/"..league.flag..league.level..".png", {mipmap=true, w=26, h=26})
 	btn_settings.underline = true
-	btn_settings.on_release = function() g.vars.view.league_id = team.league_id; g.state.switch(g.states.league_overview) end
-	self:set_infobox(g.engine.format_position(team.season.stats.pos) .. " in " .. team.league.long_name, btn_settings)
+	btn_settings.on_release = function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end
+	self:set_infobox(g.engine.format_position(team.data.season.stats.pos) .. " in " .. league.long_name, btn_settings)
 	local sb = {}
 	sb.color1, sb.color2, sb.color3 = team.color1, team.color2, team.color3
 	self:set_searchbox(sb)

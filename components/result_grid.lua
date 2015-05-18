@@ -16,8 +16,8 @@ function result_grid:set(league)
 	self.league = league
 	self.bars, self.buttons = {}, {}
 	if league==nil then return end
-	local teams = league.teams
-	table.sort(teams, function(a,b) return a.short_name < b.short_name end)
+	local teams = league.refs.teams
+	table.sort(teams, g.engine.sort_short_name)
 	local ty = math.floor(g.skin.bars.h/2 - g.font.height(g.skin.bars.font[1])/2 + .5)
 	local iy = math.floor(g.skin.bars.h/2 - g.skin.bars.img_size/2 + .5)
 	local column_width = math.floor(math.floor((self.w - g.skin.margin * 2) * .85 + .5) / #teams + .5)
@@ -45,19 +45,19 @@ function result_grid:set(league)
 		bar.rects = { { x = 0, y = 0, w = rest_width, h = bar.h, color = self.league.color2, alpha = g.skin.bars.alpha } }
 		bar.rects[2] = { x = rest_width + (i-1) * column_width + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = g.skin.black, alpha = g.skin.bars.alpha}
 		bar.images = { g.image.new("logos/128/"..team.id..".png", {mipmap = true, x = rest_width - g.skin.margin - g.skin.bars.img_size, y = iy, w = g.skin.bars.img_size, h = g.skin.bars.img_size })}
-		local c = g.vars.player.team_id==team.id and g.skin.colors[3] or g.skin.bars.color2
+		local c = g.database.vars.player.team_id==team.id and g.skin.colors[3] or g.skin.bars.color2
 		bar.labels = { { text = team.short_name, x = bar.images[1].x - g.skin.margin, y = ty, font = g.skin.bars.font[2], color = c }}
 		bar.labels[1].h, bar.labels[1].w = g.font.height(bar.labels[1].font), g.font.width(bar.labels[1].text, bar.labels[1].font)
 		bar.labels[1].x = bar.labels[1].x - bar.labels[1].w
 		local btn = g.ui.button.new("", { w = bar.labels[1].w, h = bar.labels[1].h, x = bar.x + bar.labels[1].x, y = bar.y + bar.labels[1].y } )
 		btn.on_enter = function(btn) bar.labels[1].underline = true end
 		btn.on_exit = function(btn) bar.labels[1].underline = false end
-		btn.on_release = function(btn) g.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
+		btn.on_release = function(btn) g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
 		table.insert(self.buttons, btn)
-		for i=1, #team.season.fixtures do
-			local fix = team.season.fixtures[i]
-			if fix.home==team and fix.finished then
-				local color = fix.winner==team and {0, 123, 0, 255} or (fix.draw and {123, 63, 0, 255} or {123, 0, 0, 255})
+		for i=1, #team.data.season.fixtures do
+			local fix = team.data.season.fixtures[i]
+			if fix.home==team.id and fix.finished then
+				local color = fix.winner==team.id and {0, 123, 0, 255} or (fix.draw and {123, 63, 0, 255} or {123, 0, 0, 255})
 				local score = fix.home_score .. "\t-\t" .. fix.away_score
 				bar.rects[#bar.rects+1] = { x = team_x[fix.away.id] + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = color, alpha = g.skin.bars.alpha}
 				bar.labels[#bar.labels+1] = { text = score, x = team_x[fix.away.id], y = ty, w = column_width, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }

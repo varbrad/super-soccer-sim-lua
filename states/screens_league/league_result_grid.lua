@@ -26,7 +26,7 @@ function league_results_grid:draw()
 end
 
 function league_results_grid:set_league()
-	self.league = g.engine.league_dict[g.vars.view.league_id]
+	self.league = g.database.get_view_league()
 	self.result_grid:set(self.league)
 	self.league_table:set(self.league)
 	--

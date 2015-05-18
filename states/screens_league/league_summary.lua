@@ -20,7 +20,7 @@ function league_summary:draw()
 end
 
 function league_summary:set_league()
-	self.league = g.engine.league_dict[g.vars.view.league_id]
+	self.league = g.database.get_view_league()
 	--
 	g.ribbon:set_league(self.league)
 end

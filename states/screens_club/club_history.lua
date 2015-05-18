@@ -36,7 +36,7 @@ local function color_copy(c)
 end
 
 function club_history:set_team()
-	self.team = g.engine.team_dict[g.vars.view.team_id]
+	self.team = g.database.get_view_team()
 	self.bars, self.buttons = {}, {}
 	--
 	if not self.team then return end
@@ -63,15 +63,15 @@ function club_history:set_team()
 	}
 	header.rects = { { x = 0, y = header.h - g.skin.bars.border, w = header.w, h = g.skin.bars.border, color = self.team.color3, alpha = g.skin.bars.alpha }}
 	self.bars[1] = header
-	local iter = #self.team.history.seasons -- Extra season for current season
+	local iter = #self.team.data.history.past_seasons -- Extra season for current season
 	local k = 1
-	local show_current_season = g.vars.week > 1
+	local show_current_season = g.database.vars.week > 1
 	if show_current_season then
 		iter = iter + 1
 	end
 	for i=iter, 1, -1 do
-		local data =  self.team.history.seasons[i]
-		if show_current_season and i==iter then data = self.team.season end
+		local data =  self.team.data.history.past_seasons[i]
+		if show_current_season and i==iter then data = self.team.data.season end
 		local bar = { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin + k * g.skin.bars.h, w = self.panel.w - g.skin.margin * 2, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.color = k%2==0 and g.skin.bars.color1 or g.skin.bars.color3
 		bar.images, bar.labels, bar.rects = {}, {}, {}
@@ -86,7 +86,7 @@ function club_history:set_team()
 		local btn = g.ui.button.new("", { w = bar.labels[2].w, h = bar.labels[2].h, x = bar.x + bar.labels[2].x, y = bar.y + bar.labels[2].y } )
 		btn.on_enter = function(btn) bar.labels[2].underline = true end
 		btn.on_exit = function(btn) bar.labels[2].underline = false end
-		btn.on_release = function(btn) g.vars.view.league_id = data.league.id; g.state.switch(g.states.league_overview) end
+		btn.on_release = function(btn) g.database.vars.view.league_id = data.league.id; g.state.switch(g.states.league_overview) end
 		table.insert(self.buttons, btn)
 		--
 		bar.labels[3] = { text = g.engine.format_position(data.stats.pos), x = bar.labels[2].x + 200, w = 100, align = "center", y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2 }

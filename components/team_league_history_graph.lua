@@ -24,9 +24,9 @@ function team_league_history_graph:set(team)
 	table.insert(self.lines, {left, top, left, bottom})
 	table.insert(self.lines, {left, bottom, right, bottom})
 	if self.team==nil then return end
-	local seasons_to_show = #self.team.history.seasons
+	local seasons_to_show = #self.team.data.history.past_seasons
 	if seasons_to_show > self.max_seasons then seasons_to_show = self.max_seasons end
-	local seasons = self.team.history.seasons
+	local seasons = self.team.data.history.past_seasons
 	local seasons_c = #seasons; if seasons_c > seasons_to_show then seasons_c = seasons_to_show end
 	if seasons_c < 1 then return end
 	-- Draw bottom notches

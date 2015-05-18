@@ -137,7 +137,7 @@ function dbm.save_game()
 	data.teams, data.team_dict = dbm.teams, dbm.team_dict
 	data.leagues, data.league_dict = dbm.leagues, dbm.league_dict
 	data.nations, data.nation_dict = dbm.nations, dbm.nation_dict
-	data.vars = g.vars
+	data.vars = g.database.vars
 	love.filesystem.createDirectory("save")
 	love.filesystem.write("save/savefile", g.serpent.dump(data))
 	g.console:print("Save finished!")
@@ -149,7 +149,7 @@ function dbm.load_game()
 	dbm.teams, dbm.team_dict = parsed.teams, parsed.team_dict
 	dbm.leagues, dbm.league_dict = parsed.leagues, parsed.league_dict
 	dbm.nations, dbm.nation_dict = parsed.nations, parsed.nation_dict
-	g.vars = parsed.vars
+	g.database.vars = parsed.vars
 	g.state.pop()
 	g.state.add(g.states.navbar)
 	g.state.add(g.states.ribbon)
@@ -158,21 +158,21 @@ function dbm.load_game()
 end
 
 function dbm.begin(team_id)
-	g.vars = {}
-	g.vars.week = 1
-	g.vars.season = 2015
-	g.vars.player = {}
-	g.vars.player.team_id = team_id
-	g.vars.view = {}
-	g.vars.view.league_id = dbm.team_dict[team_id].league.id
-	g.vars.view.team_id = team_id
+	g.database.vars = {}
+	g.database.vars.week = 1
+	g.database.vars.season = 2015
+	g.database.vars.player = {}
+	g.database.vars.player.team_id = team_id
+	g.database.vars.view = {}
+	g.database.vars.view.league_id = dbm.team_dict[team_id].league.id
+	g.database.vars.view.team_id = team_id
 	-- Now need to process data and link everything together
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
-		team.season.season = g.vars.season
+		team.season.season = g.database.vars.season
 		team.season.league = team.league
 	end
 	-- Now process league data
@@ -242,7 +242,7 @@ function dbm.end_of_season()
 			compact_season.team_relative_pos = (team.season.stats.pos-1) / #team.league.teams
 			if got_promoted then compact_season.promoted = true end
 			if got_relegated then compact_season.relegated = true end
-			compact_season.season = g.vars.season
+			compact_season.season = g.database.vars.season
 			table.insert(team.history.seasons, compact_season)
 			--
 		end
@@ -250,7 +250,7 @@ function dbm.end_of_season()
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
 		dbm.sort_league(league)
-		table.insert(league.history.past_winners, {{ team = league.teams[1] }, { team = league.teams[2] }, { team = league.teams[3] }, season = g.vars.season})
+		table.insert(league.history.past_winners, {{ team = league.teams[1] }, { team = league.teams[2] }, { team = league.teams[3] }, season = g.database.vars.season})
 		league.teams = {}
 	end
 	for i=1, #dbm.teams do
@@ -260,7 +260,7 @@ function dbm.end_of_season()
 		team.season = {}
 		team.season.past_pos = {}
 		team.season.stats = dbm.new_stats()
-		team.season.season = g.vars.season
+		team.season.season = g.database.vars.season
 		team.season.league = team.league
 	end
 	for i=1, #dbm.leagues do
@@ -275,8 +275,8 @@ function dbm.end_of_season()
 		local team = dbm.teams[i]
 		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
 	end
-	g.vars.week = 1
-	g.vars.season = g.vars.season + 1
+	g.database.vars.week = 1
+	g.database.vars.season = g.database.vars.season + 1
 end
 
 -- Calculates average strengths of teams in league
@@ -389,11 +389,11 @@ function dbm.get_team_fixtures(team, league)
 end
 
 function dbm.advance_week()
-	g.vars.week = g.vars.week + 1
-	if g.vars.week > 52 then g.vars.week=52; return end
+	g.database.vars.week = g.database.vars.week + 1
+	if g.database.vars.week > 52 then g.database.vars.week=52; return end
 	for i, league in ipairs(dbm.leagues) do
 		local fixtures = nil
-		if league.season.fixtures then fixtures = league.season.fixtures[g.vars.week-1] end
+		if league.season.fixtures then fixtures = league.season.fixtures[g.database.vars.week-1] end
 		if fixtures then
 			for k=1, #fixtures do
 				local f = fixtures[k]
@@ -445,8 +445,8 @@ function dbm.calculate_league(league)
 		league.teams[i].season.stats = dbm.new_stats()
 	end
 	dbm.sort_league(league)
-	if g.vars.week==1 then return end
-	local to_week = g.vars.week-1
+	if g.database.vars.week==1 then return end
+	local to_week = g.database.vars.week-1
 	if to_week > #league.season.fixtures then to_week = #league.season.fixtures end
 	for i=1,to_week do
 		local fixtures = league.season.fixtures[i]

@@ -21,7 +21,7 @@ function league_full_table:draw()
 end
 
 function league_full_table:set_league()
-	self.league = g.engine.league_dict[g.vars.view.league_id]
+	self.league = g.engine.league_dict[g.database.vars.view.league_id]
 	self.league_table:set(self.league)
 	--
 	g.ribbon:set_league(self.league)

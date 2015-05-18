@@ -81,14 +81,14 @@ function new_game:set_nation(nation)
 		end
 	end
 	-- Get list of leagues in that nation sorted into level order (BPL first, Champ 2nd, etc.)
-	table.sort(nation.leagues, function(a,b) return a.level < b.level end)
+	--table.sort(nation.refs.leagues, function(a,b) return a.level < b.level end)
 	--
 	self:remove_team_bars()
 	self:remove_league_bars()
 	self:remove_team_overview()
 	--
-	for i=1, #nation.leagues do
-		local lge = nation.leagues[i]
+	for i=1, #nation.refs.leagues do
+		local lge = nation.refs.leagues[i]
 		local bar = { x = self.panel.x + g.skin.margin * 2 + self.split_w, y = self.panel.y + g.skin.margin + i * g.skin.bars.h, w = self.split_w, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.league = lge
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
@@ -127,10 +127,10 @@ function new_game:set_league(league)
 	self:remove_team_bars()
 	self:remove_team_overview()
 	--
-	table.sort(league.teams, g.engine.sort_long_name)
+	--table.sort(league.refs.teams, g.engine.sort_long_name)
 	--
-	for i=1, #league.teams do
-		local team = league.teams[i]
+	for i=1, #league.refs.teams do
+		local team = league.refs.teams[i]
 		local bar = { x = self.panel.x + g.skin.margin * 3 + self.split_w * 2, y = self.panel.y + g.skin.margin + i * g.skin.bars.h, w = self.split_w, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.team = team
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
@@ -205,7 +205,9 @@ function new_game:set_team(team)
 	btn.y = bar.y + bar.h - g.skin.margin - btn.h
 	btn:set_colors(team.color2, team.color1, team.color3)
 	btn.on_release = function(b)
-		g.engine.begin(team.id)
+		g.database.new_game(team.id)
+		g.database.new_season()
+		g.database.save_game()
 		g.state.pop()
 		g.state.add(g.states.navbar)
 		g.state.add(g.states.ribbon)

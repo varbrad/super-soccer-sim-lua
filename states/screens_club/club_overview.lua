@@ -32,7 +32,7 @@ function club_overview:draw()
 end
 
 function club_overview:set_team()
-	self.team = g.engine.team_dict[g.vars.view.team_id]
+	self.team = g.database.team_dict[g.database.vars.view.team_id]
 	self.fixture_list:set(self.team)
 	self.league_table:set(self.team.league, "small")
 	self.league_graph:set(self.team)
@@ -44,7 +44,7 @@ end
 function club_overview:keypressed(k, ir)
 	if g.ribbon.searchbox.focus then return end
 	if k=="l" then
-		g.vars.player.team_id = g.vars.view.team_id
+		g.database.vars.player.team_id = g.database.vars.view.team_id
 		g.state.refresh_all()
 	end
 end

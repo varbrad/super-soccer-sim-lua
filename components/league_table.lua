@@ -26,7 +26,7 @@ end
 
 function league_table:set(league, style_type, pre_sort, sortable)
 	self.flux = g.flux:group()
-	local teams, style = league and league.teams or nil, style_type and styles[style_type] or nil
+	local teams, style = league and league.refs.teams or nil, style_type and styles[style_type] or nil
 	local pre_sort, sortable = pre_sort~=false and true or false, sortable~=false and true or false
 	self.league, self.teams, self.style, self.sort_criteria = league, teams, style, nil
 	self.bars, self.buttons = {}, {}
@@ -38,11 +38,11 @@ function league_table:set(league, style_type, pre_sort, sortable)
 	local x, y, w, h = self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, g.skin.bars.h
 	for i=1, #teams do
 		local team = teams[i]
-		local pos = team.season.stats.pos
+		local pos = team.data.season.stats.pos
 		local bar = { x = x, y = y + i * h, w = w, h = h, alpha = g.skin.bars.alpha }
 		bar.labels, bar.rects, bar.images = {}, {}, {}
 		bar.team = team
-		self:color_bar(bar, team, team.league, i)
+		self:color_bar(bar, team, team.refs.league, i)
 		-- Standard 3 #, logo and name
 		local w = g.skin.bars.column_size
 		local iw, ih = g.skin.bars.img_size, g.skin.bars.img_size
@@ -53,12 +53,12 @@ function league_table:set(league, style_type, pre_sort, sortable)
 		logo.x, logo.y = pos_label.x + pos_label.w + g.skin.img_margin, g.skin.bars.iy
 		table.insert(bar.images, logo)
 		local name = { text = team.short_name, x = logo.x + logo.w + g.skin.img_margin, y = g.skin.bars.ty, font = regular }
-		if team.id == g.vars.player.team_id then name.color = g.skin.colors[3]
-		elseif team.id == g.vars.view.team_id then name.color = g.skin.colors[2] end
+		if team.id == g.database.vars.player.team_id then name.color = g.skin.colors[3]
+		elseif team.id == g.database.vars.view.team_id then name.color = g.skin.colors[2] end
 		local btn = g.ui.button.new("", { x = bar.x + name.x, y = bar.y + name.y, w = g.font.width(name.text, name.font), h = g.font.height(name.font) } )
 		btn.on_enter = function(b) name.underline = true end
 		btn.on_exit = function(b) name.underline = false end
-		btn.on_release = function(b) g.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
+		btn.on_release = function(b) g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
 		btn.visible = false
 		btn.follow_bar, btn.follow_label = bar, name
 		table.insert(self.buttons, btn)
@@ -69,7 +69,7 @@ function league_table:set(league, style_type, pre_sort, sortable)
 			local item = style[i]
 			if type(item)=="string" then
 				x = x - w
-				local value = tostring(team.season.stats[string.lower(item)])
+				local value = tostring(team.data.season.stats[string.lower(item)])
 				if (item=="GD" or item=="HGD" or item=="AGD") and tonumber(value) > 0 then value = "+" .. value end
 				local label = { text = value, x = x, y = g.skin.bars.ty, w = w, align = "center", font = semibold }
 				table.insert(bar.labels, label)
@@ -79,7 +79,7 @@ function league_table:set(league, style_type, pre_sort, sortable)
 				x = x - w
 				local func = item[2]
 				if func == rect then
-					local value = tostring(team.season.stats[string.lower(item[1])])
+					local value = tostring(team.data.season.stats[string.lower(item[1])])
 					if (item[1]=="GD" or item[1]=="HGD" or item[1]=="AGD") and tonumber(value) > 0 then value = "+" .. value end
 					local label = { text = value, x = x, y = g.skin.bars.ty, w = w, align = "center", font = semibold }
 					local rect = { x = x, y = 0, w = w, h = g.skin.bars.h, color = bar.color, alpha = bar.alpha }
@@ -220,7 +220,7 @@ function league_table:sort_bars(criteria, descending)
 end
 
 function league_table:color_bar(bar, team, league, i)
-	local pos = team.season.stats.pos
+	local pos = team.data.season.stats.pos
 	bar.color = i%2==0 and color_copy(g.skin.bars.color1) or color_copy(g.skin.bars.color3)
 	bar.label_color = g.skin.bars.color2
 	-- Colorise promotion/relegation bars
@@ -228,9 +228,9 @@ function league_table:color_bar(bar, team, league, i)
 		bar.color[2] = bar.color[2] + 70
 	elseif league.promoted + league.playoffs >= pos then
 		bar.color[1], bar.color[2] = bar.color[1] + 70, bar.color[2] + 35
-	elseif league.relegated > #league.teams - pos then
+	elseif league.relegated > #league.refs.teams - pos then
 		bar.color[1] = bar.color[1] + 70
-	elseif league.relegated + league.r_playoffs > #league.teams - pos then
+	elseif league.relegated + league.r_playoffs > #league.refs.teams - pos then
 		bar.color[1] = bar.color[1] + 50
 	end
 end

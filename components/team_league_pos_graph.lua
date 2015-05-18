@@ -24,7 +24,7 @@ function team_league_pos_graph:set(team)
 	table.insert(self.lines, {left, top, left, bottom})
 	table.insert(self.lines, {left, bottom, right, bottom})
 	if self.team==nil then return end
-	local team_count = #self.team.league.teams
+	local team_count = #self.team.refs.league.refs.teams
 	for i=1, team_count do
 		local y = lerp(top, bottom, (i-1) / (team_count-1))
 		if i~=team_count then table.insert(self.lines, {left, y, right, y, color = g.skin.bars.color3 }) end -- Horizontal guide lines
@@ -36,8 +36,8 @@ function team_league_pos_graph:set(team)
 		table.insert(self.lines, {x, bottom, x, bottom + g.skin.margin * 2})
 	end
 	-- place points
-	for i=1, #self.team.season.past_pos do
-		local pos = self.team.season.past_pos[i]
+	for i=1, #self.team.data.season.past_pos do
+		local pos = self.team.data.season.past_pos[i]
 		local x, y = lerp(left, right, (i-1) / (fix_count-1)), lerp(top, bottom, (pos-1) / (team_count-1))
 		local fix = self.team.season.fixtures[i]
 		local color = {195, 5, 5}
