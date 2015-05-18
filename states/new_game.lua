@@ -208,6 +208,7 @@ function new_game:set_team(team)
 		g.database.new_game(team.id)
 		g.database.new_season()
 		g.database.save_game()
+		--
 		g.state.pop()
 		g.state.add(g.states.navbar)
 		g.state.add(g.states.ribbon)

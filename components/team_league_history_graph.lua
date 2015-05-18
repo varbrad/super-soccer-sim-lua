@@ -39,9 +39,10 @@ function team_league_history_graph:set(team)
 	local league_list = {}
 	local top_level = 999
 	for i = #seasons - seasons_c + 1, #seasons do
-		unique_divisions[seasons[i].league] = true
-		league_list[seasons[i].league.level] = seasons[i].league
-		if seasons[i].league.level < top_level then top_level = seasons[i].league.level end
+		local league = g.database.get_league(seasons[i].league)
+		unique_divisions[league] = true
+		league_list[league.level] = league
+		if league.level < top_level then top_level = league.level end
 	end
 	local ud = 0; for i, v in pairs(unique_divisions) do ud = ud + 1 end; unique_divisions = ud
 	-- unique_divisions now has the number of divisions, and top_level is the highest level reached
@@ -66,8 +67,9 @@ function team_league_history_graph:set(team)
 	--
 	for i = 1, seasons_c do
 		local season = seasons[#seasons-i+1] -- Recent season to oldest
+		local league = g.database.get_league(season.league)
 		local x = g.math.lerp(right, left, (i-1) / (seasons_to_show-1))
-		local league_level = season.league.level - top_level
+		local league_level = league.level - top_level
 		local sy = g.math.lerp(top, bottom, (1/unique_divisions) * league_level)
 		local oy = g.math.lerp(0, split_h, season.team_relative_pos)
 		local y = sy + oy

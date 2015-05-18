@@ -201,9 +201,9 @@ function league_table:sort_bars(criteria, descending)
 	-- So now we need to sort the actual data in the self.teams object to the criteria
 	table.sort(self.league, g.engine.sort_league) -- First standard sort to not get ridiculous changing
 	if criteria~="pos" then
-		table.sort(self.teams, function(a, b) if a.season.stats[criteria] < b.season.stats[criteria] then return descending elseif a.season.stats[criteria] > b.season.stats[criteria] then return not descending elseif a.season.stats.pos < b.season.stats.pos then return not descending else return descending end end)
+		table.sort(self.teams, function(a, b) if a.data.season.stats[criteria] < b.data.season.stats[criteria] then return descending elseif a.data.season.stats[criteria] > b.data.season.stats[criteria] then return not descending elseif a.data.season.stats.pos < b.data.season.stats.pos then return not descending else return descending end end)
 	else
-		table.sort(self.teams, function(a, b) return a.season.stats.pos < b.season.stats.pos end)
+		table.sort(self.teams, function(a, b) return a.data.season.stats.pos < b.data.season.stats.pos end)
 	end
 	--
 	local lookup = {}
@@ -213,7 +213,7 @@ function league_table:sort_bars(criteria, descending)
 		if not bar.header then
 			local index = lookup[bar.team.id]
 			local new_y = self.y + g.skin.margin + index * g.skin.bars.h
-			self:color_bar(bar, bar.team, bar.team.league, index)
+			self:color_bar(bar, bar.team, bar.team.refs.league, index)
 			self.flux:to(bar, g.skin.tween.time, { y = new_y }):ease(g.skin.tween.type)
 		end
 	end

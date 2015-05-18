@@ -39,9 +39,9 @@ function team_league_pos_graph:set(team)
 	for i=1, #self.team.data.season.past_pos do
 		local pos = self.team.data.season.past_pos[i]
 		local x, y = lerp(left, right, (i-1) / (fix_count-1)), lerp(top, bottom, (pos-1) / (team_count-1))
-		local fix = self.team.season.fixtures[i]
+		local fix = self.team.data.season.league_fixtures[i]
 		local color = {195, 5, 5}
-		if fix.winner==self.team then color = {5, 195, 5} elseif fix.draw then color = {195, 115, 5} end
+		if fix.winner==self.team.id then color = {5, 195, 5} elseif fix.draw then color = {195, 115, 5} end
 		table.insert(self.points, {x = x, y = y, color = color})
 	end
 end

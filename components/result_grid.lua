@@ -54,13 +54,13 @@ function result_grid:set(league)
 		btn.on_exit = function(btn) bar.labels[1].underline = false end
 		btn.on_release = function(btn) g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
 		table.insert(self.buttons, btn)
-		for i=1, #team.data.season.fixtures do
-			local fix = team.data.season.fixtures[i]
+		for i=1, #team.data.season.league_fixtures do
+			local fix = team.data.season.league_fixtures[i]
 			if fix.home==team.id and fix.finished then
 				local color = fix.winner==team.id and {0, 123, 0, 255} or (fix.draw and {123, 63, 0, 255} or {123, 0, 0, 255})
 				local score = fix.home_score .. "\t-\t" .. fix.away_score
-				bar.rects[#bar.rects+1] = { x = team_x[fix.away.id] + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = color, alpha = g.skin.bars.alpha}
-				bar.labels[#bar.labels+1] = { text = score, x = team_x[fix.away.id], y = ty, w = column_width, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }
+				bar.rects[#bar.rects+1] = { x = team_x[fix.away] + g.skin.margin, y = g.skin.margin, w = column_width - g.skin.margin * 2, h = bar.h - g.skin.margin * 2, color = color, alpha = g.skin.bars.alpha}
+				bar.labels[#bar.labels+1] = { text = score, x = team_x[fix.away], y = ty, w = column_width, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 			end
 		end
 		self.bars[#self.bars+1] = bar

@@ -68,7 +68,7 @@ function ribbon:draw()
 	--
 	love.graphics.setColorAlpha(self.colors[2], 255 * self.tween.alpha)
 	g.font.set("regular", 14)
-	love.graphics.printf("Season " .. g.database.vars.season .. "/" .. (g.database.vars.season+1), self.searchbox.x + g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "left")
+	love.graphics.printf("Season " .. g.database.vars.year .. "/" .. (g.database.vars.year+1), self.searchbox.x + g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "left")
 	love.graphics.printf("Week " .. g.database.vars.week, self.searchbox.x + self.searchbox.w/2 - g.skin.margin, g.skin.ribbon.y + g.skin.margin + 4, self.searchbox.w/2, "right")
 	--
 	love.graphics.setScissor()
@@ -129,29 +129,34 @@ function ribbon:keypressed(k, ir)
 			g.state.add(g.states.overview)
 		elseif k==" " then
 			self.continue.on_release()
+		elseif k=="z" then
+			while g.database.vars.week < 52 do
+				self.continue.on_release()
+			end
+			self.continue.on_release()
 		elseif k=="up" or k=="down" or k=="left" or k=="right" then
 			if self.active_screen_type=="team" then
 				local old = g.database.vars.view.team_id
 				if k=="up" or k=="down" then
-					local lge = g.engine.team_dict[g.database.vars.view.team_id].league
+					local lge = g.database.get_view_team().refs.league
 					local dy = k=="up" and -1 or 1
-					for i=1, #lge.teams do
-						if lge.teams[i].season.stats.pos == g.engine.team_dict[g.database.vars.view.team_id].season.stats.pos + dy then
-							g.database.vars.view.team_id = lge.teams[i].id
+					for i=1, #lge.refs.teams do
+						if lge.refs.teams[i].data.season.stats.pos == g.database.get_view_team().data.season.stats.pos + dy then
+							g.database.vars.view.team_id = lge.refs.teams[i].id
 							break
 						end
 					end
 				end
 				if k=="left" then g.database.vars.view.team_id = g.database.vars.view.team_id - 1 end
 				if k=="right" then g.database.vars.view.team_id = g.database.vars.view.team_id + 1 end
-				if not g.engine.team_dict[g.database.vars.view.team_id] then g.database.vars.view.team_id = old end
+				if not g.database.team_dict[g.database.vars.view.team_id] then g.database.vars.view.team_id = old end
 			elseif self.active_screen_type=="league" then
 				local old = g.database.vars.view.league_id
-				if k=="up" then g.database.vars.view.league_id = g.engine.league_dict[g.database.vars.view.league_id].level_up end
-				if k=="down" then g.database.vars.view.league_id = g.engine.league_dict[g.database.vars.view.league_id].level_down end
+				if k=="up" then g.database.vars.view.league_id = g.database.get_view_league().level_up end
+				if k=="down" then g.database.vars.view.league_id = g.database.get_view_league().level_down end
 				if k=="left" then g.database.vars.view.league_id = g.database.vars.view.league_id - 1 end
 				if k=="right" then g.database.vars.view.league_id = g.database.vars.view.league_id + 1 end
-				if not g.engine.league_dict[g.database.vars.view.league_id] or g.engine.league_dict[g.database.vars.view.league_id].active==false then g.database.vars.view.league_id = old end
+				if not g.database.league_dict[g.database.vars.view.league_id] then g.database.vars.view.league_id = old end
 			end
 			g.state.refresh_all()
 		end
@@ -234,7 +239,6 @@ function ribbon:set_tabs()
 	if not active_group then return end
 	local x, y = self.searchbox.x - g.skin.margin - g.skin.ribbon.tab_w, self.searchbox.y
 	local w, h = g.skin.ribbon.tab_w, self.searchbox.h
-	g.console:log(#active_group)
 	for i=#active_group, 1, -1 do
 		local screen = active_group[i]
 		local btn = g.ui.button.new(screen.name, { x = x, y = y, w = w, h = h })

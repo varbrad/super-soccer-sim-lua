@@ -154,12 +154,7 @@ function love.draw()
 end
 
 function g.continue_function()
-	if g.database.vars.week==52 then
-		g.engine.end_of_season()
-		g.notification:new("New Season!", g.image.new("logos/128/"..g.database.vars.player.team_id..".png", {mipmap=true}))
-	else
-		g.engine.advance_week()
-	end
+	g.database.advance_week()
 	g.state.refresh_all()
 end
 

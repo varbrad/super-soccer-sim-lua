@@ -101,6 +101,68 @@ function engine.new_team_stat_object()
 	}
 end
 
+function engine.simulate_fixture(f)
+	local home = g.database.get_team(f.home)
+	local away = g.database.get_team(f.away)
+	--
+	f.home_score = love.math.random(0, 3)
+	f.away_score = love.math.random(0, 3)
+	if f.home_score > f.away_score then
+		f.result_code = "1"
+		f.winner = f.home
+	elseif f.away_score > f.home_score then
+		f.result_code = "2"
+		f.winner = f.away
+	else
+		f.result_code = "X"
+		f.draw = true
+	end
+	f.finished = true
+end
+
+function engine.update_league_table(league)
+	for i = 1, #league.refs.teams do
+		league.refs.teams[i].data.season.stats = engine.new_team_stat_object()
+	end
+	local fixtures = league.data.season.fixtures
+	for i = 1, #fixtures do
+		local fix = fixtures[i]
+		if fix.finished then
+			local home, away = g.database.get_team(fix.home), g.database.get_team(fix.away)
+			local hs, as = home.data.season.stats, away.data.season.stats
+			hs.p = hs.p+1;					hs.hp = hs.hp+1
+			hs.gf = hs.gf+fix.home_score;	hs.hgf = hs.hgf+fix.home_score
+			hs.ga = hs.ga+fix.away_score;	hs.hga = hs.hga+fix.away_score
+			hs.gd = hs.gf-hs.ga;			hs.hgd = hs.hgf-hs.hga
+			as.p = as.p+1;					as.ap = as.ap+1
+			as.gf = as.gf+fix.away_score;	as.agf = as.agf+fix.away_score
+			as.ga = as.ga+fix.home_score;	as.aga = as.aga+fix.home_score
+			as.gd = as.gf-as.ga;			as.agd = as.agf-as.aga
+			if fix.result_code=="1" then -- Home win
+				hs.w = hs.w+1;	hs.hw = hs.hw+1
+				as.l = as.l+1;	as.al = as.al+1
+			elseif fix.result_code=="2" then -- Away win
+				hs.l = hs.l+1;	hs.hl = hs.hl+1
+				as.w = as.w+1;	as.aw = as.aw+1
+			elseif fix.result_code=="X" then -- Draw
+				hs.d = hs.d+1;	hs.hd = hs.hd+1
+				as.d = as.d+1;	as.ad = as.ad+1
+			end
+			hs.pts = hs.w*3+hs.d;	hs.hpts = hs.hw*3+hs.hd
+			as.pts = as.w*3+as.d;	as.apts = as.aw*3+as.ad
+		else
+			break
+		end
+	end
+	--
+	engine.sort_league(league)
+	local week = g.database.vars.week - 1
+	if week > #league.refs.teams*2 - 2 then week = #league.refs.teams*2 - 2 end
+	for k=1, #league.refs.teams do
+		league.refs.teams[k].data.season.past_pos[week] = league.refs.teams[k].data.season.stats.pos
+	end
+end
+
 --
 
 function engine.format_position(p)

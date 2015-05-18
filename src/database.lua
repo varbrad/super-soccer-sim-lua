@@ -80,8 +80,7 @@ function database.get_league(id) return database.league_dict[id] end
 function database.get_nation(flag) return database.nation_dict[flag] end
 
 function database.get_view_team() return database.team_dict[database.vars.view.team_id] end
-function database.get_view_league() return database.get_view_team().refs.league end
-function database.get_view_nation() return database.get_view_league().refs.nation end
+function database.get_view_league() return database.league_dict[database.vars.view.league_id] end
 
 function database.get_player_team() return database.team_dict[database.vars.player.team_id] end
 function database.get_player_league() return database.get_player_team().refs.league end
@@ -138,7 +137,7 @@ end
 
 function database.new_game(player_team_id)
 	local vars = {}
-	vars.season = 2015
+	vars.year = 2015
 	vars.week = 1
 	vars.player = {}
 	vars.player.team_id = player_team_id
@@ -150,30 +149,26 @@ end
 
 function database.new_season()
 	-- DOESNT handle finalising older seasons!!!!
-	love.filesystem.write("new_season", "NEW_SEASON\n\n")
 	for a=1, #database.nation_list do
 		local nation = database.nation_list[a]
-		love.filesystem.append("new_season", "" .. nation.short_name .. " (" .. nation.id .. ")\n")
 		--
 		-- Don't need to add anything to the nations object
 		--
 		for b=1, #nation.refs.leagues do
 			local league = nation.refs.leagues[b]
-			love.filesystem.append("new_season", "\t" .. league.long_name .. " (" .. league.id .. ")\n")
 			--
 			league.data.season = {}
-			league.data.season.year = database.vars.season
+			league.data.season.year = database.vars.year
 			league.data.season.fixtures = g.engine.generate_league_fixtures(league)
 			--
 			for c=1, #league.refs.teams do
 				local team = league.refs.teams[c]
-				love.filesystem.append("new_season", "\t\t" .. team.long_name .. " (" .. team.id .. ")\n")
 				--
 				team.data.season = {}
 				team.data.season.past_pos = {}
-				team.data.season.fixtures = g.engine.get_team_league_fixtures(league, team)
+				team.data.season.league_fixtures = g.engine.get_team_league_fixtures(league, team)
 				team.data.season.stats = g.engine.new_team_stat_object()
-				team.data.season.year = database.vars.season
+				team.data.season.year = database.vars.year
 				team.data.season.league = league.id
 				--
 			end
@@ -181,6 +176,93 @@ function database.new_season()
 			g.engine.sort_league(league)
 			--
 		end
+	end
+end
+
+function database.end_season()
+	for a = 1, #database.nation_list do
+		local nation = database.nation_list[a]
+		--
+		for b = 1, #nation.refs.leagues do
+			local league = nation.refs.leagues[b]
+			--
+			local total_teams = #league.data.teams
+			local top3 = {}
+			--
+			for c = 1, #league.refs.teams do
+				local team = league.refs.teams[c]
+				--
+				local promoted, relegated = false, false
+				local position = team.data.season.stats.pos
+				--
+				if position == 1 or position == 2 or position == 3 then
+					top3[position] = team.id
+				end
+				--
+				if league.level_up~=-1 and (position <= league.promoted or position <= league.promoted + (league.playoffs > 0 and 1 or 0)) then
+					-- Promoted
+					promoted = true
+					team.league_id = league.level_up
+					--
+				elseif league.level_down~=-1 and total_teams - position < league.relegated then
+					-- Relegated
+					relegated = true
+					team.league_id = league.level_down
+					--
+				end
+				--
+				local compact_season = {}
+				compact_season.stats = team.data.season.stats
+				compact_season.league = team.data.season.league
+				compact_season.promoted = promoted
+				compact_season.relegated = relegated
+				compact_season.league_team_count = total_teams
+				compact_season.team_relative_pos = (compact_season.stats.pos-1) / total_teams
+				compact_season.year = database.vars.year
+				table.insert(team.data.history.past_seasons, compact_season)
+			end
+			--
+			table.insert(league.data.history.past_winners, { { team = top3[1] }, { team = top3[2] }, { team = top3[3] }, year = database.vars.year })
+			--
+		end
+	end
+	--
+	for i=1, #database.league_list do
+		local lge = database.league_list[i]
+		lge.data.teams = {}
+	end
+	for i=1, #database.team_list do
+		local team = database.team_list[i]
+		local league = database.get_league(team.league_id)
+		table.insert(league.data.teams, team.id)
+	end
+	-- We need to re-process for everything to get re-reffed!
+	database.process()
+	--
+	database.vars.year = database.vars.year + 1
+	database.vars.week = 1
+end
+
+function database.advance_week()
+	database.vars.week = database.vars.week + 1
+	if database.vars.week == 53 then
+		database.end_season()
+		database.new_season()
+		return
+	end
+	-- Simulate all fixtures from the previous week
+	for i = 1, #database.league_list do
+		local league = database.league_list[i]
+		local fixtures = league.data.season.fixtures
+		for i=1, #fixtures do
+			local f = fixtures[i]
+			if f.week == database.vars.week - 1 then
+				g.engine.simulate_fixture(f)
+			elseif f.week > database.vars.week then
+				break
+			end
+		end
+		g.engine.update_league_table(league)
 	end
 end
 
@@ -201,6 +283,8 @@ function database.save_game()
 	love.filesystem.write("save/pretty", g.serpent.block(data))
 	-- Re-process the data to get the refs back!
 	database.process()
+	--
+	g.notification:new("Game Saved!", nil)
 end
 
 function database.build_dict()
@@ -334,6 +418,24 @@ function database.process_nation(nation)
 		table.insert(nation.refs.leagues, database.league_dict[nation.data.leagues[i]])
 	end
 	return true
+end
+
+-- Some debugging logging functions
+
+function database.log_hierarchy()
+	love.filesystem.write("hierarchy", "Hierarchy of database\n\n")
+	for a=1, #database.nation_list do
+		local nation = database.nation_list[a]
+		love.filesystem.append("new_season", "" .. nation.short_name .. " (" .. nation.id .. ")\n")
+		for b=1, #nation.refs.leagues do
+			local league = nation.refs.leagues[b]
+			love.filesystem.append("new_season", "\t" .. league.long_name .. " (" .. league.id .. ")\n")
+			for c=1, #league.refs.teams do
+				local team = league.refs.teams[c]
+				love.filesystem.append("new_season", "\t\t" .. team.long_name .. " (" .. team.id .. ")\n")
+			end
+		end
+	end
 end
 
 return database

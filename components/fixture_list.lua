@@ -27,7 +27,7 @@ function fixture_list:set(team)
 	header.labels[4] = { text = "Result", x = header.labels[3].x - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[1], color = col2, align = "center", w = 60}
 	self.bars[1] = header
 	if team==nil then return end
-	local fixtures = self.team.data.season.fixtures
+	local fixtures = self.team.data.season.league_fixtures
 	for i = 1, #fixtures do
 		local fixture = fixtures[i]
 		local bar = { x = self.x + g.skin.margin; y = self.y + g.skin.margin + i*g.skin.small_bars.h; w = self.w - g.skin.margin*2; h = g.skin.small_bars.h; alpha = g.skin.small_bars.alpha; }
@@ -48,14 +48,14 @@ function fixture_list:set(team)
 		btn.on_release = function(btn) g.database.vars.view.team_id = opponent.id; g.state.switch(g.states.club_overview) end
 		self.buttons[#self.buttons+1] = btn
 		if fixture.finished then
-			local team_score = fixture.home==self.team and fixture.home_score or fixture.away_score
-			local opp_score = fixture.home==self.team and fixture.away_score or fixture.home_score
-			bar.labels[5] = { text = g.engine.format_position(self.team.season.past_pos[i]), x = self.w - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 60, align = "center" }
+			local team_score = fixture.home==self.team.id and fixture.home_score or fixture.away_score
+			local opp_score = fixture.home==self.team.id and fixture.away_score or fixture.home_score
+			bar.labels[5] = { text = g.engine.format_position(self.team.data.season.past_pos[i]), x = self.w - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 60, align = "center" }
 			bar.labels[6] = { text = team_score.."\t-\t"..opp_score, x = bar.labels[5].x - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 60, align = "center" }
 			--
 			local image_string, image_color = "misc/draw_icon.png", {255, 165, 5, g.skin.small_bars.alpha}
-			if fixture.winner==self.team then image_string, image_color = "misc/win_icon.png", {5, 255, 5, g.skin.small_bars.alpha}
-			elseif fixture.winner==opponent then image_string, image_color = "misc/lose_icon.png", {255, 5, 5, g.skin.small_bars.alpha} end
+			if fixture.winner==self.team.id then image_string, image_color = "misc/win_icon.png", {5, 255, 5, g.skin.small_bars.alpha}
+			elseif fixture.winner==opponent.id then image_string, image_color = "misc/lose_icon.png", {255, 5, 5, g.skin.small_bars.alpha} end
 			bar.images[2] = g.image.new(image_string, {mipmap=true, x = bar.labels[6].x - g.skin.margin - g.skin.small_bars.img_size, y = iy, w = g.skin.small_bars.img_size, h = g.skin.small_bars.img_size, color = image_color })
 		end
 		self.bars[#self.bars+1] = bar

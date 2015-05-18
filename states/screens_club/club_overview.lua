@@ -32,9 +32,9 @@ function club_overview:draw()
 end
 
 function club_overview:set_team()
-	self.team = g.database.team_dict[g.database.vars.view.team_id]
+	self.team = g.database.get_view_team()
 	self.fixture_list:set(self.team)
-	self.league_table:set(self.team.league, "small")
+	self.league_table:set(g.database.get_league(self.team.league_id), "small")
 	self.league_graph:set(self.team)
 	self.history_graph:set(self.team)
 	--

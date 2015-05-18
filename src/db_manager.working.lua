@@ -170,10 +170,10 @@ function dbm.begin(team_id)
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
 		team.season = {}
-		team.season.past_pos = {}
-		team.season.stats = dbm.new_stats()
-		team.season.season = g.database.vars.season
-		team.season.league = team.league
+		team.data.seasonpast_pos = {}
+		team.data.seasonstats = dbm.new_stats()
+		team.data.seasonseason = g.database.vars.season
+		team.data.seasonleague = team.league
 	end
 	-- Now process league data
 	for i=1, #dbm.leagues do
@@ -191,7 +191,7 @@ function dbm.begin(team_id)
 	--
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
-		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
+		team.data.seasonfixtures = dbm.get_team_fixtures(team, team.league)
 	end
 end
 
@@ -202,7 +202,7 @@ function dbm.end_of_season()
 			-- Lets figure out if this team should be promoted or relegated
 			local promoted = team.league.promoted
 			local relegated = team.league.relegated
-			local final_pos = team.season.stats.pos
+			local final_pos = team.data.seasonstats.pos
 			local got_promoted = false
 			local got_relegated = false
 			--
@@ -234,12 +234,12 @@ function dbm.end_of_season()
 			if team.att > 100 then team.att = 100 end
 			--
 			local compact_season = {}
-			compact_season.stats = team.season.stats
+			compact_season.stats = team.data.seasonstats
 			compact_season.league = team.league
 			compact_season.promoted = got_promoted
 			compact_season.relegated = got_relegated
 			compact_season.league_team_count = #team.league.teams
-			compact_season.team_relative_pos = (team.season.stats.pos-1) / #team.league.teams
+			compact_season.team_relative_pos = (team.data.seasonstats.pos-1) / #team.league.teams
 			if got_promoted then compact_season.promoted = true end
 			if got_relegated then compact_season.relegated = true end
 			compact_season.season = g.database.vars.season
@@ -258,10 +258,10 @@ function dbm.end_of_season()
 		team.league = dbm.league_dict[team.league_id]
 		table.insert(team.league.teams, team)
 		team.season = {}
-		team.season.past_pos = {}
-		team.season.stats = dbm.new_stats()
-		team.season.season = g.database.vars.season
-		team.season.league = team.league
+		team.data.seasonpast_pos = {}
+		team.data.seasonstats = dbm.new_stats()
+		team.data.seasonseason = g.database.vars.season
+		team.data.seasonleague = team.league
 	end
 	for i=1, #dbm.leagues do
 		local league = dbm.leagues[i]
@@ -273,7 +273,7 @@ function dbm.end_of_season()
 	end
 	for i=1, #dbm.teams do
 		local team = dbm.teams[i]
-		team.season.fixtures = dbm.get_team_fixtures(team, team.league)
+		team.data.seasonfixtures = dbm.get_team_fixtures(team, team.league)
 	end
 	g.database.vars.week = 1
 	g.database.vars.season = g.database.vars.season + 1

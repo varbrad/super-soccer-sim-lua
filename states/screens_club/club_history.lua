@@ -75,18 +75,19 @@ function club_history:set_team()
 		local bar = { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin + k * g.skin.bars.h, w = self.panel.w - g.skin.margin * 2, h = g.skin.bars.h, alpha = g.skin.bars.alpha }
 		bar.color = k%2==0 and g.skin.bars.color1 or g.skin.bars.color3
 		bar.images, bar.labels, bar.rects = {}, {}, {}
-		local l1 = data.season.."/"..(data.season+1)
+		local l1 = data.year.."/"..(data.year+1)
 		if show_current_season and i==iter then l1 = "Current Season" end
 		bar.labels[1] = { text = l1, x = 0, y = g.skin.bars.ty, w = year_w, align = "center", font = g.skin.bars.font[3], color = self.team.color2 }
 		bar.rects[1] = { x = bar.labels[1].x, y = 0, w = bar.labels[1].w, h = g.skin.bars.h, color = self.team.color1, alpha = g.skin.bars.alpha }
-		bar.images[1] = g.image.new("logos/128/"..data.league.flag..data.league.level..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
-		bar.labels[2] = { text = data.league.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
+		local league = g.database.get_league(data.league)
+		bar.images[1] = g.image.new("logos/128/"..league.flag..league.level..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
+		bar.labels[2] = { text = league.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
 		bar.labels[2].w, bar.labels[2].h = g.font.width(bar.labels[2].text, bar.labels[2].font), g.font.height(bar.labels[2].font)
 		--
 		local btn = g.ui.button.new("", { w = bar.labels[2].w, h = bar.labels[2].h, x = bar.x + bar.labels[2].x, y = bar.y + bar.labels[2].y } )
 		btn.on_enter = function(btn) bar.labels[2].underline = true end
 		btn.on_exit = function(btn) bar.labels[2].underline = false end
-		btn.on_release = function(btn) g.database.vars.view.league_id = data.league.id; g.state.switch(g.states.league_overview) end
+		btn.on_release = function(btn) g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end
 		table.insert(self.buttons, btn)
 		--
 		bar.labels[3] = { text = g.engine.format_position(data.stats.pos), x = bar.labels[2].x + 200, w = 100, align = "center", y = g.skin.bars.ty, font = g.skin.bars.font[3], color = g.skin.bars.color2 }
