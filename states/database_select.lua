@@ -12,17 +12,21 @@ function database_select:added()
 	self.panel = g.ui.panel.new(x, y, w, h)
 	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	--
+	g.in_game = true
+	--
 	self:set()
 end
 
 function database_select:set()
 	self.bars, self.buttons = {}, {}
 	local files = g.database.find_database_files()
+	local w = (self.panel.w - g.skin.margin * 4)/3
 	for i=1, #files do
 		local file = files[i]
-		local btn = g.ui.button.new(file.name, { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin })
-		btn:set_colors(g.skin.components.color1, g.skin.components.color2, g.skin.components.color3)
-		btn.y = btn.y + (i-1) * (btn.h + g.skin.margin)
+		local btn = g.ui.button.new(file.name, { x = self.panel.x + g.skin.margin, y = self.panel.y + g.skin.margin, w = w, h = g.skin.bars.h * 2, font = g.font.get(g.skin.bold) })
+		btn.database = true
+		btn:set_colors(g.skin.components.color2, g.skin.colors[3], g.skin.components.color1)
+		btn.y = self.panel.y + g.skin.margin + (i-1) * (btn.h + g.skin.margin)
 		--
 		btn.on_release = function(b)
 			self:set_preview(b, file)
@@ -30,12 +34,32 @@ function database_select:set()
 		--
 		table.insert(self.buttons, btn)
 	end
+
+	-- Add back button at bottom left
+	local btn = g.ui.button.new("Back")
+	btn.x, btn.y = self.panel.x + g.skin.margin, self.panel.y + self.panel.h - btn.h - g.skin.margin
+	btn:set_colors(g.skin.red, g.skin.black, love.graphics.darken(g.skin.red))
+	btn.on_release = function(b)
+		g.state.switch(g.states.overview)
+	end
+	table.insert(self.buttons, btn)
 end
 
 function database_select:set_preview(button, file)
 	-- sets the database.team, database.league and database.nation
 	local success = g.database.get_preview(file)
 	assert(success, "Something went wrong pre-loading the database!")
+	--
+	for i=1, #self.buttons do
+		local b = self.buttons[i]
+		if b.database then
+			if b==button then
+				b:set_colors(g.skin.colors[3], g.skin.components.color2, love.graphics.darken(g.skin.colors[3]))
+			else
+				b:set_colors(g.skin.components.color2, g.skin.colors[3], g.skin.components.color1)
+			end
+		end
+	end
 	--
 	-- Should do some league validation here and such, before we process the database and move onto the next state
 	--

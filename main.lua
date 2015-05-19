@@ -19,7 +19,6 @@ function love.load(args)
 	g.ser = require "libs.ser"
 	g.serpent = require "libs.serpent"
 	g.state = require "libs.state"
-	--g.timer = require "libs.timer" -- Now replaced by flux (faster and auto-deletes still-running tweens)
 	g.ui = require "libs.ui"
 	g.utf8 = require "utf8"
 	-- Src

@@ -30,11 +30,14 @@ function notification:new(text, image)
 	for i in string.gfind(label.text, "\n") do mult = mult + 1 end
 	label.y = math.floor(item.h/2 - (g.font.height(label.font)*mult)/2 + .5)
 	item.labels = {label}
-	item.rects = { { x = g.skin.margin, y = g.skin.margin, w = self.skin.img_size, h = self.skin.img_size, color = self.skin.color3, alpha = self.skin.alpha }}
+	item.rects = { { x = g.skin.img_margin, y = g.skin.img_margin, w = self.skin.img_size, h = self.skin.img_size, color = self.skin.color3, alpha = self.skin.alpha }}
 	if image then
+		if type(image)=="string" then
+			image = g.image.new("icons/"..image..".png", {mipmap=true})
+		end
 		--image:resize(self.skin.img_size, self.skin.img_size)
 		image:constrain_w(self.skin.img_size)
-		image.x, image.y = g.skin.margin, g.skin.margin + math.floor(self.skin.img_size/2 - image.h/2 + .5)
+		image.x, image.y = g.skin.img_margin, g.skin.img_margin + math.floor(self.skin.img_size/2 - image.h/2 + .5)
 		image.alpha = self.skin.alpha
 		item.images = {image}
 	end

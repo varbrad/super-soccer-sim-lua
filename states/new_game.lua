@@ -12,6 +12,8 @@ function new_game:added()
 	self.panel = g.ui.panel.new(x, y, w, h)
 	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	--
+	g.in_game = false
+	--
 	self:set()
 end
 

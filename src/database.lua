@@ -212,11 +212,10 @@ function database.end_season()
 				--
 				local compact_season = {}
 				compact_season.stats = team.data.season.stats
-				compact_season.league = team.data.season.league
+				compact_season.league = team.data.season.league -- id, not ref
 				compact_season.promoted = promoted
 				compact_season.relegated = relegated
 				compact_season.league_team_count = total_teams
-				compact_season.team_relative_pos = (compact_season.stats.pos-1) / total_teams
 				compact_season.year = database.vars.year
 				table.insert(team.data.history.past_seasons, compact_season)
 			end
@@ -279,11 +278,34 @@ function database.save_game()
 	--
 	love.filesystem.createDirectory("save")
 	-- Using Ser because it is a LOT faster than Serpent.
-	love.filesystem.write("save/savedata1.data", g.ser(data))
+	love.filesystem.write("save/savedata", g.ser(data))
 	-- Re-process the data to get the refs back!
 	database.process()
 	--
-	g.notification:new("Game Saved!")
+	g.notification:new("Game Saved!", "save")
+end
+
+function database.load_game()
+	if not love.filesystem.exists("save/savedata") then return false, "No save file exists" end
+	local data, size = love.filesystem.read("save/savedata")
+	local f, err = loadstring(data)
+	if f==nil then
+		love.filesystem.write("error_log", err)
+		love.system.setClipboardText(err)
+		return false, err
+	end
+	data = f()
+	database.team_list = data.team_list
+	database.league_list = data.league_list
+	database.nation_list = data.nation_list
+	database.vars = data.vars
+	--
+	database.build_dict()
+	--
+	database.process()
+	--
+	g.notification:new("Game Loaded!\nData Size: " .. math.floor(size/1024) .. "kB", "load")
+	return true
 end
 
 function database.build_dict()
@@ -300,6 +322,19 @@ function database.build_dict()
 		local nation = database.nation_list[i]
 		database.nation_dict[nation.code] = nation
 	end
+end
+
+function database.get_league_fixtures_for_week(league, week)
+	local ret = {}
+	if week==0 then return ret end
+	local fixtures = league.data.season.fixtures
+	for i=1, #fixtures do
+		local fix = fixtures[i]
+		if fix.week == week then
+			table.insert(ret, fix)
+		end
+	end
+	return ret
 end
 
 function database.get_filename_and_extension(filename)

@@ -14,10 +14,11 @@ local styles = {
 
 local function color_copy(c) return {c[1], c[2], c[3], c[4] or 255} end
 
-function league_table.new(x, y, w, h)
+function league_table.new(x, y, w, h, show_view_team)
 	local lt = {}
 	setmetatable(lt, league_table)
 	lt.x, lt.y, lt.w, lt.h = x or 0, y or 0, w or 10, h or 10
+	lt.show_view_team = show_view_team
 	lt.panel = g.ui.panel.new(lt.x, lt.y, lt.w, lt.h)
 	lt.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	lt:set()
@@ -54,7 +55,7 @@ function league_table:set(league, style_type, pre_sort, sortable)
 		table.insert(bar.images, logo)
 		local name = { text = team.short_name, x = logo.x + logo.w + g.skin.img_margin, y = g.skin.bars.ty, font = regular }
 		if team.id == g.database.vars.player.team_id then name.color = g.skin.colors[3]
-		elseif team.id == g.database.vars.view.team_id then name.color = g.skin.colors[2] end
+		elseif self.show_view_team and team.id == g.database.vars.view.team_id then name.color = g.skin.colors[2] end
 		local btn = g.ui.button.new("", { x = bar.x + name.x, y = bar.y + name.y, w = g.font.width(name.text, name.font), h = g.font.height(name.font) } )
 		btn.on_enter = function(b) name.underline = true end
 		btn.on_exit = function(b) name.underline = false end

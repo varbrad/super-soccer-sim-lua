@@ -65,7 +65,7 @@ skin.notification = {
 	color3 = hex("0f0f0fff");
 	alpha = 225;
 	dalpha = 215;
-	img_size = 100 - skin.margin * 2;
+	img_size = 100 - skin.img_margin * 2;
 }
 skin.notification.iy = math.floor(skin.notification.h/2 - skin.notification.img_size/2 + .5)
 skin.notification.ty = math.floor(skin.notification.h/2 - g.font.height(skin.notification.font[1])/2 + .5)

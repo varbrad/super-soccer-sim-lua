@@ -39,8 +39,8 @@ function league_overview:set_league()
 	self.league = g.database.get_view_league()
 	self.teams_ribbon:set(self.league.refs.teams, true)
 	self.league_table:set(self.league, "default")
-	self.upcoming:set(self.league, g.database.vars.week, false)
-	self.results:set(self.league, g.database.vars.week-1, true)
+	self.upcoming:set(self.league, g.database.vars.week)
+	self.results:set(self.league, g.database.vars.week-1)
 	--
 	g.ribbon:set_league(self.league)
 end
