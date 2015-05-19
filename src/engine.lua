@@ -101,21 +101,59 @@ function engine.new_team_stat_object()
 	}
 end
 
+local rand = { min = -5, max = 5 }
+local p_chance = { home = .017, away = .014, home_min = .0003, away_min = .0003 }
+local u_chance = 0.033
+local att_weight, mid_weight, boost_weight = 0.05, 0.04, 0.0035
+local min_chance = -0.004
 function engine.simulate_fixture(f)
 	local home = g.database.get_team(f.home)
 	local away = g.database.get_team(f.away)
 	--
-	f.home_score = love.math.random(0, 3)
-	f.away_score = love.math.random(0, 3)
+	local h_attack = home.att - away.def
+	local a_attack = away.att - home.def
+	local midfield = home.mid - away.mid
+
+	-- Assign random modifier
+	h_attack = h_attack + love.math.random(rand.min, rand.max)
+	a_attack = a_attack + love.math.random(rand.min, rand.max)
+	midfield = midfield + love.math.random(rand.min, rand.max)
+
+	-- Assign scoring chance
+	local h_chance = p_chance.home
+	local a_chance = p_chance.away
+	local h_attack_chance = (h_attack/100) * att_weight
+	local a_attack_chance = (a_attack/100) * att_weight
+	local midfield_chance = (midfield/100) * mid_weight
+	local h_attack_boost = (h_attack/100) * boost_weight
+	local a_attack_boost = (a_attack/100) * boost_weight
+	--
+	if h_attack_chance < min_chance then h_attack_chance = min_chance end
+	if a_attack_chance < min_chance then a_attack_chance = min_chance end
+	--
+	h_chance = h_chance + h_attack_chance + h_attack_boost + midfield_chance
+	a_chance = a_chance + a_attack_chance + a_attack_boost - midfield_chance
+	if h_chance < p_chance.home_min then h_chance = p_chance.home_min end
+	if a_chance < p_chance.away_min then a_chance = p_chance.away_min end
+	--
+	f.home_score, f.away_score = 0, 0
+	for i=1, 90 do
+		if i == 46 then f.half_time = { f.home_score, f.away_score } end
+		local h_g = h_chance > love.math.random()
+		local a_g = a_chance > love.math.random()
+		if h_g and a_g then h_g, a_g = false, false end
+		if h_g then f.home_score = f.home_score + 1 end
+		if a_g then f.away_score = f.away_score + 1 end
+	end
 	if f.home_score > f.away_score then
-		f.result_code = "1"
 		f.winner = f.home
+		f.result_code = "1"
 	elseif f.away_score > f.home_score then
-		f.result_code = "2"
 		f.winner = f.away
+		f.result_code = "2"
 	else
-		f.result_code = "X"
 		f.draw = true
+		f.result_code = "X"
 	end
 	f.finished = true
 end

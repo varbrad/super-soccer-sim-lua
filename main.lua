@@ -206,7 +206,7 @@ function love.graphics.hexToRgb(hex)
 end
 
 function love.graphics.darken(color)
-	return { color[1] * g.skin.darken, color[2] * g.skin.darken, color[3] * g.skin.darken, color[4] or 255}
+	return { math.floor(color[1] * g.skin.darken + .5), math.floor(color[2] * g.skin.darken + .5), math.floor(color[3] * g.skin.darken + .5), color[4] or 255}
 end
 
 function love.graphics.setColorAlpha(color,alpha)

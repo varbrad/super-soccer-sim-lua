@@ -33,6 +33,7 @@ function database.get_preview(file)
 	local raw_teams_csv = love.filesystem.read(mount_dir.."/teams.csv")
 	local raw_leagues_csv = love.filesystem.read(mount_dir.."/leagues.csv")
 	local raw_nations_csv = love.filesystem.read(mount_dir.."/nations.csv")
+	local raw_vars = love.filesystem.read(mount_dir.."/vars")
 	--
 	assert(love.filesystem.unmount(file_path), "Unmount failed!")
 	--
@@ -48,7 +49,7 @@ function database.get_preview(file)
 	database.league_dict = {}
 	database.nation_list = {}
 	database.nation_dict = {}
-	database.vars = {}
+	database.vars = raw_vars and loadstring("return " .. raw_vars)() or { year = 2015 }
 	--
 	for fields in teams:lines() do
 		local team = database.create_team(fields)
@@ -136,15 +137,13 @@ function database.process()
 end
 
 function database.new_game(player_team_id)
-	local vars = {}
-	vars.year = 2015
+	local vars = database.vars
 	vars.week = 1
 	vars.player = {}
 	vars.player.team_id = player_team_id
 	vars.view = {}
 	vars.view.league_id = database.team_dict[player_team_id].refs.league.id
 	vars.view.team_id = player_team_id
-	database.vars = vars
 end
 
 function database.new_season()
