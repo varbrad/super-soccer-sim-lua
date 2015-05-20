@@ -80,9 +80,12 @@ function database.get_team(id) return database.team_dict[id] end
 function database.get_league(id) return database.league_dict[id] end
 function database.get_nation(flag) return database.nation_dict[flag] end
 
+function database.set_view_team(id) database.vars.view.team_id = id end
 function database.get_view_team() return database.team_dict[database.vars.view.team_id] end
+function database.set_view_league(id) database.vars.view.league_id = id end
 function database.get_view_league() return database.league_dict[database.vars.view.league_id] end
 
+function database.set_player_team(id) database.vars.player.team_id = id end
 function database.get_player_team() return database.team_dict[database.vars.player.team_id] end
 function database.get_player_league() return database.get_player_team().refs.league end
 function database.get_player_nation() return database.get_player_league().refs.nation end
@@ -140,9 +143,9 @@ function database.new_game(player_team_id)
 	local vars = database.vars
 	vars.week = 1
 	vars.player = {}
-	vars.player.team_id = player_team_id
+	database.set_player_team(player_team_id)
 	vars.view = {}
-	vars.view.league_id = database.team_dict[player_team_id].refs.league.id
+	vars.view.league_id = database.get_player_league()
 	vars.view.team_id = player_team_id
 end
 
@@ -186,6 +189,10 @@ function database.end_season()
 			local league = nation.refs.leagues[b]
 			--
 			local total_teams = #league.data.teams
+			local lub_min = league.level_up_boost_min
+			local lub_max = league.level_up_boost_max
+			local ldb_min = league.level_down_boost_min
+			local ldb_max = league.level_down_boost_max
 			local top3 = {}
 			--
 			for c = 1, #league.refs.teams do
@@ -193,7 +200,7 @@ function database.end_season()
 				--
 				local promoted, relegated = false, false
 				local position = team.data.season.stats.pos
-				--
+				-- If top 3 in the league, then add this teams id to the position of the leagues top3
 				if position == 1 or position == 2 or position == 3 then
 					top3[position] = team.id
 				end
@@ -208,6 +215,19 @@ function database.end_season()
 					relegated = true
 					team.league_id = league.level_down
 					--
+				end
+				-- Random fluctuation in team quality, based on if they got promoted or relegated (boost vs decline)
+				-- Also random fluctutaion by +-1 if they remained the same.
+				-- Will eventually use a more advanced metric to determine this, but works OK for now.
+				local b_min = promoted and lub_min or (relegated and ldb_min or -1)
+				local b_max = promoted and lub_max or (relegated and ldb_max or 1)
+				if not promoted and position==1 then -- Champions of the league
+					b_min, b_max = -2, 1 -- Stop absolute monopolies on leagues
+				end
+				local r1, r2, r3 = love.math.random(b_min, b_max), love.math.random(b_min, b_max), love.math.random(b_min, b_max)
+				team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att + r3
+				if team.id == g.database.vars.player.team_id then
+					g.console:log(team.short_name .. " now rated " .. team.def .. ", " .. team.mid .. ", " .. team.att)
 				end
 				--
 				local compact_season = {}

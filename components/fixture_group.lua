@@ -49,9 +49,21 @@ function fixture_group:set(league, week)
 		local away_logo = g.image.new("logos/128/"..away.id..".png", { w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = score.x + score.w + g.skin.img_margin, y = g.skin.bars.iy })
 		--
 		local home_team = { text = home.short_name, y = g.skin.bars.ty, font = g.skin.bars.font[2], alpha = f.result_code~="2" and 255 or g.skin.bars.alpha, color = home.id==g.database.vars.player.team_id and g.skin.colors[3] or nil }
+		home_team.w, home_team.h = g.font.width(home_team.text, home_team.font), g.font.height(home_team.font)
 		home_team.x = home_logo.x - g.skin.img_margin - g.font.width(home_team.text, home_team.font)
 		local away_team = { text = away.short_name, y = g.skin.bars.ty, font = g.skin.bars.font[2], alpha = f.result_code~="1" and 255 or g.skin.bars.alpha, color = away.id==g.database.vars.player.team_id and g.skin.colors[3] or nil }
+		away_team.w, away_team.h = g.font.width(away_team.text, away_team.font), g.font.height(away_team.font)
 		away_team.x = away_logo.x + away_logo.w + g.skin.img_margin
+		--
+		local btn1 = g.ui.button.new("", { x = bar.x + home_team.x, y = bar.y + home_team.y, w = home_team.w, h = home_team.h })
+		local btn2 = g.ui.button.new("", { x = bar.x + away_team.x, y = bar.y + away_team.y, w = away_team.w, h = away_team.h })
+		btn1.on_enter, btn1.on_exit = function(b) home_team.underline = true end, function(b) home_team.underline = false end
+		btn2.on_enter, btn2.on_exit = function(b) away_team.underline = true end, function(b) away_team.underline = false end
+		btn1.on_release = function(b) g.database.set_view_team(home.id); g.state.switch(g.states.club_overview) end
+		btn2.on_release = function(b) g.database.set_view_team(away.id); g.state.switch(g.states.club_overview) end
+		btn1.visible, btn2.visible = false, false
+		table.insert(self.buttons, btn1)
+		table.insert(self.buttons, btn2)
 		--
 		local home_pos = { text = g.engine.format_position(home.data.season.stats.pos), x = g.skin.margin, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "center", font = g.skin.bars.font[2] }
 		local away_pos = { text = g.engine.format_position(away.data.season.stats.pos), x = bar.w - g.skin.margin - g.skin.bars.column_size, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "center", font = g.skin.bars.font[2] }

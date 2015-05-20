@@ -90,6 +90,7 @@ function love.load(args)
 	g.mouse.cursor.current = "arrow"
 	g.mouse.cursor.arrow = love.mouse.getSystemCursor("arrow")
 	g.mouse.cursor.hand = love.mouse.getSystemCursor("hand")
+	g.mouse.cursor.ibeam = love.mouse.getSystemCursor("ibeam")
 	love.mouse.setCursor(g.mouse.cursor.arrow)
 	--`
 	g.console:print("love.load finished", g.skin.green)
@@ -99,11 +100,11 @@ function love.load(args)
 	-- This should never be drawn to or used anywhere else except main.lua
 	g.canvas = love.graphics.newCanvas()
 	--
-	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2
+	g.state.add(g.states.background) -- z = 0, navbar is 3, ribbon is 2 -- Shouldn't have any keypressed actions!
 	g.state.add(g.states.msgbox) -- z = 7
-	g.state.add(g.states.notification) -- z = 8 
+	g.state.add(g.states.notification) -- z = 8 -- No Keypressed actions! 
 	g.state.add(g.states.console) -- z = 9
-	g.state.add(g.states.overview) -- z = 1
+	g.state.add(g.states.overview) -- z = 1 -- Keypressed actions are fine (Will be recieved last as active screen)
 	-- All screens should be z = 1
 end
 
@@ -121,9 +122,12 @@ function love.update(dt)
 	if g.mouse.cursor.current~="hand" and g.ui.button.active_hover then
 		love.mouse.setCursor(g.mouse.cursor.hand)
 		g.mouse.cursor.current = "hand"
-	elseif g.mouse.cursor.current~="arrow" and g.ui.button.active_hover==nil then
+	elseif g.mouse.cursor.current~="arrow" and g.ui.button.active_hover==nil and not (g.ribbon.searchbox and g.ribbon.searchbox.focus) then
 		love.mouse.setCursor(g.mouse.cursor.arrow)
 		g.mouse.cursor.current = "arrow"
+	elseif g.mouse.cursor.current~="ibeam" and g.ui.button.active_hover==nil and g.ribbon.searchbox and g.ribbon.searchbox.focus then
+		love.mouse.setCursor(g.mouse.cursor.ibeam)
+		g.mouse.cursor.current = "ibeam"
 	end
 end
 
@@ -160,15 +164,18 @@ end
 
 function love.keypressed(k,ir)
 	-- Ensure to check if searchbox is focused in each state keypressed function (if it has one)
+	-- If a state reports a button press, then no other states can recieve that keyboard event. This prevents weird double-keypress events
+	-- Obviously, make sure states that can appear at the same time (Ribbon, Navbar, Any Screen, Console, etc) don't use the same events, unless it is needed
+	-- to overwrite another states default keypressed handler
 	for i, state in g.state.states() do
-		if state.keypressed then state:keypressed(k,ir) end
+		if state.keypressed then if state:keypressed(k,ir)==true then break end end
 	end
 	-- Run these commands regardless of what the heck is going on!
 	-- Probably should be F1 thru F12 keys only, as nothing else cares about those
-	if k=="f8" then
-		g.database.save_game()
+	if k=="f5" then
+		if g.in_game then g.database.save_game() end
 	elseif k=="f9" then
-		g.database.load_game()
+		if g.in_game then g.database.load_game(); g.state.refresh_all() end
 	elseif k=="f10" then
 		g.console:print(g.state.order(), g.skin.red)
 		g.console:print("Active State: " .. g.state.active().name, g.skin.green)

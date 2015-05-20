@@ -80,7 +80,7 @@ function overview:draw()
 end
 
 function overview:keypressed(k, ir)
-	if k=="escape" then print("Quit from Overview"); love.event.quit() end
+	if k=="escape" then love.event.quit(); return true end
 end
 
 function overview:mousepressed(x, y, b)

@@ -16,9 +16,13 @@ function bg:init()
 		end
 	end
 	--
-	bg:set_image(7)
+	bg:set_random()
 	--
 	g.console:log("background:init")
+end
+
+function bg:set_random()
+	self:set_image(love.math.random(1,#self.images))
 end
 
 function bg:set_image(index)
