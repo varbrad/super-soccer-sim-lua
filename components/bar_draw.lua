@@ -5,7 +5,11 @@ function bd.draw(bar, ox, oy)
 	if bar.x + ox > g.width or bar.y + oy > g.height or bar.x + ox + bar.w < 0 or bar.y + oy + bar.h < 0 then return end
 	if bar.alpha > 0 then
 		love.graphics.setColorAlpha(bar.color, bar.alpha)
-		love.graphics.rectangle("fill", bar.x + ox, bar.y + oy, bar.w, bar.h)
+		if bar.rounded then
+			love.graphics.roundrect("fill", bar.x + ox, bar.y + oy, bar.w, bar.h, bar.rounded)
+		else
+			love.graphics.rectangle("fill", bar.x + ox, bar.y + oy, bar.w, bar.h)
+		end
 	end
 	if bar.rects then
 		for i=1, #bar.rects do

@@ -27,6 +27,7 @@ function love.load(args)
 	g.database = require "src.database"
 	g.engine = require "src.engine"
 	g.math = require "src.math"
+	g.settings = require "src.settings"
 	g.shaders = require "src.shaders"
 	-- Load components
 	g.components = {
@@ -49,7 +50,7 @@ function love.load(args)
 		league_past_winners = require "states.screens_league.league_past_winners";
 		league_result_grid = require "states.screens_league.league_result_grid";
 		league_stats = require "states.screens_league.league_stats";
-		league_summary = require "states.screens_league.league_summary";
+		league_records = require "states.screens_league.league_records";
 		--
 		background = require "states.background";
 		console = require "states.console";
@@ -65,7 +66,7 @@ function love.load(args)
 	--
 	g.screen_groups = {
 		{ g.states.club_overview, g.states.club_history };
-		{ g.states.league_overview, g.states.league_stats, g.states.league_result_grid, g.states.league_past_winners, g.states.league_summary };
+		{ g.states.league_overview, g.states.league_stats, g.states.league_result_grid, g.states.league_past_winners, g.states.league_records };
 	}
 	-- Common alliases for states
 	g.console = g.states.console
@@ -80,8 +81,7 @@ function love.load(args)
 	g.ui.__defaultFont = g.font.get(g.skin.ui.button.font)
 	g.ui.panel.__defaultAlpha = g.skin.ui.panel.alpha
 	--
-	g.settings = {}
-	g.settings.screenshot_format = "jpg"
+	g.settings.load()
 	--
 	g.mouse = {}
 	g.mouse.x = -1
@@ -109,16 +109,20 @@ function love.load(args)
 end
 
 function love.update(dt)
-	g.shaders.update(dt)
-	g.flux.update(dt)
 	g.mouse.x, g.mouse.y = love.mouse.getPosition()
 	g.ui.set_mouse_position(g.mouse.x, g.mouse.y)
 	g.ui.button.active_hover = nil
-	--
-	for i, state in g.state.states() do
-		if state.update then state:update(dt) end
+	if not g.msgbox.active then
+		g.shaders.update(dt)
+		g.flux.update(dt)
+		--
+		for i, state in g.state.states() do
+			if state.update then state:update(dt) end
+		end
+	else
+		if g.msgbox.update then g.msgbox:update(dt) end
+		if g.console.update then g.console:update(dt) end
 	end
-	--
 	if g.mouse.cursor.current~="hand" and g.ui.button.active_hover then
 		love.mouse.setCursor(g.mouse.cursor.hand)
 		g.mouse.cursor.current = "hand"
@@ -134,8 +138,10 @@ end
 function love.draw()
 	love.graphics.setCanvas(g.canvas)
 	for i, state in g.state.states_z() do
-		if state~=g.console and state.draw then state:draw() end
+		if state~=g.console and state~=g.msgbox and state.draw then state:draw() end
 	end
+	if g.msgbox.draw then g.msgbox:draw() end
+	--
 	love.graphics.setCanvas()
 	if g.console.visible then
 		love.graphics.setShader(g.shaders.pixelate)
@@ -167,13 +173,15 @@ function love.keypressed(k,ir)
 	-- If a state reports a button press, then no other states can recieve that keyboard event. This prevents weird double-keypress events
 	-- Obviously, make sure states that can appear at the same time (Ribbon, Navbar, Any Screen, Console, etc) don't use the same events, unless it is needed
 	-- to overwrite another states default keypressed handler
-	for i, state in g.state.states() do
-		if state.keypressed then if state:keypressed(k,ir)==true then break end end
+	if not g.msgbox.active then
+		for i, state in g.state.states() do
+			if state.keypressed then if state:keypressed(k,ir)==true then break end end
+		end
 	end
 	-- Run these commands regardless of what the heck is going on!
-	-- Probably should be F1 thru F12 keys only, as nothing else cares about those
+	-- Probably should be F1 thru F12 keys only, as nothing else cares about those!
 	if k=="f5" then
-		if g.in_game then g.database.save_game() end
+		if g.in_game and not g.msgbox.active then g.database.save_game() end
 	elseif k=="f9" then
 		if g.in_game then g.database.load_game(); g.state.refresh_all() end
 	elseif k=="f10" then
@@ -187,18 +195,30 @@ function love.keypressed(k,ir)
 end
 
 function love.mousepressed(x, y, b)
+	if g.msgbox.active then
+		if g.msgbox.mousepressed then g.msgbox:mousepressed(x, y, b) end
+		return
+	end
 	for i, state in g.state.states() do
 		if state.mousepressed then state:mousepressed(x, y, b) end
 	end
 end
 
 function love.mousereleased(x, y, b)
+	if g.msgbox.active then
+		if g.msgbox.mousereleased then g.msgbox:mousereleased(x, y, b) end
+		return
+	end
 	for i, state in g.state.states() do
 		if state.mousereleased then state:mousereleased(x, y, b) end
 	end
 end
 
 function love.textinput(t)
+	if g.msgbox.active then
+		if g.msgbox.textinput then g.msgbox:textinput(x, y, b) end
+		return
+	end
 	for i, state in g.state.states() do
 		if state.textinput then state:textinput(t) end
 	end

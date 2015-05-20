@@ -18,13 +18,32 @@ function settings:added()
 	label.y = math.floor(header.h/2 - label.h/2 + .5)
 	header.labels = { label }
 	table.insert(self.bars, header)
-
+	--
+	local half_w = math.floor((header.w-g.skin.margin)/2 + .5)
+	--
+	local screenshot_format = { x = header.x, y = header.x + header.h + g.skin.margin, w = half_w, h = g.skin.bars.h, color = g.skin.bars.color1, label_color = g.skin.bars.color2, alpha = g.skin.bars.alpha }
+	screenshot_format.labels = {
+		{ text = "Saved Screenshot Format", x = g.skin.margin, y = g.skin.bars.ty, font = g.skin.bars.font[2]}
+	}
+	local jpg_button = g.ui.button.new(".jpg (faster to save)", { w = "auto", h = g.skin.bars.h - g.skin.margin * 2, y = screenshot_format.y + g.skin.margin})
+	local png_button = g.ui.button.new(".png (higher quality)", { w = "auto", h = g.skin.bars.h - g.skin.margin * 2, y = screenshot_format.y + g.skin.margin})
+	jpg_button.x = screenshot_format.x + screenshot_format.w - g.skin.margin * 2 - png_button.w - jpg_button.w
+	png_button.x = jpg_button.x + jpg_button.w + g.skin.margin
+	if g.settings.screenshot_format=="jpg" then jpg_button:set_colors(g.skin.red, g.skin.blue, g.skin.green) end
+	if g.settings.screenshot_format=="png" then png_button:set_colors(g.skin.red, g.skin.blue, g.skin.green) end
+	png_button.on_release = function(b) g.settings.screenshot_format = "png"; g.state.refresh_all() end
+	jpg_button.on_release = function(b) g.settings.screenshot_format = "jpg"; g.state.refresh_all() end
+	table.insert(self.buttons, jpg_button)
+	table.insert(self.buttons, png_button)
+	--
+	table.insert(self.bars, screenshot_format)
 	--
 	-- Add back button at bottom left
 	local btn = g.ui.button.new("Back")
 	btn.x, btn.y = self.panel.x + g.skin.margin, self.panel.y + self.panel.h - btn.h - g.skin.margin
 	btn:set_colors(g.skin.red, g.skin.black, love.graphics.darken(g.skin.red))
 	btn.on_release = function(b)
+		g.settings.save()
 		g.state.switch(g.states.overview)
 	end
 	table.insert(self.buttons, btn)
