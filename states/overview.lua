@@ -36,7 +36,7 @@ function overview:added()
 	end
 	load_game.on_release = function(btn) 
 		local loaded, err = g.database.load_game()
-		if not loaded then g.notification:new("No Saved Game!", "alert") return end
+		if not loaded then g.notification:new(err, "alert") return end
 		--
 		g.state.pop()
 		g.state.add(g.states.navbar)

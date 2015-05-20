@@ -143,7 +143,7 @@ function database.new_game(player_team_id)
 	local vars = database.vars
 	vars.week = 1
 	vars.player = {}
-	database.set_player_team(player_team_id)
+	database.set_player_team(player_team_id) -- equiv. vars.player.team_id = player_team_id
 	vars.view = {}
 	vars.view.league_id = database.get_player_league()
 	vars.view.team_id = player_team_id
@@ -188,11 +188,10 @@ function database.end_season()
 		for b = 1, #nation.refs.leagues do
 			local league = nation.refs.leagues[b]
 			--
+			local league_records = league.data.history.records
 			local total_teams = #league.data.teams
-			local lub_min = league.level_up_boost_min
-			local lub_max = league.level_up_boost_max
-			local ldb_min = league.level_down_boost_min
-			local ldb_max = league.level_down_boost_max
+			local lub_min, lub_max = league.level_up_boost_min, league.level_up_boost_max
+			local ldb_min, ldb_max = league.level_down_boost_min, league.level_down_boost_max
 			local top3 = {}
 			--
 			for c = 1, #league.refs.teams do
@@ -222,7 +221,7 @@ function database.end_season()
 				local b_min = promoted and lub_min or (relegated and ldb_min or -1)
 				local b_max = promoted and lub_max or (relegated and ldb_max or 1)
 				if not promoted and position==1 then -- Champions of the league
-					b_min, b_max = -2, 1 -- Stop absolute monopolies on leagues
+					b_min, b_max = -2, 2 -- Stop absolute monopolies on leagues
 				end
 				local r1, r2, r3 = love.math.random(b_min, b_max), love.math.random(b_min, b_max), love.math.random(b_min, b_max)
 				team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att + r3
@@ -237,6 +236,11 @@ function database.end_season()
 				compact_season.relegated = relegated
 				compact_season.league_team_count = total_teams
 				compact_season.year = database.vars.year
+				-- Did we break any league.data.history.records? Go through all stats
+				for k,v in pairs(compact_season.stats) do
+					if league_records[k]==nil or v > league_records[k].value then league_records[k] = { year = database.vars.year, value = v, team = team.id } end
+				end
+				--
 				table.insert(team.data.history.past_seasons, compact_season)
 			end
 			--
@@ -430,6 +434,7 @@ function database.setup_league(league)
 	league.data.teams = {}
 	league.data.history = {}
 	league.data.history.past_winners = {}
+	league.data.history.records = {}
 	--
 	local nation = database.nation_dict[league.flag]
 	if nation then
