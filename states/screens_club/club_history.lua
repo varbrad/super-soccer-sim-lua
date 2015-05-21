@@ -94,9 +94,9 @@ function club_history:set_team()
 		local col = color_copy(bar.color)
 		local do_rect = false
 		if i<iter or not show_current_season then
-			if data.promoted then col[2] = col[2] + 70 elseif data.relegated then col[1] = col[1] + 50 end
-			if not data.promoted and data.stats.pos==1 then col[1], col[2] = col[1] + 190, col[2] + 130; do_rect = true end
-			if data.promoted or data.relegated or do_rect then	bar.rects[2] = { x = bar.rects[1].x + bar.rects[1].w, y = 0, w = bar.w - bar.rects[1].w, h =g.skin.bars.h, color = col, alpha = g.skin.bars.alpha } end
+			if data.promoted_or_relegated=="P" then col[2] = col[2] + 70 elseif data.promoted_or_relegated=="R" then col[1] = col[1] + 50 end
+			if not data.promoted_or_relegated=="P" and data.stats.pos==1 then col[1], col[2] = col[1] + 190, col[2] + 130; do_rect = true end
+			if data.promoted_or_relegated=="P" or data.promoted_or_relegated=="R" or do_rect then	bar.rects[2] = { x = bar.rects[1].x + bar.rects[1].w, y = 0, w = bar.w - bar.rects[1].w, h =g.skin.bars.h, color = col, alpha = g.skin.bars.alpha } end
 		end
 		bar.rects[#bar.rects+1] = { x = bar.labels[3].x, y = 0, w = bar.labels[3].w, h = g.skin.bars.h, color = bar.color, alpha = g.skin.bars.alpha }
 		--

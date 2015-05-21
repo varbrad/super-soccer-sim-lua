@@ -27,7 +27,7 @@ function fixture_list:set(team)
 	header.labels[4] = { text = "Result", x = header.labels[3].x - g.skin.margin - 60, y = ty, font = g.skin.small_bars.font[1], color = col2, align = "center", w = 60}
 	self.bars[1] = header
 	if team==nil then return end
-	local fixtures = self.team.data.season.league_fixtures
+	local fixtures = g.engine.get_team_league_fixtures(self.team.refs.league, self.team)
 	for i = 1, #fixtures do
 		local fixture = fixtures[i]
 		local bar = { x = self.x + g.skin.margin; y = self.y + g.skin.margin + i*g.skin.small_bars.h; w = self.w - g.skin.margin*2; h = g.skin.small_bars.h; alpha = g.skin.small_bars.alpha; }

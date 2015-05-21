@@ -17,7 +17,6 @@ function love.load(args)
 	g.font = require "libs.font"
 	g.image = require "libs.image"
 	g.ser = require "libs.ser"
-	g.serpent = require "libs.serpent"
 	g.state = require "libs.state"
 	g.ui = require "libs.ui"
 	g.utf8 = require "utf8"

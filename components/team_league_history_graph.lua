@@ -74,7 +74,7 @@ function team_league_history_graph:set(team)
 		local oy = g.math.lerp(0, split_h, (season.stats.pos-1)/season.league_team_count)
 		local y = sy + oy
 		local c = g.skin.colors[4]
-		if not season.promoted and oy==0 then c = {190, 130, 5} elseif season.promoted then c = {5, 195, 5} elseif season.relegated then c = {195, 5, 5} end
+		if not season.promoted_or_relegated and oy==0 then c = {190, 130, 5} elseif season.promoted_or_relegated=="P" then c = {5, 195, 5} elseif season.promoted_or_relegated=="R" then c = {195, 5, 5} end
 		table.insert(self.points, {x = x, y = y, color = c})
 	end
 	--

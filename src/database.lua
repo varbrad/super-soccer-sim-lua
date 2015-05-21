@@ -141,6 +141,7 @@ end
 
 function database.new_game(player_team_id)
 	local vars = database.vars
+	vars.__type = "vars"
 	vars.week = 1
 	vars.player = {}
 	database.set_player_team(player_team_id) -- equiv. vars.player.team_id = player_team_id
@@ -168,7 +169,6 @@ function database.new_season()
 				--
 				team.data.season = {}
 				team.data.season.past_pos = {}
-				team.data.season.league_fixtures = g.engine.get_team_league_fixtures(league, team)
 				team.data.season.stats = g.engine.new_team_stat_object()
 				team.data.season.year = database.vars.year
 				team.data.season.league = league.id
@@ -225,19 +225,16 @@ function database.end_season()
 				end
 				local r1, r2, r3 = love.math.random(b_min, b_max), love.math.random(b_min, b_max), love.math.random(b_min, b_max)
 				team.def, team.mid, team.att = team.def + r1, team.mid + r2, team.att + r3
-				if team.id == g.database.vars.player.team_id then
-					g.console:log(team.short_name .. " now rated " .. team.def .. ", " .. team.mid .. ", " .. team.att)
-				end
 				--
 				local compact_season = {}
-				compact_season.stats = team.data.season.stats
+				local s = team.data.season.stats
+				compact_season.stats = { p=s.p, w=s.w, d=s.d, l=s.l, gf=s.gf, ga=s.ga, gd=s.gd, pts=s.pts, pos=s.pos}
 				compact_season.league = team.data.season.league -- id, not ref
-				compact_season.promoted = promoted
-				compact_season.relegated = relegated
+				compact_season.promoted_or_relegated = promoted and "P" or (relegated and "R" or nil)
 				compact_season.league_team_count = total_teams
 				compact_season.year = database.vars.year
 				-- Did we break any league.data.history.records? Go through all stats
-				for k,v in pairs(compact_season.stats) do
+				for k,v in pairs(team.data.season.stats) do
 					if league_records[k]==nil or v > league_records[k].value then league_records[k] = { year = database.vars.year, value = v, team = team.id } end
 				end
 				--
@@ -289,46 +286,56 @@ function database.advance_week()
 end
 
 function database.save_game()
+	-- Testing to see if this fixes the luajit 65,536 bug
+	local t1 = love.timer.getTime()
 	local data = {}
-	data.team_list = database.team_list
-	data.league_list = database.league_list
-	data.nation_list = database.nation_list
-	data.vars = database.vars
-	-- Remove all refs! This saves file-size from being really high
-	-- Also, we don't save the dict's, as we just rebuild those when loading in database.build_dict()
-	for i=1, #data.team_list do data.team_list[i].refs = nil end
-	for i=1, #data.league_list do data.league_list[i].refs = nil end
-	for i=1, #data.nation_list do data.nation_list[i].refs = nil end
+	for i=1, #database.team_list do
+		-- strip its ref
+		local t = database.team_list[i]
+		t.refs = nil
+		table.insert(data, g.ser(t))
+	end
+	for i=1, #database.league_list do
+		local l = database.league_list[i]
+		l.refs = nil;
+		table.insert(data, g.ser(l))
+	end
+	for i=1, #database.nation_list do
+		local n = database.nation_list[i]
+		n.refs = nil;
+		table.insert(data, g.ser(n))
+	end
+	table.insert(data, g.ser(database.vars))
 	--
-	love.filesystem.createDirectory("save")
-	-- Using Ser because it is a LOT faster than Serpent.
-	love.filesystem.write("save/savedata", g.ser(data))
-	-- Re-process the data to get the refs back!
+	love.filesystem.write("save/save.sav", table.concat(data, "\f"))
+	--
+	g.console:print("Took " .. (love.timer.getTime()-t1) .. " seconds to save game!", g.skin.blue)
+	--
 	database.process()
 	--
 	g.notification:new("Game Saved!", "save")
 end
 
 function database.load_game()
-	if not love.filesystem.exists("save/savedata") then return false, "No save file exists" end
-	local data, size = love.filesystem.read("save/savedata")
-	local f, err = loadstring(data)
-	if f==nil then
-		love.filesystem.write("error_log", err)
-		love.system.setClipboardText(err)
-		return false, err
+	local t1 = love.timer.getTime()
+	if not love.filesystem.exists("save/save.sav") then return false, "No saved game data found!" end
+	database.team_list, database.league_list, database.nation_list, database.vars = {}, {}, {}, nil
+	local data = love.filesystem.read("save/save.sav")
+	for item_raw in string.gmatch(data, "([^\f]+)") do
+		local item = loadstring(item_raw)()
+		if item.__type == "team" then table.insert(database.team_list, item)
+		elseif item.__type == "league" then table.insert(database.league_list, item)
+		elseif item.__type == "nation" then table.insert(database.nation_list, item)
+		elseif item.__type == "vars" then database.vars = item end
 	end
-	data = f()
-	database.team_list = data.team_list
-	database.league_list = data.league_list
-	database.nation_list = data.nation_list
-	database.vars = data.vars
 	--
 	database.build_dict()
 	--
 	database.process()
 	--
-	g.notification:new("Game Loaded!\nData Size: " .. math.floor(size/1024) .. "kB", "load")
+	g.console:print("Took " .. (love.timer.getTime()-t1) .. " seconds to load game!", g.skin.green)
+	--
+	g.notification:new("Game Loaded!", "load")
 	return true
 end
 

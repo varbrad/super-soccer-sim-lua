@@ -54,8 +54,9 @@ function result_grid:set(league)
 		btn.on_exit = function(btn) bar.labels[1].underline = false end
 		btn.on_release = function(btn) g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
 		table.insert(self.buttons, btn)
-		for i=1, #team.data.season.league_fixtures do
-			local fix = team.data.season.league_fixtures[i]
+		local fixtures = g.engine.get_team_league_fixtures(self.league, team)
+		for i=1, #fixtures do
+			local fix = fixtures[i]
 			if fix.home==team.id and fix.finished then
 				local color = fix.winner==team.id and {0, 123, 0, 255} or (fix.draw and {123, 63, 0, 255} or {123, 0, 0, 255})
 				local score = fix.home_score .. "\t-\t" .. fix.away_score
