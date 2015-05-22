@@ -21,6 +21,7 @@ function team_league_history_graph:set(team)
 	self.points = {}
 	self.rects = {}
 	self.images = {}
+	self.labels = {}
 	table.insert(self.lines, {left, top, left, bottom})
 	table.insert(self.lines, {left, bottom, right, bottom})
 	if self.team==nil then return end
@@ -61,13 +62,15 @@ function team_league_history_graph:set(team)
 		local lge = league_list[top_level + (i-1)]
 		local y = g.math.lerp(top, bottom, (i-1) / unique_divisions)
 		y = y + split_h/2 - g.skin.bars.img_size/2
-		table.insert(self.images, g.image.new("logos/128/"..lge.flag..lge.level..".png",
-					{mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 2, y = y }))
+		table.insert(self.images, g.image.new("logos/"..lge.flag..lge.level..".png",
+					{mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 2, y = y, league = lge }))
+		table.insert(self.labels, { text = lge.code or lge.level, x = g.skin.margin * 2, y = y + g.skin.bars.img_size, w = g.skin.bars.img_size, font = g.skin.small_bars.font[2], color = g.skin.bars.color2 })
 	end
 	--
 	for i = 1, seasons_c do
 		local season = seasons[#seasons-i+1] -- Recent season to oldest
 		local league = g.database.get_league(season.league)
+		if seasons_to_show==1 then seasons_to_show=2 end
 		local x = g.math.lerp(right, left, (i-1) / (seasons_to_show-1))
 		local league_level = league.level - top_level
 		local sy = g.math.lerp(top, bottom, (1/unique_divisions) * league_level)
@@ -105,11 +108,18 @@ function team_league_history_graph:draw()
 		local point = self.points[i]
 		love.graphics.setColorAlpha(point.color, 255)
 		love.graphics.circle("fill", self.x + point.x, self.y + point.y, 6, 4)
+		g.console:log(self.x + point.x, self.y + point.y)
 	end
 	for i=1, #self.images do
 		local image = self.images[i]
 		love.graphics.setColor(255, 255, 255, 255)
 		image:draw(self.x, self.y)
+	end
+	for i=1, #self.labels do
+		local label = self.labels[i]
+		love.graphics.setColor(label.color)
+		g.font.set(label.font)
+		love.graphics.printf(label.text, self.x + label.x, self.y + label.y, label.w, "center")
 	end
 	--
 	love.graphics.setScissor()

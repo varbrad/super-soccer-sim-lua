@@ -3,6 +3,7 @@ settings.name = "settings"
 
 function settings:init()
 	self.__z = 1
+	self.flux = g.flux:group()
 	--
 	g.console:log("settings:init")
 end
@@ -21,22 +22,9 @@ function settings:added()
 	--
 	local half_w = math.floor((header.w-g.skin.margin)/2 + .5)
 	--
-	local screenshot_format = { x = header.x, y = header.x + header.h + g.skin.margin, w = half_w, h = g.skin.bars.h, color = g.skin.bars.color1, label_color = g.skin.bars.color2, alpha = g.skin.bars.alpha }
-	screenshot_format.labels = {
-		{ text = "Saved Screenshot Format", x = g.skin.margin, y = g.skin.bars.ty, font = g.skin.bars.font[2]}
-	}
-	local jpg_button = g.ui.button.new(".jpg (faster to save)", { w = "auto", h = g.skin.bars.h - g.skin.margin * 2, y = screenshot_format.y + g.skin.margin})
-	local png_button = g.ui.button.new(".png (higher quality)", { w = "auto", h = g.skin.bars.h - g.skin.margin * 2, y = screenshot_format.y + g.skin.margin})
-	jpg_button.x = screenshot_format.x + screenshot_format.w - g.skin.margin * 2 - png_button.w - jpg_button.w
-	png_button.x = jpg_button.x + jpg_button.w + g.skin.margin
-	if g.settings.screenshot_format=="jpg" then jpg_button:set_colors(g.skin.red, g.skin.blue, g.skin.green) end
-	if g.settings.screenshot_format=="png" then png_button:set_colors(g.skin.red, g.skin.blue, g.skin.green) end
-	png_button.on_release = function(b) g.settings.screenshot_format = "png"; g.state.refresh_all() end
-	jpg_button.on_release = function(b) g.settings.screenshot_format = "jpg"; g.state.refresh_all() end
-	table.insert(self.buttons, jpg_button)
-	table.insert(self.buttons, png_button)
-	--
-	table.insert(self.bars, screenshot_format)
+	local graphics_bar = self:get_header_bar(header.x, header.y + header.h, half_w, g.skin.bars.h * 2, g.skin.colors[4], "Graphic Settings")
+	table.insert(self.bars, graphics_bar)
+	table.insert(self.bars, self:get_screenshot_format_bar(graphics_bar.x, graphics_bar.y + graphics_bar.h, graphics_bar.w, g.skin.bars.h, g.skin.bars.color1))
 	--
 	-- Add back button at bottom left
 	local btn = g.ui.button.new("Back")
@@ -50,6 +38,7 @@ function settings:added()
 end
 
 function settings:update(dt)
+	self.flux:update(dt)
 	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
@@ -64,6 +53,7 @@ end
 function settings:keypressed(k, ir)
 	if k=="escape" then
 		g.state.switch(g.states.overview)
+		return true
 	end
 end
 
@@ -73,6 +63,44 @@ end
 
 function settings:mousereleased(x, y, b)
 	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
+end
+
+function settings:get_header_bar(x, y, w, h, c, title)
+	local bar = { x = x, y = y, w = w, h = h, color = c, label_color = g.skin.bars.color2, alpha = g.skin.bars.alpha }
+	local text = { text = title, x = 0, w = bar.w, align = "center", font = {"bold", 24 } }
+	text.y = math.floor(bar.h/2 - g.font.height(text.font)/2 + .5)
+	bar.labels = { text }
+	return bar
+end
+
+function settings:get_screenshot_format_bar(x, y, w, h, c)
+	local bar = { x = x, y = y, w = w, h = h, color = c, label_color = g.skin.bars.color2, alpha = g.skin.bars.alpha }
+	local title = { text = "Saved Screenshot Format", x = g.skin.margin, y = g.skin.bars.ty, font = g.skin.bars.font[1] }
+	local jpg_label = { text = ".jpg (faster to save)", x = bar.w - 400, y = g.skin.bars.ty, w = 200, align = "center", font = g.skin.bars.font[2], color = nil }
+	local png_label = { text = ".png (better quality)", x = bar.w - 200, y = g.skin.bars.ty, w = 200, align = "center", font = g.skin.bars.font[2], color = nil }
+	--
+	local jpg_button = g.ui.button.new("", { w = jpg_label.w, h = g.skin.bars.h, x = bar.x + jpg_label.x, y = bar.y })
+	local png_button = g.ui.button.new("", { w = png_label.w, h = g.skin.bars.h, x = bar.x + png_label.x, y = bar.y })
+	jpg_button.visible, png_button.visible = false, false
+	--
+	local rect = { y = 0, w = 200, h = g.skin.bars.h, color = g.skin.colors[3], alpha = g.skin.bars.alpha }
+	--
+	bar.rects = { rect }
+	bar.labels = { title, jpg_label, png_label }
+	--
+	rect.x = g.settings.screenshot_format=="jpg" and jpg_label.x or png_label.x
+	png_button.on_release = function(b)
+		g.settings.screenshot_format = "png"
+		self.flux:to(rect, g.skin.tween.time, { x = png_label.x }):ease(g.skin.tween.type)
+	end
+	jpg_button.on_release = function(b)
+		g.settings.screenshot_format = "jpg"
+		self.flux:to(rect, g.skin.tween.time, { x = jpg_label.x }):ease(g.skin.tween.type)
+	end
+	table.insert(self.buttons, jpg_button)
+	table.insert(self.buttons, png_button)
+
+	return bar
 end
 
 return settings

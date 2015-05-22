@@ -27,7 +27,7 @@ function teams_ribbon:set(teams, sort)
 	self.bar.images, self.bar.rects = {}, {}
 	for i=1, #teams do
 		local t = teams[i]
-		local img = g.image.new("logos/128/"..t.id..".png", {w = image_height, h = image_height, x = columns * (i-1) + ix, y = g.skin.margin})
+		local img = g.image.new("logos/"..t.id..".png", {w = image_height, h = image_height, x = columns * (i-1) + ix, y = g.skin.margin, team = t})
 		local rect = { x = img.x - ix, y = 0, w = columns, h = height, color = t.color1, alpha = 0 }
 		table.insert(self.bar.images, img)
 		table.insert(self.bar.rects, rect)

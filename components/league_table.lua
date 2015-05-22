@@ -50,7 +50,7 @@ function league_table:set(league, style_type, pre_sort, sortable)
 		local regular, semibold = g.skin.bars.font[2], g.skin.bars.font[3]
 		local pos_label = { text = pos..".", x = g.skin.margin, y = g.skin.bars.ty, w = w, align = "right", font = semibold }
 		table.insert(bar.labels, pos_label)
-		local logo = g.image.new("logos/128/"..team.id..".png", { mipmap = true, w = iw, h = iw } )
+		local logo = g.image.new("logos/"..team.id..".png", { mipmap = true, w = iw, h = iw, team = team } )
 		logo.x, logo.y = pos_label.x + pos_label.w + g.skin.img_margin, g.skin.bars.iy
 		table.insert(bar.images, logo)
 		local name = { text = team.short_name, x = logo.x + logo.w + g.skin.img_margin, y = g.skin.bars.ty, font = regular }
@@ -138,7 +138,7 @@ function league_table:get_header(league, style, sortable)
 	local font = g.skin.bars.font[1]
 	local pos = { text = "#", x = g.skin.margin, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "right", font = font }
 	table.insert(header.labels, pos)
-	local logo = g.image.new("logos/128/"..league.flag..league.level..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size})
+	local logo = g.image.new("logos/"..league.flag..league.level..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, league = league })
 	logo.x, logo.y = pos.x + pos.w + g.skin.img_margin, g.skin.bars.iy
 	table.insert(header.images, logo)
 	local name = { text = league.short_name, x = logo.x + logo.w + g.skin.img_margin, y = g.skin.bars.ty, font = font }

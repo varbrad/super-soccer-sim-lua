@@ -20,7 +20,7 @@ function navbar:set()
 	local btn_w = g.skin.navbar.w - g.skin.navbar.border - g.skin.margin * 2
 	local btn_x = math.floor((g.skin.navbar.w-g.skin.navbar.border)/2 - btn_w/2 + .5)
 	local funcs = { function() g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end, function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end, nil, nil }
-	local imgs = { g.image.new("logos/128/"..team.id..".png", {mipmap=true, w = 32, h = 32}), g.image.new("logos/128/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32}), nil, nil}
+	local imgs = { g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, team = team}), g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, league=league}), nil, nil}
 	for i = 1, 2 do
 		self.buttons[i] = g.ui.button.new("", { x = btn_x, y = btn_x + (i-1)*(btn_w + g.skin.margin), w = btn_w, h = btn_w, image = imgs[i], on_release = funcs[i] })
 		self.buttons[i]:set_colors(team.color1, team.color2, team.color3)

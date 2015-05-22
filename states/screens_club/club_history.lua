@@ -80,7 +80,7 @@ function club_history:set_team()
 		bar.labels[1] = { text = l1, x = 0, y = g.skin.bars.ty, w = year_w, align = "center", font = g.skin.bars.font[3], color = self.team.color2 }
 		bar.rects[1] = { x = bar.labels[1].x, y = 0, w = bar.labels[1].w, h = g.skin.bars.h, color = self.team.color1, alpha = g.skin.bars.alpha }
 		local league = g.database.get_league(data.league)
-		bar.images[1] = g.image.new("logos/128/"..league.flag..league.level..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
+		bar.images[1] = g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
 		bar.labels[2] = { text = league.long_name, x = bar.images[1].x + g.skin.margin * 2 + bar.images[1].w, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
 		bar.labels[2].w, bar.labels[2].h = g.font.width(bar.labels[2].text, bar.labels[2].font), g.font.height(bar.labels[2].font)
 		--

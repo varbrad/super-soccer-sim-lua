@@ -39,7 +39,7 @@ function fixture_list:set(team)
 		bar.labels[2] = { text = fixture.type, x = bar.labels[1].x + bar.labels[1].w + g.skin.margin, y = ty, font = g.skin.small_bars.font[2], color = g.skin.small_bars.color2, w = 30, align="center" }
 		bar.labels[3] = { text = at_home, x = bar.labels[2].x + bar.labels[2].w + g.skin.margin, y = ty, font = g.skin.small_bars.font[3], color = at_home=="H" and self.team.color2 or g.skin.small_bars.color2, w = 30, align = "center" }
 		if at_home=="H" then bar.rects[1] = { x = bar.labels[3].x, y = 0, w = bar.labels[3].w, h = bar.h, color = self.team.color1, alpha = g.skin.small_bars.alpha } end
-		bar.images[1] = g.image.new("logos/128/"..opponent.id..".png", {mipmap=true, x = bar.labels[3].x + bar.labels[3].w + g.skin.margin, y = iy, w = g.skin.small_bars.img_size, h = g.skin.small_bars.img_size})
+		bar.images[1] = g.image.new("logos/"..opponent.id..".png", {mipmap=true, x = bar.labels[3].x + bar.labels[3].w + g.skin.margin, y = iy, w = g.skin.small_bars.img_size, h = g.skin.small_bars.img_size, team = opponent})
 		bar.labels[4] = { text = opponent.short_name, x = bar.images[1].x + bar.images[1].w + g.skin.margin, y = ty, font = g.skin.small_bars.font[2], color = opponent.id==g.database.vars.player.team_id and g.skin.colors[3] or g.skin.small_bars.color2 }
 		bar.labels[4].h, bar.labels[4].w = g.font.height(bar.labels[4].font), g.font.width(bar.labels[4].text, bar.labels[4].font)
 		local btn = g.ui.button.new("", { w = bar.labels[4].w, h = bar.labels[4].h, x = bar.x + bar.labels[4].x, y = bar.y + bar.labels[4].y } )

@@ -177,13 +177,13 @@ function ribbon:do_search()
 		for i=1, #g.database.team_list do
 			local t = g.database.team_list[i]
 			if string.find(string.lower(t.short_name), string.lower(text)) or string.find(string.lower(t.long_name), string.lower(text)) then
-				self.search_list[#self.search_list+1] = { item = t, image = g.image.new("logos/128/"..t.id..".png", {mipmap=true, w=g.skin.small_bars.img_size, h = g.skin.small_bars.img_size })}
+				self.search_list[#self.search_list+1] = { item = t, image = g.image.new("logos/"..t.id..".png", {mipmap=true, w=g.skin.small_bars.img_size, h = g.skin.small_bars.img_size, team = t })}
 			end
 		end
 		for i=1, #g.database.league_list do
 			local t = g.database.league_list[i]
 			if string.find(string.lower(t.short_name), string.lower(text)) or string.find(string.lower(t.long_name), string.lower(text)) then
-				self.search_list[#self.search_list+1] = { item = t, image = g.image.new("logos/128/"..t.flag..t.level..".png", {mipmap=true, w=g.skin.small_bars.img_size, h = g.skin.small_bars.img_size })}
+				self.search_list[#self.search_list+1] = { item = t, image = g.image.new("logos/"..t.flag..t.level..".png", {mipmap=true, w=g.skin.small_bars.img_size, h = g.skin.small_bars.img_size, league = t })}
 			end
 		end
 		table.sort(self.search_list, function(a,b) return a.item.long_name < b.item.long_name end)
@@ -192,10 +192,13 @@ end
 
 -- functions
 
-function ribbon:set_image(path)
+function ribbon:set_image(path, entity)
 	if path==nil then self.logo = nil; self.large_logo = nil; return end
-	self.logo = g.image.new(path)
-	self.large_logo = g.image.new(path)
+	local settings = { mipmap = true }
+	if entity.__type=="team" then settings.team = entity
+	elseif entity.__type=="league" then settings.league = entity end
+	self.logo = g.image.new(path, settings)
+	self.large_logo = g.image.new(path, settings)
 	self:set_positions()
 end
 
@@ -279,7 +282,7 @@ end
 function ribbon:set_league(league)
 	self.active_screen_type = "league"
 	self:reset()
-	self:set_image("logos/128/"..league.flag..league.level..".png")
+	self:set_image("logos/"..league.flag..league.level..".png", league)
 	self:set_header(league.long_name)
 	self:set_colors(league.color1, league.color2, league.color3)
 	local ib = {}
@@ -302,7 +305,7 @@ function ribbon:set_team(team)
 	local league = g.database.get_league(team.league_id)
 	self.active_screen_type = "team"
 	self:reset()
-	self:set_image("logos/128/"..team.id..".png")
+	self:set_image("logos/"..team.id..".png", team)
 	self:set_header(team.long_name)
 	self:set_colors(team.color1, team.color2, team.color3)
 	local btn_settings = {}
@@ -310,7 +313,7 @@ function ribbon:set_team(team)
 	btn_settings.color1 = team.color1
 	btn_settings.color2 = team.color2
 	btn_settings.color3 = team.color3
-	btn_settings.image = g.image.new("logos/128/"..league.flag..league.level..".png", {mipmap=true, w=26, h=26})
+	btn_settings.image = g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=26, h=26, league = league})
 	btn_settings.underline = true
 	btn_settings.on_release = function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end
 	self:set_infobox(g.engine.format_position(team.data.season.stats.pos) .. " in " .. league.long_name, btn_settings)

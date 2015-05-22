@@ -45,8 +45,8 @@ function fixture_group:set(league, week)
 		local score = { text = score_text, x = middle - g.skin.bars.column_size/2 - g.skin.margin, y = g.skin.bars.ty, w = g.skin.bars.column_size + g.skin.margin*2, align = "center", color = g.skin.bars.color2, font = g.skin.bars.font[3] }
 		local score_rect = { x = score.x, y = g.skin.margin, w = score.w, h = g.skin.bars.h - g.skin.margin * 2, color = bar.color, alpha = g.skin.bars.alpha, rounded = g.skin.rounded }
 		--
-		local home_logo = g.image.new("logos/128/"..home.id..".png", { w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = score.x - g.skin.bars.img_size - g.skin.img_margin, y = g.skin.bars.iy })
-		local away_logo = g.image.new("logos/128/"..away.id..".png", { w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = score.x + score.w + g.skin.img_margin, y = g.skin.bars.iy })
+		local home_logo = g.image.new("logos/"..home.id..".png", { w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = score.x - g.skin.bars.img_size - g.skin.img_margin, y = g.skin.bars.iy, team = home })
+		local away_logo = g.image.new("logos/"..away.id..".png", { w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = score.x + score.w + g.skin.img_margin, y = g.skin.bars.iy, team = away })
 		--
 		local home_team = { text = home.short_name, y = g.skin.bars.ty, font = g.skin.bars.font[2], alpha = f.result_code~="2" and 255 or g.skin.bars.alpha, color = home.id==g.database.vars.player.team_id and g.skin.colors[3] or nil }
 		home_team.w, home_team.h = g.font.width(home_team.text, home_team.font), g.font.height(home_team.font)

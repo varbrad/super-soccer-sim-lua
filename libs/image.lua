@@ -12,16 +12,43 @@ function image.new(path, settings)
 	setmetatable(i, image)
 	if type(path)=="string" then
 		if cache[path] then
-			i.img = cache[path]
-			if settings.mipmap==true then i.img:setMipmapFilter("nearest",0) end
+			if type(cache[path])=="table" then
+				i.img, i.img2 = cache[path][1], cache[path][2]
+				if settings.mipmap==true then i.img:setMipmapFilter("nearest",0); i.img2:setMipmapFilter("nearest",0) end
+			else
+				i.img = cache[path]
+				if settings.mipmap==true then i.img:setMipmapFilter("nearest",0) end
+			end
 		else
 			if love.filesystem.exists(path) then
 				i.img = love.graphics.newImage(path)
 				if settings.mipmap==true then i.img:setMipmapFilter("nearest", 0) end
 				cache[path] = i.img
+			elseif settings.team then
+				local imgdata = love.image.newImageData("assets/images/logos/team_default.png")
+				local imgdata2 = love.image.newImageData("assets/images/logos/team_default_border.png")
+				local c, c2 = settings.team.color1, settings.team.color2
+				imgdata:mapPixel(function(x,y,r,g,b,a) r,g,b=c[1],c[2],c[3];return r,g,b,a end)
+				imgdata2:mapPixel(function(x,y,r,g,b,a) r,g,b=c2[1],c2[2],c2[3];return r,g,b,a end)
+				i.img = love.graphics.newImage(imgdata)
+				i.img2 = love.graphics.newImage(imgdata2)
+				i.img:setMipmapFilter("nearest", 0)
+				i.img2:setMipmapFilter("nearest", 0)
+				cache[path] = {i.img, i.img2}
+			elseif settings.league then
+				local imgdata = love.image.newImageData("assets/images/logos/league_default.png")
+				local imgdata2 = love.image.newImageData("assets/images/logos/league_default_border.png")
+				local c, c2 = settings.league.color2, settings.league.color1
+				imgdata:mapPixel(function(x,y,r,g,b,a) r,g,b=c[1],c[2],c[3];return r,g,b,a end)
+				imgdata2:mapPixel(function(x,y,r,g,b,a) r,g,b=c2[1],c2[2],c2[3];return r,g,b,a end)
+				i.img = love.graphics.newImage(imgdata)
+				i.img2 = love.graphics.newImage(imgdata2)
+				i.img:setMipmapFilter("nearest", 0)
+				i.img2:setMipmapFilter("nearest", 0)
+				cache[path] = { i.img, i.img2 }
 			else
+				-- Make some crappy img_data thing
 				i.no_image = true
-				g.console:print("An Image Could Not Be Loaded.\t\t("..path..")", g.skin.red)
 			end
 		end
 	else
@@ -65,6 +92,7 @@ function image:draw(ox, oy, sx, sy)
 		love.graphics.rectangle("fill", self.x + ox, self.y + oy, self.w, self.h)
 	else
 		love.graphics.draw(self.img, self.x + ox, self.y + oy, 0, self.sx * sx, self.sy * sy)
+		if self.img2 then love.graphics.draw(self.img2, self.x + ox, self.y + oy, 0, self.sx * sx, self.sy * sy) end
 	end
 end
 

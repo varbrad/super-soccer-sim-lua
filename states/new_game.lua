@@ -95,7 +95,7 @@ function new_game:set_nation(nation)
 		bar.league = lge
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
 		bar.color1, bar.color2 = bar.color, g.skin.colors[3]
-		local lge_img = g.image.new("logos/128/"..lge.flag..lge.level..".png", { mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3, y = g.skin.bars.iy })
+		local lge_img = g.image.new("logos/"..lge.flag..lge.level..".png", { mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3, y = g.skin.bars.iy, league = lge })
 		local name = { text = lge.long_name, x = g.skin.margin * 6 + g.skin.bars.img_size, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
 		bar.images = { lge_img }
 		bar.labels = { name }
@@ -137,7 +137,7 @@ function new_game:set_league(league)
 		bar.team = team
 		bar.color = i%2==0 and g.skin.bars.color1 or g.skin.bars.color3
 		bar.color1, bar.color2 = bar.color, g.skin.colors[3]
-		local team_img = g.image.new("logos/128/"..team.id..".png", { mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3, y = g.skin.bars.iy })
+		local team_img = g.image.new("logos/"..team.id..".png", { mipmap=true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3, y = g.skin.bars.iy, team = team })
 		local name = { text = team.long_name, x = g.skin.margin * 6 + g.skin.bars.img_size, y = g.skin.bars.ty, font = g.skin.bars.font[2], color = g.skin.bars.color2 }
 		bar.images = { team_img }
 		bar.labels = { name }
@@ -178,7 +178,7 @@ function new_game:set_team(team)
 	name.x = math.floor(bar.w/2 - name.w/2 + .5)
 	local name_rect = { x = name.x - g.skin.margin * 2, y = name.y - g.skin.margin, w = name.w + g.skin.margin * 4, h = name.h + g.skin.margin * 2, color = team.color1, alpha = g.skin.bars.alpha, rounded = g.skin.rounded }
 	--
-	local logo = g.image.new("logos/128/"..team.id..".png", {mipmap=true} )
+	local logo = g.image.new("logos/"..team.id..".png", {mipmap=true, team = team} )
 	logo.x, logo.y = math.floor(bar.w/2 - logo.w/2 + .5), name_rect.y + name_rect.h + g.skin.margin
 	--
 	local r1 = { x = g.skin.margin, y = logo.y + logo.h + g.skin.margin, w = (bar.w - g.skin.margin * 2), h = g.skin.bars.h, color = team.color3, alpha = g.skin.bars.alpha }

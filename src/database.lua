@@ -163,6 +163,7 @@ function database.new_season()
 			league.data.season = {}
 			league.data.season.year = database.vars.year
 			league.data.season.fixtures = g.engine.generate_league_fixtures(league)
+			league.data.season.records = { min = {}, max = {} }
 			--
 			for c=1, #league.refs.teams do
 				local team = league.refs.teams[c]
@@ -188,7 +189,18 @@ function database.end_season()
 		for b = 1, #nation.refs.leagues do
 			local league = nation.refs.leagues[b]
 			--
-			local league_records = league.data.history.records
+			local league_season_records = league.data.season.records
+			local league_alltime_records = league.data.history.records
+			-- Did we break any historic records this season?
+			for k,v in pairs(league_season_records.min) do
+				if league_alltime_records.min[k]==nil or v.value < league_alltime_records.min[k].value then league_alltime_records.min[k] = v end
+			end
+			for k,v in pairs(league_season_records.max) do
+				if league_alltime_records.max[k]==nil or v.value > league_alltime_records.max[k].value then league_alltime_records.max[k] = v end
+			end
+			--
+			league.data.season.records = nil
+			--
 			local total_teams = #league.data.teams
 			local lub_min, lub_max = league.level_up_boost_min, league.level_up_boost_max
 			local ldb_min, ldb_max = league.level_down_boost_min, league.level_down_boost_max
@@ -234,10 +246,11 @@ function database.end_season()
 				compact_season.league_team_count = total_teams
 				compact_season.year = database.vars.year
 				-- Did we break any league.data.history.records? Go through all stats
+				--[[
 				for k,v in pairs(team.data.season.stats) do
 					if league_records[k]==nil or v > league_records[k].value then league_records[k] = { year = database.vars.year, value = v, team = team.id } end
 				end
-				--
+				--]]--
 				table.insert(team.data.history.past_seasons, compact_season)
 			end
 			--
@@ -282,6 +295,19 @@ function database.advance_week()
 			end
 		end
 		g.engine.update_league_table(league)
+		-- Update W, D, L, etc. league.data.season.records!
+		-- league.data.season.records needs to be reset too!
+		league.data.season.records = { min = {}, max = {} }
+		local season_records = league.data.season.records
+		for i=1, #league.refs.teams do
+			local team = league.refs.teams[i]
+			local stats = team.data.season.stats
+			for k,v in pairs(stats) do
+				if season_records.min[k]==nil or v < season_records.min[k].value then season_records.min[k] = { team = team.id, value = v, year = g.database.vars.year } end
+				if season_records.max[k]==nil or v > season_records.max[k].value then season_records.max[k] = { team = team.id, value = v, year = g.database.vars.year } end
+			end
+		end
+		--
 	end
 end
 
@@ -307,6 +333,7 @@ function database.save_game()
 	end
 	table.insert(data, g.ser(database.vars))
 	--
+	love.filesystem.createDirectory("save")
 	love.filesystem.write("save/save.sav", table.concat(data, "\f"))
 	--
 	g.console:print("Took " .. (love.timer.getTime()-t1) .. " seconds to save game!", g.skin.blue)
@@ -413,10 +440,10 @@ end
 function database.create_league(raw)
 	local league = {}
 	league.__type = "league"
-	--id,long_name,short_name,level,flag,color1,color2,color3,level_up,level_up_boost_min,level_up_boost_max,level_down,level_down_boost_min,level_down_boost_max,promoted,relegated,playoffs,r_playoffs
 	league.id = assert(tonumber(raw.id), "A league had no ID!")
 	league.long_name = raw.long_name or "<LONG_NAME>"
 	league.short_name = raw.short_name or "<SHORT_NAME>"
+	league.code = raw.code or nil -- Used for team history graph. NOT UNIQUE, so dont use for anything unique sensitive
 	league.level = tonumber(raw.level) or 1
 	league.flag = assert(raw.flag, "A league had no flag!")
 	league.color1 = love.graphics.hexToRgb(raw.color1) or { 50, 50, 87, 255 }
@@ -441,7 +468,7 @@ function database.setup_league(league)
 	league.data.teams = {}
 	league.data.history = {}
 	league.data.history.past_winners = {}
-	league.data.history.records = {}
+	league.data.history.records = { min = {}, max = {} }
 	--
 	local nation = database.nation_dict[league.flag]
 	if nation then

@@ -50,9 +50,9 @@ function league_past_winners:set()
 		bar.images, bar.labels, bar.rects = {}, {}, {}
 		bar.labels[1] = { text = data.year.."/"..(data.year+1), x = 0, y = g.skin.bars.ty, w = year_w, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 		bar.rects[1] = { x = bar.labels[1].x, y = 0, w = bar.labels[1].w, h = g.skin.bars.h, color = self.league.color2, alpha = g.skin.bars.alpha }
-		bar.images[1] = g.image.new("logos/128/"..data[1].team..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
-		bar.images[2] = g.image.new("logos/128/"..data[2].team..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w + col_width, y = g.skin.bars.iy})
-		bar.images[3] = g.image.new("logos/128/"..data[3].team..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w + col_width * 2, y = g.skin.bars.iy})
+		bar.images[1] = g.image.new("logos/"..data[1].team..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w, y = g.skin.bars.iy})
+		bar.images[2] = g.image.new("logos/"..data[2].team..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w + col_width, y = g.skin.bars.iy})
+		bar.images[3] = g.image.new("logos/"..data[3].team..".png", {mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = g.skin.margin * 3 + bar.labels[1].w + col_width * 2, y = g.skin.bars.iy})
 		local c1, c2, c3 = g.database.vars.player.team_id==data[1].team, g.database.vars.player.team_id==data[2].team, g.database.vars.player.team_id==data[3].team
 		c1, c2, c3 = c1 and g.skin.colors[3] or g.skin.bars.color2, c2 and g.skin.colors[3] or g.skin.bars.color2, c3 and g.skin.colors[3] or g.skin.bars.color2
 		local team1, team2, team3 = g.database.get_team(data[1].team), g.database.get_team(data[2].team), g.database.get_team(data[3].team)
