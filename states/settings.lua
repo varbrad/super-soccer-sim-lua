@@ -25,6 +25,7 @@ function settings:added()
 	local graphics_bar = self:get_header_bar(header.x, header.y + header.h, half_w, g.skin.bars.h * 2, g.skin.colors[4], "Graphic Settings")
 	table.insert(self.bars, graphics_bar)
 	table.insert(self.bars, self:get_screenshot_format_bar(graphics_bar.x, graphics_bar.y + graphics_bar.h, graphics_bar.w, g.skin.bars.h, g.skin.bars.color1))
+	table.insert(self.bars, self:get_background_cycle_bar(graphics_bar.x, graphics_bar.y + graphics_bar.h + g.skin.bars.h, graphics_bar.w, g.skin.bars.h, g.skin.bars.color3))
 	--
 	-- Add back button at bottom left
 	local btn = g.ui.button.new("Back")
@@ -99,6 +100,38 @@ function settings:get_screenshot_format_bar(x, y, w, h, c)
 	end
 	table.insert(self.buttons, jpg_button)
 	table.insert(self.buttons, png_button)
+
+	return bar
+end
+
+function settings:get_background_cycle_bar(x, y, w, h, c)
+	local bar = { x = x, y = y, w = w, h = h, color = c, label_color = g.skin.bars.color2, alpha = g.skin.bars.alpha }
+	local title = { text = "Background Cycling", x = g.skin.margin, y = g.skin.bars.ty, font = g.skin.bars.font[1] }
+	local yes_label = { text = "ON", x = bar.w - 400, y = g.skin.bars.ty, w = 200, align = "center", font = g.skin.bars.font[2], color = nil }
+	local no_label = { text = "OFF", x = bar.w - 200, y = g.skin.bars.ty, w = 200, align = "center", font = g.skin.bars.font[2], color = nil }
+	--
+	local yes_button = g.ui.button.new("", { w = yes_label.w, h = g.skin.bars.h, x = bar.x + yes_label.x, y = bar.y })
+	local no_button = g.ui.button.new("", { w = no_label.w, h = g.skin.bars.h, x = bar.x + no_label.x, y = bar.y })
+	yes_button.visible, no_button.visible = false, false
+	--
+	local rect = { y = 0, w = 200, h = g.skin.bars.h, color = g.skin.colors[3], alpha = g.skin.bars.alpha }
+	--
+	bar.rects = { rect }
+	bar.labels = { title, yes_label, no_label }
+	--
+	rect.x = g.settings.background_cycle==true and yes_label.x or no_label.x
+	no_button.on_release = function(b)
+		g.settings.background_cycle = false
+		g.states.background:stop_cycling()
+		self.flux:to(rect, g.skin.tween.time, { x = no_label.x }):ease(g.skin.tween.type)
+	end
+	yes_button.on_release = function(b)
+		g.settings.background_cycle = true
+		g.states.background:start_cycling()
+		self.flux:to(rect, g.skin.tween.time, { x = yes_label.x }):ease(g.skin.tween.type)
+	end
+	table.insert(self.buttons, yes_button)
+	table.insert(self.buttons, no_button)
 
 	return bar
 end

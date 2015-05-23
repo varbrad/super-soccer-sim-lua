@@ -95,9 +95,9 @@ end
 
 function engine.new_team_stat_object()
 	return {
-		pos = -1, p = 0, w = 0, d = 0, l = 0, gf = 0, ga = 0, gd = 0, pts = 0,
-		hp = 0, hw = 0, hd = 0, hl = 0, hgf = 0, hga = 0, hgd = 0, hpts = 0,
-		ap = 0, aw = 0, ad = 0, al = 0, agf = 0, aga = 0, agd = 0, apts = 0
+		pos = -1, p = 0, w = 0, d = 0, l = 0, gf = 0, ga = 0, gd = 0, pts = 0, cs = 0,
+		hp = 0, hw = 0, hd = 0, hl = 0, hgf = 0, hga = 0, hgd = 0, hpts = 0, hcs = 0,
+		ap = 0, aw = 0, ad = 0, al = 0, agf = 0, aga = 0, agd = 0, apts = 0, acs = 0
 	}
 end
 
@@ -188,6 +188,8 @@ function engine.update_league_table(league)
 			end
 			hs.pts = hs.w*3+hs.d;	hs.hpts = hs.hw*3+hs.hd
 			as.pts = as.w*3+as.d;	as.apts = as.aw*3+as.ad
+			hs.cs, hs.hcs = hs.cs + (fix.away_score==0 and 1 or 0), hs.hcs + (fix.away_score==0 and 1 or 0)
+			as.cs, as.acs = as.cs + (fix.home_score==0 and 1 or 0), as.acs + (fix.home_score==0 and 1 or 0)
 		else
 			break
 		end

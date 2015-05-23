@@ -26,6 +26,7 @@ function league_records:set()
 		{ "ga", "Goals Conceded" },
 		{ "gd", "Goal Difference" },
 		{ "pts", "Points" },
+		{ "cs", "Clean Sheets"},
 		{ 1 },
 		{ "hw", "Home Wins" },
 		{ "hd", "Home Draws" },
@@ -34,6 +35,7 @@ function league_records:set()
 		{ "hga", "Home Goals Conceded" },
 		{ "hgd", "Home Goal Difference" },
 		{ "hpts", "Home Points" },
+		{ "hcs", "Home Clean Sheets" },
 		{ 1 },
 		{ "aw", "Away Wins" },
 		{ "ad", "Away Draws" },
@@ -41,7 +43,8 @@ function league_records:set()
 		{ "agf", "Away Goals Scored" },
 		{ "aga", "Away Goals Conceded" },
 		{ "agd", "Away Goal Difference" },
-		{ "apts", "Away Points" }
+		{ "apts", "Away Points" },
+		{ "acs", "Away Clean Sheets" }
 	}
 	for i = 1, #key_order do
 		local k = key_order[i][1]
@@ -60,7 +63,15 @@ function league_records:set()
 				local team_logo = g.image.new("logos/"..team.id..".png", { mipmap = true, w = g.skin.bars.img_size, h = g.skin.bars.img_size, x = value_text.x + value_text.w + g.skin.img_margin, y = g.skin.bars.iy })
 				local team_name = { text = team.long_name, x = team_logo.x + team_logo.w + g.skin.img_margin, y = g.skin.bars.ty, font = g.skin.bars.font[2] }
 				team_name.color = g.database.get_player_team() == team and g.skin.colors[3] or nil
-				team_name.w = g.font.width(team_name.text, team_name.font)
+				team_name.w, team_name.h = g.font.width(team_name.text, team_name.font), g.font.height(team_name.font)
+				--
+				local btn = g.ui.button.new("", { x = bar.x + team_name.x, y = bar.y + team_name.y, w = team_name.w, h = team_name.h })
+				btn.visible = false
+				btn.on_enter = function(b) team_name.underline = true end
+				btn.on_exit = function(b) team_name.underline = false end
+				btn.on_release = function(b) g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end
+				table.insert(self.buttons, btn)
+				--
 				local year_text = { text = year .. "/" .. (year+1), x = team_name.x + team_name.w + g.skin.margin, y = g.skin.bars.ty, font = g.skin.bars.font[2], alpha = g.skin.bars.alpha }
 				--
 				bar.images = { team_logo }
@@ -76,12 +87,20 @@ function league_records:set()
 end
 
 function league_records:update(dt)
-	
+	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
 function league_records:draw()
 	self.panel:draw()
 	for i=1, #self.bars do g.components.bar_draw.draw(self.bars[i]) end
+end
+
+function league_records:mousepressed(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+end
+
+function league_records:mousereleased(x, y, b)
+	for i=1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
 end
 
 return league_records
