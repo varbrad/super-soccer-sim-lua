@@ -108,7 +108,6 @@ function team_league_history_graph:draw()
 		local point = self.points[i]
 		love.graphics.setColorAlpha(point.color, 255)
 		love.graphics.circle("fill", self.x + point.x, self.y + point.y, 6, 4)
-		g.console:log(self.x + point.x, self.y + point.y)
 	end
 	for i=1, #self.images do
 		local image = self.images[i]

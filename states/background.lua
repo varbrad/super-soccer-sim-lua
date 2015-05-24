@@ -33,7 +33,6 @@ function bg:start_cycling()
 	self.image2 = self.images[next_index]
 	self.image2.alpha = 0
 	self.flux:to(self.image2, g.settings.background_cycle_time, {alpha = 255}):oncomplete(function() self.index = next_index; self:set(); self:start_cycling() end)
-	g.console:log("Switched from " .. self.index .. " to " .. next_index)
 end
 
 function bg:stop_cycling()
