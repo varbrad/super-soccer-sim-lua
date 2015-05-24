@@ -5,6 +5,7 @@ local hex = love.graphics.hexToRgb
 skin.red = hex("ff3333")
 skin.green = hex("33ff33")
 skin.blue = hex("72f7ff")
+skin.yellow = hex("f7ff72")
 skin.white = hex("ffffff")
 skin.black = hex("000000")
 

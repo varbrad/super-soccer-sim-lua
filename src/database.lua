@@ -148,6 +148,18 @@ function database.new_game(player_team_id)
 	vars.view = {}
 	vars.view.league_id = database.get_player_league()
 	vars.view.team_id = player_team_id
+	--
+	local team = database.get_player_team()
+	local def, mid, att = team.def, team.mid, team.att
+	vars.players = g.players.generate_team(def, mid, att) -- Gets a preset team of 21 players based around team stats
+	--
+	for i=1, #vars.players do
+		local p = vars.players[i]
+		local str = string.format("%3s: %-20s - Age = %2i, OVR = %2i", p.position, p.first_name .. " " .. p.last_name, p.age, p.rating)
+		local c = g.skin.red
+		if p.position=="gk" then c = g.skin.yellow elseif p.position=="df" then c = g.skin.blue elseif p.position=="mf" then c = g.skin.green end
+		g.console:print(str, c)
+	end
 end
 
 function database.new_season()

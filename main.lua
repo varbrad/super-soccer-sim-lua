@@ -26,6 +26,7 @@ function love.load(args)
 	g.database = require "src.database"
 	g.engine = require "src.engine"
 	g.math = require "src.math"
+	g.players = require "src.players"
 	g.settings = require "src.settings"
 	g.shaders = require "src.shaders"
 	-- Load components
@@ -180,9 +181,9 @@ function love.keypressed(k,ir)
 	-- Run these commands regardless of what the heck is going on!
 	-- Probably should be F1 thru F12 keys only, as nothing else cares about those!
 	if k=="f5" then
-		if g.in_game and not g.msgbox.active then g.database.save_game() end
+		if g.in_game and not g.msgbox.active and not g.busy then g.database.save_game() end
 	elseif k=="f9" then
-		if g.in_game then g.database.load_game(); g.state.refresh_all() end
+		if g.in_game and not g.msgbox.active and not g.busy then g.database.load_game(); g.state.refresh_all() end
 	elseif k=="f10" then
 		g.console:print(g.state.order(), g.skin.red)
 		g.console:print("Active State: " .. g.state.active().name, g.skin.green)
