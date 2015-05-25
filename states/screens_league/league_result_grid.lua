@@ -12,6 +12,7 @@ function league_results_grid:added()
 	local w80 = w * .8
 	self.result_grid = g.components.result_grid.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, w80, h)
 	self.league_table = g.components.league_table.new(self.result_grid.x + self.result_grid.w + g.skin.margin, self.result_grid.y, w - w80 - g.skin.margin, h)
+	g.tween_alpha()
 	self:set_league()
 end
 
@@ -21,8 +22,8 @@ function league_results_grid:update(dt)
 end
 
 function league_results_grid:draw()
-	self.result_grid:draw()
-	self.league_table:draw()
+	self.result_grid:draw(g.tween.t_alpha)
+	self.league_table:draw(g.tween.t_alpha)
 end
 
 function league_results_grid:set_league()

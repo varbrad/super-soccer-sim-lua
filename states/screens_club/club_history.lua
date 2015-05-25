@@ -11,6 +11,7 @@ function club_history:added()
 	self.panel = g.ui.panel.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, g.skin.screen.h - g.skin.margin * 3 - 300)
 	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
 	self.history_graph = g.components.team_league_history_graph.new(self.panel.x, self.panel.y + self.panel.h + g.skin.margin, self.panel.w, 300, 50)
+	g.tween_alpha()
 	self:set_team()
 end
 
@@ -23,12 +24,12 @@ function club_history:draw()
 	love.graphics.setScissor(self.panel.x + g.skin.margin, self.panel.y + g.skin.margin, self.panel.w - g.skin.margin * 2, self.panel.h - g.skin.margin * 2)
 	--
 	for i=1,#self.bars do
-		g.components.bar_draw.draw(self.bars[i])
+		g.components.bar_draw.draw(self.bars[i], 0, 0, g.tween.t_alpha)
 	end
 	--
 	love.graphics.setScissor()
 	--
-	self.history_graph:draw()
+	self.history_graph:draw(g.tween.t_alpha)
 end
 
 local function color_copy(c)

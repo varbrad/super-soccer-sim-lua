@@ -72,12 +72,12 @@ function result_grid:update(dt)
 	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
-function result_grid:draw()
+function result_grid:draw(t_alpha)
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
 	for i=1, #self.bars do
 		local bar = self.bars[i]
-		g.components.bar_draw.draw(bar)
+		g.components.bar_draw.draw(bar, 0, 0, t_alpha)
 	end
 	love.graphics.setScissor()
 end

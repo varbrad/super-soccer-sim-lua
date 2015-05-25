@@ -44,10 +44,10 @@ function teams_ribbon:update(dt)
 	self.flux:update(dt)
 end
 
-function teams_ribbon:draw()
+function teams_ribbon:draw(t_alpha)
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
-	g.components.bar_draw.draw(self.bar)
+	g.components.bar_draw.draw(self.bar, 0, 0, t_alpha)
 	love.graphics.setScissor()
 end
 

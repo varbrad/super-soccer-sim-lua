@@ -16,6 +16,7 @@ function club_overview:added()
 	self.league_table = g.components.league_table.new(self.fixture_list.x + self.fixture_list.w + g.skin.margin, self.fixture_list.y, middle, height, true) -- Show the current view_team
 	self.league_graph = g.components.team_league_pos_graph.new(self.league_table.x + self.league_table.w + g.skin.margin, self.fixture_list.y, split_w, split_h)
 	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h, 20)
+	g.tween_alpha()
 	self:set_team()
 end
 
@@ -25,10 +26,10 @@ function club_overview:update(dt)
 end
 
 function club_overview:draw()
-	self.fixture_list:draw()
-	self.league_table:draw()
-	self.league_graph:draw()
-	self.history_graph:draw()
+	self.fixture_list:draw(g.tween.t_alpha)
+	self.league_table:draw(g.tween.t_alpha)
+	self.league_graph:draw(g.tween.t_alpha)
+	self.history_graph:draw(g.tween.t_alpha)
 end
 
 function club_overview:set_team()

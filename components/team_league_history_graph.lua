@@ -83,40 +83,42 @@ function team_league_history_graph:set(team)
 	--
 end
 
-function team_league_history_graph:draw()
+function team_league_history_graph:draw(t_alpha)
+	t_alpha = t_alpha or 1
 	self.panel:draw()
 	love.graphics.setScissor(self.x + g.skin.margin, self.y + g.skin.margin, self.w - g.skin.margin * 2, self.h - g.skin.margin * 2)
 	-- Draw lines first
 	love.graphics.setLineWidth(2)
 	for i=1, #self.rects do
 		local rect = self.rects[i]
+		if rect.color then love.graphics.setColorAlpha(rect.color, g.skin.bars.alpha * t_alpha) end
 		love.graphics.rectangle("fill", self.x + rect.x, self.y + rect.y, rect.w, rect.h)
 	end
 	for i=1, #self.lines do
 		local line = self.lines[i]
-		if line.color then love.graphics.setColorAlpha(line.color, g.skin.bars.alpha) else love.graphics.setColorAlpha(g.skin.bars.color2, g.skin.bars.alpha) end
+		if line.color then love.graphics.setColorAlpha(line.color, g.skin.bars.alpha * t_alpha) else love.graphics.setColorAlpha(g.skin.bars.color2, g.skin.bars.alpha * t_alpha) end
 		love.graphics.line(self.x + line[1], self.y + line[2], self.x + line[3], self.y + line[4])
 	end
 	if #self.points > 1 then
 		for i=1, #self.points - 1 do
 			local p1, p2 = self.points[i], self.points[i+1]
-			love.graphics.setColorAlpha(g.skin.bars.color2, g.skin.bars.alpha)
+			love.graphics.setColorAlpha(g.skin.bars.color2, g.skin.bars.alpha * t_alpha)
 			love.graphics.line(self.x + p1.x, self.y + p1.y, self.x + p2.x, self.y + p2.y)
 		end
 	end
 	for i=1, #self.points do
 		local point = self.points[i]
-		love.graphics.setColorAlpha(point.color, 255)
+		love.graphics.setColorAlpha(point.color, 255 * t_alpha)
 		love.graphics.circle("fill", self.x + point.x, self.y + point.y, 6, 4)
 	end
 	for i=1, #self.images do
 		local image = self.images[i]
-		love.graphics.setColor(255, 255, 255, 255)
+		love.graphics.setColor(255, 255, 255, 255 * t_alpha)
 		image:draw(self.x, self.y)
 	end
 	for i=1, #self.labels do
 		local label = self.labels[i]
-		love.graphics.setColor(label.color)
+		love.graphics.setColorAlpha(label.color, 255 * t_alpha)
 		g.font.set(label.font)
 		love.graphics.printf(label.text, self.x + label.x, self.y + label.y, label.w, "center")
 	end

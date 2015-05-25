@@ -84,12 +84,13 @@ function fixture_group:update(dt)
 	for i=1, #self.buttons do self.buttons[i]:update(dt) end
 end
 
-function fixture_group:draw()
+function fixture_group:draw(t_alpha)
+	t_alpha = t_alpha or 1
 	self.panel:draw()
 	love.graphics.setScissor(self.panel.x+g.skin.margin, self.panel.y+g.skin.margin, self.panel.w-g.skin.margin*2, self.panel.h-g.skin.margin*2)
 	for i=1, #self.bars do
 		local bar = self.bars[i]
-		g.components.bar_draw.draw(bar)
+		g.components.bar_draw.draw(bar, 0, 0,  t_alpha)
 	end
 	love.graphics.setScissor()
 end

@@ -96,6 +96,8 @@ function love.load(args)
 	g.console:print("love.load finished", g.skin.green)
 	g.console:hr()
 	--
+	g.tween = { t_alpha = 1 }
+	--
 	-- The canvas object everything gets drawn to, in order to use alpha-based shaders.
 	-- This should never be drawn to or used anywhere else except main.lua
 	g.canvas = love.graphics.newCanvas()
@@ -166,6 +168,11 @@ end
 function g.continue_function()
 	g.database.advance_week()
 	g.state.refresh_all()
+end
+
+function g.tween_alpha()
+	g.tween.t_alpha = 0
+	g.flux.to(g.tween, g.skin.tween.time, { t_alpha = 1 }):ease(g.skin.tween.type)
 end
 
 function love.keypressed(k,ir)

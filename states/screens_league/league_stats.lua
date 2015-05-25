@@ -9,6 +9,7 @@ end
 
 function league_stats:added()
 	self.custom_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, g.skin.screen.h - g.skin.margin * 2)
+	g.tween_alpha()
 	self:set()
 end
 
@@ -25,7 +26,7 @@ function league_stats:update(dt)
 end
 
 function league_stats:draw()
-	self.custom_table:draw()
+	self.custom_table:draw(g.tween.t_alpha)
 end
 
 function league_stats:mousepressed(x, y, b)

@@ -18,6 +18,7 @@ function league_overview:added()
 	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, self.teams_ribbon.y + self.teams_ribbon.h + g.skin.margin, split_w, rest_h)
 	self.upcoming = g.components.fixture_group.new(g.skin.screen.x + g.skin.margin * 2 + self.league_table.w, self.league_table.y, split_w, split_rest_h) 
 	self.results = g.components.fixture_group.new(self.upcoming.x, self.upcoming.y + self.upcoming.h + g.skin.margin, self.upcoming.w, self.upcoming.h)
+	g.tween_alpha()
 	self:set_league()
 end
 
@@ -29,10 +30,10 @@ function league_overview:update(dt)
 end
 
 function league_overview:draw()
-	self.teams_ribbon:draw()
-	self.league_table:draw()
-	self.upcoming:draw()
-	self.results:draw()
+	self.teams_ribbon:draw(g.tween.t_alpha)
+	self.league_table:draw(g.tween.t_alpha)
+	self.upcoming:draw(g.tween.t_alpha)
+	self.results:draw(g.tween.t_alpha)
 end
 
 function league_overview:set_league()

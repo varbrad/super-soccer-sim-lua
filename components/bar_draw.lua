@@ -1,10 +1,11 @@
 local bd = {}
 
-function bd.draw(bar, ox, oy)
+function bd.draw(bar, ox, oy, t_alpha)
+	t_alpha = t_alpha or 1
 	ox, oy = ox or 0, oy or 0
 	if bar.x + ox > g.width or bar.y + oy > g.height or bar.x + ox + bar.w < 0 or bar.y + oy + bar.h < 0 then return end
 	if bar.alpha > 0 then
-		love.graphics.setColorAlpha(bar.color, bar.alpha)
+		love.graphics.setColorAlpha(bar.color, bar.alpha * t_alpha)
 		if bar.rounded then
 			love.graphics.roundrect("fill", bar.x + ox, bar.y + oy, bar.w, bar.h, bar.rounded)
 		else
@@ -14,7 +15,7 @@ function bd.draw(bar, ox, oy)
 	if bar.rects then
 		for i=1, #bar.rects do
 			local rect = bar.rects[i]
-			love.graphics.setColorAlpha(rect.color, rect.alpha or 255)
+			love.graphics.setColorAlpha(rect.color, (rect.alpha or 255)  * t_alpha)
 			if rect.rounded then
 				love.graphics.roundrect("fill", bar.x + rect.x + ox, bar.y + rect.y + oy, rect.w, rect.h, rect.rounded)
 			else
@@ -27,9 +28,9 @@ function bd.draw(bar, ox, oy)
 			local label = bar.labels[i]
 			g.font.set(label.font)
 			if label.color==nil then
-				love.graphics.setColorAlpha(bar.label_color, label.alpha or 255)
+				love.graphics.setColorAlpha(bar.label_color, (label.alpha or 255)  * t_alpha)
 			else
-				love.graphics.setColorAlpha(label.color, label.alpha or 255)
+				love.graphics.setColorAlpha(label.color, (label.alpha or 255) * t_alpha )
 			end
 			if label.align then
 				love.graphics.printf(label.text, math.floor(bar.x + label.x + ox + .5), math.floor(bar.y + label.y + oy + .5), label.w, label.align)
@@ -44,7 +45,7 @@ function bd.draw(bar, ox, oy)
 		end
 	end
 	if bar.images then
-		love.graphics.setColor(255, 255, 255, 255)
+		love.graphics.setColor(255, 255, 255, 255 * t_alpha)
 		for i=1, #bar.images do
 			bar.images[i]:draw(bar.x + ox, bar.y + oy)
 		end

@@ -10,6 +10,7 @@ end
 function league_records:added()
 	self.panel = g.ui.panel.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, g.skin.screen.h - g.skin.margin * 2)
 	self.panel:set_colors(g.skin.components.color1, g.skin.components.color3)
+	g.tween_alpha()
 	self:set()
 end
 
@@ -99,7 +100,7 @@ end
 
 function league_records:draw()
 	self.panel:draw()
-	for i=1, #self.bars do g.components.bar_draw.draw(self.bars[i]) end
+	for i=1, #self.bars do g.components.bar_draw.draw(self.bars[i], 0, 0, g.tween.t_alpha) end
 end
 
 function league_records:mousepressed(x, y, b)

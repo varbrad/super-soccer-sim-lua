@@ -23,7 +23,7 @@ function notification:new(text, image)
 		self.flux:to(item, g.skin.tween.time, { x = item.tx, y = item.ty }):ease(g.skin.tween.type)
 	end
 	--
-	local item = { tx = self.skin.x, ty = self.skin.y, w = self.skin.w, h = self.skin.h, color = self.skin.color1, alpha = self.skin.alpha - self.skin.dalpha }
+	local item = { tx = self.skin.x, ty = self.skin.y, w = self.skin.w, h = self.skin.h, color = self.skin.color1, alpha = self.skin.alpha - self.skin.dalpha, rounded = g.skin.rounded }
 	item.x, item.y = item.tx - self.skin.dx, item.ty - self.skin.dy
 	local label = { text = text or "", w = item.w - g.skin.margin * 3 - self.skin.img_size, align = "center", x = g.skin.margin * 2 + self.skin.img_size, color = {255, 255, 255}, alpha = 255, font = self.skin.font[1] }
 	local mult = 1

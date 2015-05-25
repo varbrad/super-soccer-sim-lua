@@ -106,9 +106,9 @@ function league_table:update(dt)
 	end
 end
 
-function league_table:draw()
+function league_table:draw(t_alpha)
 	self.panel:draw()
-	for i=1, #self.bars do g.components.bar_draw.draw(self.bars[i]) end
+	for i=1, #self.bars do g.components.bar_draw.draw(self.bars[i], 0, 0, t_alpha) end
 	for i=1, #self.buttons do self.buttons[i]:draw() end
 end
 

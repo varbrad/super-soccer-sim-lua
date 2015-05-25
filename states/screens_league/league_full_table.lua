@@ -9,6 +9,7 @@ end
 
 function league_full_table:added()
 	self.league_table = g.components.league_table.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, g.skin.screen.h - g.skin.margin * 2, nil, "full")
+	g.start_tween()
 	self:set_league()
 end
 
@@ -17,7 +18,7 @@ function league_full_table:update(dt)
 end
 
 function league_full_table:draw()
-	self.league_table:draw()
+	self.league_table:draw(g.tween.t_alpha)
 end
 
 function league_full_table:set_league()

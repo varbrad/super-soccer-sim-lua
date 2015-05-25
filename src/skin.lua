@@ -75,7 +75,7 @@ skin.navbar = {
 	x = 0;
 	y = 0;
 	w = 52;
-	h = g.width;
+	h = g.height;
 	border = 2;
 	alpha = 255;
 }
