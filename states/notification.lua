@@ -30,7 +30,6 @@ function notification:new(text, image)
 	for i in string.gfind(label.text, "\n") do mult = mult + 1 end
 	label.y = math.floor(item.h/2 - (g.font.height(label.font)*mult)/2 + .5)
 	item.labels = {label}
-	item.rects = { { x = g.skin.img_margin, y = g.skin.img_margin, w = self.skin.img_size, h = self.skin.img_size, color = self.skin.color3, alpha = self.skin.alpha }}
 	if image then
 		if type(image)=="string" then
 			image = g.image.new("icons/"..image..".png", {mipmap=true})

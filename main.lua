@@ -45,6 +45,8 @@ function love.load(args)
 		club_history = require "states.screens_club.club_history";
 		club_overview = require "states.screens_club.club_overview";
 		--
+		game_debug = require "states.screens_game.game_debug";
+		--
 		league_full_table = require "states.screens_league.league_full_table";
 		league_overview = require "states.screens_league.league_overview";
 		league_past_winners = require "states.screens_league.league_past_winners";

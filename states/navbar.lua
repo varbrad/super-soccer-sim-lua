@@ -23,6 +23,9 @@ function navbar:set()
 	local names = {
 		g.database.get_player_team().long_name,
 		g.database.get_player_league().long_name,
+		--
+		"Game Debug",
+		--
 		"Quit Game",
 		"Save Game"
 	}
@@ -30,6 +33,8 @@ function navbar:set()
 		-- Top
 		function() g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end,
 		function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end,
+		-- Game btns
+		function() g.state.switch(g.states.game_debug) end,
 		-- Bottom
 		function() g.state.pop(); g.state.remove(g.states.ribbon); g.state.remove(g.states.navbar); g.state.add(g.states.overview) end,
 		function() if not g.busy then g.database.save_game() end end,
@@ -37,10 +42,13 @@ function navbar:set()
 	local imgs = {
 		g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, team = team}),
 		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, league=league}),
+		--
+		g.image.new("icons/menu.png", {mipmap=true, w=32, h=32}),
+		--
 		g.image.new("icons/error.png", {mipmap=true, w=32, h=32}),
 		g.image.new("icons/save.png", {mipmap=true, w=32, h=32})
 	}
-	local pos = { "top", "top", "bottom", "bottom" }
+	local pos = { "top", "top", "top", "bottom", "bottom" }
 	local top_y = btn_x
 	local bottom_y = g.skin.navbar.h - btn_w - btn_x
 	for i = 1, #funcs do
