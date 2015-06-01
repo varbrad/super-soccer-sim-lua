@@ -8,8 +8,10 @@ function players.generate_player(settings)
 	p.rating = settings.rating or love.math.random(60, 70)
 	p.potential = settings.potential or love.math.random(65, 75)
 	if p.rating > p.potential then p.potential = p.rating + 10 end
+	p.nationality = settings.nationality or "en"
 	p.form = love.math.random(-5, 5)
 	p.position = settings.position or "gk"
+	p.position_value = p.position=="gk" and 1 or p.position=="df" and 2 or p.position=="mf" and 3 or 4
 	return p
 end
 
@@ -72,6 +74,22 @@ function players.get_ratings(plyrs)
 	return def, mid, att
 end
 
+function players.get_rating_color(rating)
+	if rating >= 96 then return g.skin.rating_colors.a_plus
+	elseif rating >= 93 then return g.skin.rating_colors.a
+	elseif rating >= 90 then return g.skin.rating_colors.a_minus
+	elseif rating >= 86 then return g.skin.rating_colors.b_plus
+	elseif rating >= 83 then return g.skin.rating_colors.b
+	elseif rating >= 80 then return g.skin.rating_colors.b_minus
+	elseif rating >= 76 then return g.skin.rating_colors.c_plus
+	elseif rating >= 73 then return g.skin.rating_colors.c
+	elseif rating >= 70 then return g.skin.rating_colors.c_minus
+	elseif rating >= 66 then return g.skin.rating_colors.d_plus
+	elseif rating >= 63 then return g.skin.rating_colors.d
+	elseif rating >= 60 then return g.skin.rating_colors.d_minus
+	else return g.skin.rating_colors.f end
+end
+
 function players.sort_by_rating(players)
 	table.sort(players, function(a,b) return a.rating > b.rating end)
 end
@@ -79,7 +97,7 @@ end
 function players.generate_name()
 	local firsts = {
 		"Oliver", "Jack", "Charlie", "Harry", "Oscar", "Thomas", "Thomas", "Ethan", "Noah", "James", "William", "Joshua", "George", "Leo", "Max", "Henry", "Alfie", "Lucas", "Daniel",
-		"Dylan", "Finley", "Alexander", "Freddie", "Isaac", "Aaron", "Samuel", "Cameron", "Joseph", "Tommy", "Hugo", "Archie", "muhammad", "Brody", "Evan", "Benjamin", "Evan", "Gabriel",
+		"Dylan", "Finley", "Alexander", "Freddie", "Isaac", "Aaron", "Samuel", "Cameron", "Joseph", "Tommy", "Hugo", "Archie", "Muhammad", "Brody", "Evan", "Benjamin", "Evan", "Gabriel",
 		"Lewis", "Logan", "Dexter", "Austin", "Matthew", "Matty", "Sebastian", "Nicholas", "Seth", "Jake", "Edward", "Harley", "Owen", "Zachary", "Aidan", "Stanley", "Nathaniel", "Luke", "Mason",
 		"Rowan", "Rory", "Riley", "Ryan", "Teddy", "Jason", "Elliot", "Toby", "Hayden", "Tristan", "Reuben", "Adam", "Theo", "Josh", "Jasper", "Theo", "Connor", "Bobby", "Frankie", "Tom", "Jayden",
 		"Nathan", "Liam", "Paddy", "Patrick", "Brad", "Nate", "Jordan", "Steve", "Paul", "Harrison", "Sam", "Michael", "Ollie", "Zac", "Arthur", "Luca", "Ben", "Finn", "Alex", "Elijah", "Tyler",

@@ -518,7 +518,7 @@ end
 function database.process_nation(nation)
 	nation.refs = {}
 	nation.refs.leagues = {}
-	if #nation.data.leagues < 1 then return false end
+	--if #nation.data.leagues < 1 then return false end
 	for i=1, #nation.data.leagues do
 		table.insert(nation.refs.leagues, database.league_dict[nation.data.leagues[i]])
 	end

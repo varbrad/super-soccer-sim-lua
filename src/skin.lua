@@ -157,4 +157,20 @@ skin.ui = {
 	}
 }
 
+skin.rating_colors = {
+	a_plus		= hex("FF0002");
+	a			= hex("F92602");
+	a_minus		= hex("F44C01");
+	b_plus		= hex("EE7201");
+	b			= hex("E89800");
+	b_minus		= hex("C9BA00");
+	c_plus		= hex("ABDD00");
+	c			= hex("8CFF00");
+	c_minus		= hex("6CF934");
+	d_plus		= hex("4CF468");
+	d			= hex("2CEE9C");
+	d_minus		= hex("0CE8D0");
+	f			= hex("ffffff");
+}
+
 return skin

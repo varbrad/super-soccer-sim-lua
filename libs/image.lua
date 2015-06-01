@@ -87,7 +87,7 @@ end
 function image:draw(ox, oy, sx, sy)
 	ox, oy = ox or 0, oy or 0
 	sx, sy = sx or 1, sy or 1
-	if self.color then love.graphics.setColor(self.color) end
+	if self.color then love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.alpha) end
 	if self.no_image then
 		love.graphics.rectangle("fill", self.x + ox, self.y + oy, self.w, self.h)
 	else

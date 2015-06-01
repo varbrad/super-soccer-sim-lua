@@ -41,12 +41,12 @@ function navbar:set()
 	}
 	local imgs = {
 		g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, team = team}),
-		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, league=league}),
+		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, league = league }),
 		--
-		g.image.new("icons/menu.png", {mipmap=true, w=32, h=32}),
+		g.image.new("icons/menu.png", {mipmap=true, w=32, h=32, color = team.color2, alpha = g.skin.bars.alpha }),
 		--
-		g.image.new("icons/error.png", {mipmap=true, w=32, h=32}),
-		g.image.new("icons/save.png", {mipmap=true, w=32, h=32})
+		g.image.new("icons/error.png", {mipmap=true, w=32, h=32, color = team.color2, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/save.png", {mipmap=true, w=32, h=32, color = team.color2, alpha = g.skin.bars.alpha })
 	}
 	local pos = { "top", "top", "top", "bottom", "bottom" }
 	local top_y = btn_x

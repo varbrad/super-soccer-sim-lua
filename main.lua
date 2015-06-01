@@ -35,6 +35,7 @@ function love.load(args)
 		fixture_group = require "components.fixture_group";
 		fixture_list = require "components.fixture_list";
 		league_table = require "components.league_table";
+		player_list = require "components.player_list";
 		result_grid = require "components.result_grid";
 		team_league_history_graph = require "components.team_league_history_graph";
 		team_league_pos_graph = require "components.team_league_pos_graph";
