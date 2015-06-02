@@ -151,7 +151,7 @@ function database.new_game(player_team_id)
 	--
 	local team = database.get_player_team()
 	local def, mid, att = team.def, team.mid, team.att
-	vars.players = g.players.generate_team(def, mid, att) -- Gets a preset team of 21 players based around team stats
+	vars.players = g.players.generate_team(def, mid, att, team.refs.league.flag) -- Gets a preset team of 21 players based around team stats
 	--
 	for i=1, #vars.players do
 		local p = vars.players[i]

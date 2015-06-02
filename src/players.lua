@@ -3,19 +3,19 @@ local players = {}
 function players.generate_player(settings)
 	settings = settings or {}
 	local p = {}
-	p.first_name, p.last_name = players.generate_name()
 	p.age = settings.age or love.math.random(18, 33)
 	p.rating = settings.rating or love.math.random(60, 70)
 	p.potential = settings.potential or love.math.random(65, 75)
 	if p.rating > p.potential then p.potential = p.rating + 10 end
-	p.nationality = settings.nationality or "en"
+	p.nationality = players.generate_nationality(settings.nationality_data)
+	p.first_name, p.last_name = players.generate_name(p.nationality)
 	p.form = love.math.random(-5, 5)
 	p.position = settings.position or "gk"
 	p.position_value = p.position=="gk" and 1 or p.position=="df" and 2 or p.position=="mf" and 3 or 4
 	return p
 end
 
-function players.generate_team(def, mid, att)
+function players.generate_team(def, mid, att, nation)
 	-- Generate a total of 21 players with stats roughly equal (give or take +-2 or so) to the incoming stats of a team
 	-- GK = 3		-- DF = 7		-- MF = 7		-- AT = 4
 	local p = {}
@@ -23,6 +23,7 @@ function players.generate_team(def, mid, att)
 	for i = 1, 3 do -- 1st = 0, 3 (avg 1.5), 2nd = -2, 1 (avg -.5), 3rd = -3, -1 (avg -2), total averages = +1.5, -.5, -2 = total -1 (GK is special, should be -1)
 		local rating = def + love.math.random(gk[i][1], gk[i][2])
 		local settings = { rating = rating, position = "gk" }
+		settings.nationality_data = { {70, nation}, {30, "other"} }
 		table.insert(p, players.generate_player(settings))
 	end
 	-- 1st = 2, 5 (avg 3.5), 2nd = 1, 3 (avg 2), 3rd = -1, 1 (avg 0), 4th = -3, 1 (avg -1), 5th = -5, -2 (avg -3.5), 6th = -5, -2 (avg -3.5), 7th = -6, -2 (avg -4)
@@ -32,6 +33,7 @@ function players.generate_team(def, mid, att)
 		local rating = def + love.math.random(df[i][1], df[i][2])
 		local age = (i==6 or i==7) and love.math.random(17,20) or nil -- Last 2 players will auto be under 21
 		local settings = { rating = rating, position = "df", age = age}
+		settings.nationality_data = { {70, nation}, {30, "other"} }
 		table.insert(p, players.generate_player(settings))
 	end
 	--
@@ -39,6 +41,7 @@ function players.generate_team(def, mid, att)
 		local rating = mid + love.math.random(df[i][1], df[i][2])
 		local age = (i==5 or i==7) and love.math.random(17,20) or nil
 		local settings = { rating = rating, position = "mf", age = age}
+		settings.nationality_data = { {70, nation}, {30, "other"} }
 		table.insert(p, players.generate_player(settings))
 	end
 	--
@@ -48,6 +51,7 @@ function players.generate_team(def, mid, att)
 		local rating = att + love.math.random(at[i][1], at[i][2])
 		age = i==random_under21 and love.math.random(17,20) or nil
 		local settings = { rating = rating, position = "at", age = age}
+		settings.nationality_data = { {70, nation}, {30, "other"} }
 		table.insert(p, players.generate_player(settings))
 	end
 	--
@@ -94,20 +98,29 @@ function players.sort_by_rating(players)
 	table.sort(players, function(a,b) return a.rating > b.rating end)
 end
 
-function players.generate_name()
-	local firsts = {
-		"Oliver", "Jack", "Charlie", "Harry", "Oscar", "Thomas", "Thomas", "Ethan", "Noah", "James", "William", "Joshua", "George", "Leo", "Max", "Henry", "Alfie", "Lucas", "Daniel",
-		"Dylan", "Finley", "Alexander", "Freddie", "Isaac", "Aaron", "Samuel", "Cameron", "Joseph", "Tommy", "Hugo", "Archie", "Muhammad", "Brody", "Evan", "Benjamin", "Evan", "Gabriel",
-		"Lewis", "Logan", "Dexter", "Austin", "Matthew", "Matty", "Sebastian", "Nicholas", "Seth", "Jake", "Edward", "Harley", "Owen", "Zachary", "Aidan", "Stanley", "Nathaniel", "Luke", "Mason",
-		"Rowan", "Rory", "Riley", "Ryan", "Teddy", "Jason", "Elliot", "Toby", "Hayden", "Tristan", "Reuben", "Adam", "Theo", "Josh", "Jasper", "Theo", "Connor", "Bobby", "Frankie", "Tom", "Jayden",
-		"Nathan", "Liam", "Paddy", "Patrick", "Brad", "Nate", "Jordan", "Steve", "Paul", "Harrison", "Sam", "Michael", "Ollie", "Zac", "Arthur", "Luca", "Ben", "Finn", "Alex", "Elijah", "Tyler",
-		"Jamie", "Blake", "Reece", "Rhys", "David", "Callum", "Caleb", "Jackson", "Felix", "Harvey", "Jude", "Jenson", "Alfred"
-	} -- some basic first names
-	local lasts = { "Smith", "Wood", "Green", "Davis", "Stevens", "Stephenson", "Jeffries", "Kelsey", "Tomlin", "Woodley", "Woodridge", "Winstanley", "Christiansen", "Fotham", "Kelton", "Morisson", 
-					"Vicars", "Bethell", "Cole", "Davids", "Russell", "Harriot", "Harrington", "Bright", "Jones", "James", "Shaynes", "Howell", "Cowell", "Bynes", "Williams", "Williamson", "Kurt",
-					"Tomlinson", "Nicholls", "Nicholson", "Wheeler", "Adamson", "Adams", "Addams", "Christian", "Paul", "Lovell"
-	} -- lol
-	return firsts[love.math.random(1,#firsts)] , lasts[love.math.random(1,#lasts)]
+function players.generate_nationality(data)
+	local rand = love.math.random(1, 100)
+	local count = 0
+	for i=1, #data do
+		local val, nat = data[i][1], data[i][2]
+		count = count + val
+		if rand <= count then
+			if nat=="other" then
+				return g.database.nation_list[love.math.random(1,#g.database.nation_list)].code
+			else
+				return nat
+			end
+		end
+	end
+end
+
+function players.generate_name(nationality)
+	local first, last = g.name_list.first, g.name_list.last
+	--
+	local first_list, last_list = first[nationality], last[nationality]
+	if first_list==nil then first_list = first["en"] end
+	if last_list==nil then last_list = last["en"] end
+	return first_list[love.math.random(1,#first_list)], last_list[love.math.random(1,#last_list)]
 end
 
 return players
