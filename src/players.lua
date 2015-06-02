@@ -10,6 +10,8 @@ function players.generate_player(settings)
 	p.nationality = players.generate_nationality(settings.nationality_data)
 	p.first_name, p.last_name = players.generate_name(p.nationality)
 	p.form = love.math.random(-5, 5)
+	p.contract_wage = players.generate_wage(p.age, p.rating)
+	p.contract_time = love.math.random(1, 5)
 	p.position = settings.position or "gk"
 	p.position_value = p.position=="gk" and 1 or p.position=="df" and 2 or p.position=="mf" and 3 or 4
 	return p
@@ -115,12 +117,55 @@ function players.generate_nationality(data)
 end
 
 function players.generate_name(nationality)
-	local first, last = g.name_list.first, g.name_list.last
-	--
-	local first_list, last_list = first[nationality], last[nationality]
-	if first_list==nil then first_list = first["en"] end
-	if last_list==nil then last_list = last["en"] end
+	if g.names[nationality]==nil then return "Player", love.math.random(1, 1000000) end
+	local first_list, last_list = g.names[nationality].first_names, g.names[nationality].surnames
 	return first_list[love.math.random(1,#first_list)], last_list[love.math.random(1,#last_list)]
+end
+
+local function round_to_nearest_n(value, unit)
+	return math.floor(value / unit + .5) * unit
+end
+
+function players.format_wage(n)
+	local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
+	return "£"..left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
+end
+
+local wage_list = { -- First number is rating, second is wage in £ per week.
+	{ 5, 1 }, { 10, 5 }, { 15, 10 }, { 20, 15 }, { 25, 20 },
+	{ 30, 25 }, { 35, 40 }, { 40, 70 }, { 45, 130 }, { 50, 250 },
+	{ 55, 550 }, { 60, 1000 }, { 65, 3000 }, { 70, 7000 },
+	{ 75, 20000 }, { 80, 50000 }, { 85, 100000 }, { 90, 150000 },
+	{ 95, 230000 }, { 100, 350000 }
+}
+function players.generate_wage(age, rating)
+	--
+	local eff_rating = rating
+	if age < 24 then eff_rating = eff_rating + age - 24 end
+	eff_rating = eff_rating + love.math.random(-1, 1)
+	for i=1, #wage_list do
+		local data = wage_list[i]
+		if data[1] >= eff_rating then
+			local max_wage = data[2]
+			local min_wage = wage_list[i-1][2]
+			local diff = eff_rating - wage_list[i-1][1] -- 74 - 70 = 4
+			local wage = min_wage + (max_wage - min_wage) * (diff / 5)
+			local len_wage = #tostring(wage)
+			if len_wage < 3 then len_wage = 3 end
+			local round_unit = 10 ^ (len_wage - 2)
+			local rounded = round_to_nearest_n(wage, round_unit)
+			local rand_bonus = love.math.random(-2, 2) * round_unit
+			return rounded + rand_bonus
+		end
+	end
+end
+
+function players.total_wage_bill(players)
+	local c = 0
+	for i=1, #players do
+		c = c + players[i].contract_wage
+	end
+	return c
 end
 
 return players

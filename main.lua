@@ -26,7 +26,7 @@ function love.load(args)
 	g.database = require "src.database"
 	g.engine = require "src.engine"
 	g.math = require "src.math"
-	g.name_list = require "src.name_list"
+	g.names = require "src.names"
 	g.players = require "src.players"
 	g.settings = require "src.settings"
 	g.shaders = require "src.shaders"

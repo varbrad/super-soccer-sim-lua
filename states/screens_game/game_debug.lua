@@ -9,7 +9,8 @@ end
 
 function game_debug:added()
 	local x, y, w, h = g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, g.skin.screen.w - g.skin.margin * 2, g.skin.screen.h - g.skin.margin * 2
-	self.player_list = g.components.player_list.new(x, y, w, h)
+	local half_w = math.floor((w-g.skin.margin)/2+.5)
+	self.player_list = g.components.player_list.new(x, y, half_w, h)
 	--
 	g.tween_alpha()
 	self:set()
