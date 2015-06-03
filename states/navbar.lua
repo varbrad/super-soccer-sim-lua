@@ -15,62 +15,91 @@ end
 function navbar:set()
 	local team = g.database.get_player_team()
 	local league = g.database.get_player_league()
-	self.buttons, self.labels = {}, {}
+	self.buttons, self.labels, self.rects = {}, {}, {}
 	if team==nil then return end
 	self.color1, self.color2 = team.color3, team.color1
 	local btn_w = g.skin.navbar.w - g.skin.navbar.border - g.skin.margin * 2
 	local btn_x = math.floor((g.skin.navbar.w-g.skin.navbar.border)/2 - btn_w/2 + .5)
 	local names = {
+		"Inbox",
+		"Squad",
+		--
 		g.database.get_player_team().long_name,
 		g.database.get_player_league().long_name,
-		--
-		"Game Debug",
 		--
 		"Quit Game",
 		"Save Game"
 	}
 	local funcs = {
+		-- Game btns
+		function() end,
+		function() g.state.switch(g.states.game_debug) end,
 		-- Top
 		function() g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end,
 		function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end,
-		-- Game btns
-		function() g.state.switch(g.states.game_debug) end,
 		-- Bottom
 		function() g.state.pop(); g.state.remove(g.states.ribbon); g.state.remove(g.states.navbar); g.state.add(g.states.overview) end,
 		function() if not g.busy then g.database.save_game() end end,
 	}
 	local imgs = {
-		g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, team = team}),
-		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, league = league }),
+		g.image.new("icons/message2.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/menu.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
 		--
-		g.image.new("icons/menu.png", {mipmap=true, w=32, h=32, color = team.color2, alpha = g.skin.bars.alpha }),
+		g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, color = team.color1, alpha = g.skin.bars.alpha, team = team}),
+		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha, league = league }),
 		--
-		g.image.new("icons/error.png", {mipmap=true, w=32, h=32, color = team.color2, alpha = g.skin.bars.alpha }),
-		g.image.new("icons/save.png", {mipmap=true, w=32, h=32, color = team.color2, alpha = g.skin.bars.alpha })
+		g.image.new("icons/error.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/save.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha })
 	}
-	local pos = { "top", "top", "top", "bottom", "bottom" }
+	local pos = { "top", "top", "gap_top", "top", "top", "bottom", "bottom" }
+	local whiten = {false, false, true, true, false, false}
 	local top_y = btn_x
 	local bottom_y = g.skin.navbar.h - btn_w - btn_x
-	for i = 1, #funcs do
+	local index = 0
+	for i = 1, #pos do
 		local y = pos[i]
+		local pos_type = y
 		if y=="top" then
 			y = top_y
 			top_y = top_y + btn_w + g.skin.margin
-		else
+		elseif y=="bottom" then
 			y = bottom_y
 			bottom_y = bottom_y - btn_w - g.skin.margin
+		elseif y=="gap_top" then
+			y = top_y
+			top_y = top_y + g.skin.margin + 1
+		elseif y=="gap_bottom" then
+			y = bottom_y
+			top_y = top_y - g.skin.margin + 1
 		end
 		--
-		local label = { text = names[i], font = g.skin.bars.font[3], color = team.color2, bg_color = team.color3 }
-		label.w, label.h = g.font.width(label.text, label.font), g.font.height(label.font)
-		label.x = g.skin.navbar.x + g.skin.navbar.w - g.skin.margin - label.w; label.x1 = label.x
-		label.y = y + math.floor(btn_w/2 - label.h/2 + .5)
-		self.labels[i] = label
-		--
-		self.buttons[i] = g.ui.button.new("", { x = btn_x, y = y, w = btn_w, h = btn_w, image = imgs[i], on_release = funcs[i] })
-		self.buttons[i].on_enter = function(b) self.flux:to(label, g.skin.tween.time, { x = g.skin.navbar.x + g.skin.navbar.w + g.skin.margin }):ease(g.skin.tween.type) end
-		self.buttons[i].on_exit = function(b) self.flux:to(label, g.skin.tween.time, { x = label.x1 }):ease(g.skin.tween.type) end
-		self.buttons[i]:set_colors(team.color1, team.color2, team.color3)
+		if pos_type=="bottom" or pos_type=="top" then
+			index = index + 1
+			local label = { text = names[index], font = g.skin.bars.font[3], color = team.color2, bg_color = team.color3 }
+			local to_color = whiten[index] and {255, 255, 255} or team.color2
+			label.w, label.h = g.font.width(label.text, label.font), g.font.height(label.font)
+			label.x = g.skin.navbar.x + g.skin.navbar.w - g.skin.margin - label.w; label.x1 = label.x
+			label.y = y + math.floor(btn_w/2 - label.h/2 + .5)
+			table.insert(self.labels, label)
+			--
+			local btn = g.ui.button.new("", { x = btn_x, y = y, w = btn_w, h = btn_w, image = imgs[index], on_release = funcs[index] })
+			btn.on_enter = function(b)
+				self.flux:to(label, g.skin.tween.time, { x = g.skin.navbar.x + g.skin.navbar.w + g.skin.margin }):ease(g.skin.tween.type)
+				g.console:log(btn.image.highlight)
+				btn.image.alpha = 255
+				btn.image.color = to_color
+			end
+			btn.on_exit = function(b)
+				self.flux:to(label, g.skin.tween.time, { x = label.x1 }):ease(g.skin.tween.type)
+				btn.image.alpha = g.skin.bars.alpha
+				btn.image.color = team.color1
+			end
+			btn:set_colors(team.color3, team.color2, team.color1)
+			table.insert(self.buttons, btn)
+		elseif pos_type=="gap_top" or pos_type=="gap_bottom" then
+			local rect = { x = g.skin.navbar.x, y = y, w = g.skin.navbar.w - g.skin.navbar.border, h = 1 }
+			table.insert(self.rects, rect)
+		end
 	end
 end
 
@@ -96,6 +125,10 @@ function navbar:draw()
 		self.buttons[i]:draw()
 	end
 	love.graphics.setColorAlpha(self.color2, g.skin.navbar.alpha)
+	for i = 1, #self.rects do
+		local rect = self.rects[i]
+		love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h)
+	end
 	love.graphics.rectangle("fill", g.skin.navbar.x + g.skin.navbar.w - g.skin.navbar.border, g.skin.navbar.y, g.skin.navbar.border, g.skin.navbar.h)
 end
 

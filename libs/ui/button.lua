@@ -118,7 +118,7 @@ function button:draw(ox, oy, alpha)
 	if self.hover and self.underline then
 		love.graphics.rectangle("fill", x + self.tx, y + self.ty + self.th + dy, self.tw, 1)
 	end
-	ui.setColorAlpha(g.skin.white, 255 * alpha)
+	love.graphics.setColor(255, 255, 255, 255 * alpha)
 	if self.image then g.image.draw(self.image, x + self.ix, y + self.iy + dy) end
 	love.graphics.setScissor()
 end

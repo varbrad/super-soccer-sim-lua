@@ -148,6 +148,8 @@ function database.new_game(player_team_id)
 	vars.view = {}
 	vars.view.league_id = database.get_player_league()
 	vars.view.team_id = player_team_id
+	-- Inbox
+	vars.inbox = {}
 	--
 	local team = database.get_player_team()
 	local def, mid, att = team.def, team.mid, team.att

@@ -61,6 +61,7 @@ function image.new(path, settings)
 	i.x, i.y = settings.x or 0, settings.y or 0
 	i.w, i.h = settings.w or i.__w, settings.h or i.__h
 	i.color = settings.color or nil
+	i.alpha = settings.alpha or nil
 	i.sx, i.sy = i.w / i.__w, i.h / i.__h
 	return i
 end
@@ -87,7 +88,7 @@ end
 function image:draw(ox, oy, sx, sy)
 	ox, oy = ox or 0, oy or 0
 	sx, sy = sx or 1, sy or 1
-	if self.color then love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.alpha) end
+	if self.color then love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.alpha or self.color[4] or 255) end
 	if self.no_image then
 		love.graphics.rectangle("fill", self.x + ox, self.y + oy, self.w, self.h)
 	else
