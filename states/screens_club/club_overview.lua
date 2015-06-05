@@ -15,7 +15,11 @@ function club_overview:added()
 	self.fixture_list = g.components.fixture_list.new(g.skin.screen.x + g.skin.margin, g.skin.screen.y + g.skin.margin, split_w, height)
 	self.league_table = g.components.league_table.new(self.fixture_list.x + self.fixture_list.w + g.skin.margin, self.fixture_list.y, middle, height, true) -- Show the current view_team
 	self.league_graph = g.components.team_league_pos_graph.new(self.league_table.x + self.league_table.w + g.skin.margin, self.fixture_list.y, split_w, split_h)
-	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h, 20)
+	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h / 2, 20)
+	local pcx, pcy = self.history_graph.x + split_w / 2, self.history_graph.y + self.history_graph.h * 1.5
+	local pcr = (self.history_graph.h / 2) - g.skin.margin * 2
+	self.piechart_wdl = g.ui.piechart.new({ x = pcx - pcr - g.skin.margin, y = pcy, radius = pcr })
+	self.piechart_gd = g.ui.piechart.new({ x = pcx + pcr + g.skin.margin, y = pcy, radius = pcr })
 	g.tween_alpha()
 	self:set_team()
 end
@@ -23,6 +27,8 @@ end
 function club_overview:update(dt)
 	self.fixture_list:update(dt)
 	self.league_table:update(dt)
+	self.piechart_wdl:update(dt)
+	self.piechart_gd:update(dt)
 end
 
 function club_overview:draw()
@@ -30,6 +36,8 @@ function club_overview:draw()
 	self.league_table:draw(g.tween.t_alpha)
 	self.league_graph:draw(g.tween.t_alpha)
 	self.history_graph:draw(g.tween.t_alpha)
+	self.piechart_wdl:draw(g.tween.t_alpha)
+	self.piechart_gd:draw(g.tween.t_alpha)
 end
 
 function club_overview:set_team()
@@ -38,6 +46,19 @@ function club_overview:set_team()
 	self.league_table:set(g.database.get_league(self.team.league_id), "small")
 	self.league_graph:set(self.team)
 	self.history_graph:set(self.team)
+	--
+	self.piechart_wdl:reset()
+	self.piechart_gd:reset()
+	local p, w, d = self.team.data.season.stats.p, self.team.data.season.stats.w, self.team.data.season.stats.d
+	local gf, ga = self.team.data.season.stats.gf, self.team.data.season.stats.ga
+	if p > 0 then
+		w, d = math.floor(w * 100 / p + .5), math.floor(d * 100 / p + .5)
+		gf = math.floor(gf * 100 / (gf+ga) + .5)
+		self.piechart_wdl:add(g.skin.green, w):add(g.skin.yellow, d):add(g.skin.red)
+		self.piechart_gd:add(g.skin.green, gf):add(g.skin.red)
+		self.piechart_wdl:tween(g.skin.tween.time, g.skin.tween.type)
+		self.piechart_gd:tween(g.skin.tween.time, g.skin.tween.type)
+	end
 	--
 	g.ribbon:set_team(self.team)
 end

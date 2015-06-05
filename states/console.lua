@@ -49,6 +49,7 @@ function console:draw()
 	arr[6] = string.format("Draw Calls: %i", stats.drawcalls)
 	arr[7] = string.format("Loaded Images: %s (0x%x)", stats.images, stats.images)
 	arr[8] = string.format("Loaded Fonts: %s (0x%x)", stats.fonts, stats.fonts)
+	arr[9] = string.format("mx %i , my %i", g.mouse.x, g.mouse.y)
 
 	local arr2 = {}
 	arr2[1] = "Game Identity: " .. self.game_identity

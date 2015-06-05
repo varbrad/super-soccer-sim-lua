@@ -33,7 +33,7 @@ function navbar:set()
 	local funcs = {
 		-- Game btns
 		function() end,
-		function() g.state.switch(g.states.game_debug) end,
+		function() g.state.switch(g.states.game_squad) end,
 		-- Top
 		function() g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end,
 		function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end,
@@ -42,8 +42,8 @@ function navbar:set()
 		function() if not g.busy then g.database.save_game() end end,
 	}
 	local imgs = {
-		g.image.new("icons/message2.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
-		g.image.new("icons/menu.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/inbox.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/squad.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
 		--
 		g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, color = team.color1, alpha = g.skin.bars.alpha, team = team}),
 		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha, league = league }),
@@ -85,13 +85,12 @@ function navbar:set()
 			local btn = g.ui.button.new("", { x = btn_x, y = y, w = btn_w, h = btn_w, image = imgs[index], on_release = funcs[index] })
 			btn.on_enter = function(b)
 				self.flux:to(label, g.skin.tween.time, { x = g.skin.navbar.x + g.skin.navbar.w + g.skin.margin }):ease(g.skin.tween.type)
-				g.console:log(btn.image.highlight)
-				btn.image.alpha = 255
+				self.flux:to(btn.image, g.skin.tween.time, { alpha = 255 }):ease(g.skin.tween.type)
 				btn.image.color = to_color
 			end
 			btn.on_exit = function(b)
 				self.flux:to(label, g.skin.tween.time, { x = label.x1 }):ease(g.skin.tween.type)
-				btn.image.alpha = g.skin.bars.alpha
+				self.flux:to(btn.image, g.skin.tween.time, { alpha = g.skin.bars.alpha }):ease(g.skin.tween.type)
 				btn.image.color = team.color1
 			end
 			btn:set_colors(team.color3, team.color2, team.color1)
