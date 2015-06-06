@@ -23,17 +23,21 @@ function navbar:set()
 	local names = {
 		"Inbox",
 		"Squad",
+		"Youth System",
+		"Financial",
 		--
-		g.database.get_player_team().long_name,
-		g.database.get_player_league().long_name,
+		g.database.get_player_team().short_name,
+		g.database.get_player_league().short_name,
 		--
-		"Quit Game",
-		"Save Game"
+		"Quit",
+		"Save"
 	}
 	local funcs = {
 		-- Game btns
-		function() end,
+		function() g.state.switch(g.states.game_inbox) end,
 		function() g.state.switch(g.states.game_squad) end,
+		function() end,
+		function() g.state.switch(g.states.game_financial) end,
 		-- Top
 		function() g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end,
 		function() g.database.vars.view.league_id = league.id; g.state.switch(g.states.league_overview) end,
@@ -44,6 +48,8 @@ function navbar:set()
 	local imgs = {
 		g.image.new("icons/inbox.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
 		g.image.new("icons/squad.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/youth.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/money.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
 		--
 		g.image.new("logos/"..team.id..".png", {mipmap=true, w = 32, h = 32, color = team.color1, alpha = g.skin.bars.alpha, team = team}),
 		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha, league = league }),
@@ -51,8 +57,8 @@ function navbar:set()
 		g.image.new("icons/error.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
 		g.image.new("icons/save.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha })
 	}
-	local pos = { "top", "top", "gap_top", "top", "top", "bottom", "bottom" }
-	local whiten = {false, false, true, true, false, false}
+	local pos = { "top", "top", "top", "top", "gap_top", "top", "top", "bottom", "bottom" }
+	local whiten = {false, false, false, false, true, true, false, false}
 	local top_y = btn_x
 	local bottom_y = g.skin.navbar.h - btn_w - btn_x
 	local index = 0
@@ -67,10 +73,10 @@ function navbar:set()
 			bottom_y = bottom_y - btn_w - g.skin.margin
 		elseif y=="gap_top" then
 			y = top_y
-			top_y = top_y + g.skin.margin + 1
+			top_y = top_y + g.skin.margin * 2
 		elseif y=="gap_bottom" then
 			y = bottom_y
-			top_y = top_y - g.skin.margin + 1
+			top_y = top_y - g.skin.margin * 3
 		end
 		--
 		if pos_type=="bottom" or pos_type=="top" then
@@ -96,7 +102,7 @@ function navbar:set()
 			btn:set_colors(team.color3, team.color2, team.color1)
 			table.insert(self.buttons, btn)
 		elseif pos_type=="gap_top" or pos_type=="gap_bottom" then
-			local rect = { x = g.skin.navbar.x, y = y, w = g.skin.navbar.w - g.skin.navbar.border, h = 1 }
+			local rect = { x = g.skin.navbar.x, y = y, w = g.skin.navbar.w - g.skin.navbar.border, h = g.skin.margin }
 			table.insert(self.rects, rect)
 		end
 	end

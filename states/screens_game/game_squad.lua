@@ -1,5 +1,5 @@
 local game_squad = {}
-game_squad.name = "Game Debug"
+game_squad.name = "Game Squad"
 
 function game_squad:init()
 	self.__z = 1
@@ -27,7 +27,7 @@ end
 function game_squad:set()
 	self.player_list:set()
 	--
-	g.ribbon:set_team(g.database.get_player_team())
+	g.ribbon:set_game("Squad")
 end
 
 function game_squad:keypressed(k, ir)

@@ -116,7 +116,8 @@ function players.generate_nationality(data)
 	end
 end
 
-function players.generate_name(nationality)
+function players.generate_name(nationality) --5% chance of a random nationality name being produced
+	if love.math.random(1, 100) < 8 then nationality = g.database.get_random_nation().code end
 	if g.names[nationality]==nil then return "Player", love.math.random(1, 1000000) end
 	local first_list, last_list = g.names[nationality].first_names, g.names[nationality].surnames
 	return first_list[love.math.random(1,#first_list)], last_list[love.math.random(1,#last_list)]
@@ -124,11 +125,6 @@ end
 
 local function round_to_nearest_n(value, unit)
 	return math.floor(value / unit + .5) * unit
-end
-
-function players.format_wage(n)
-	local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
-	return "£"..left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
 local wage_list = { -- First number is rating, second is wage in £ per week.

@@ -53,12 +53,13 @@ function player_list:set()
 		--
 		local player_name = { text = player.first_name .. " " .. player.last_name, x = position.x + position.w + g.skin.margin * 2 + 32, y = g.skin.bars.ty, font = g.skin.bars.font[2] }
 		--
-		local rating = { text = player.rating, x = bar.w - g.skin.margin - cw, y = g.skin.bars.ty - 5, w = cw, align = "center", font = { "bebas", 24 } }
+		local rating = { text = player.rating, x = bar.w - g.skin.margin - cw, w = cw, align = "center", font = { "bebas", 24 } }
+		rating.y = math.floor(bar.h/2 - g.font.height(rating.font)/2 + .5)
 		rating.color = g.players.get_rating_color(player.rating)
 		local rating_rect = { x = rating.x, y = g.skin.margin, w = rating.w, h = bar.h - g.skin.margin * 2, color = rating.color, alpha = 70, rounded = g.skin.rounded }
 		--
 		local ctr_years = { text = player.contract_time, x = rating.x - g.skin.margin - cw * 2, y = g.skin.bars.ty, w = cw * 2, align = "center", font = g.skin.bars.font[3] }
-		local ctr_wage = { text = g.players.format_wage(player.contract_wage), x = ctr_years.x - cw * 2 - g.skin.margin, y = g.skin.bars.ty, w = cw * 2, align = "right", font = g.skin.bars.font[3] }
+		local ctr_wage = { text = g.format_currency(player.contract_wage), x = ctr_years.x - cw * 2 - g.skin.margin, y = g.skin.bars.ty, w = cw * 2, align = "right", font = g.skin.bars.font[3] }
 		--
 		local age = { text = player.age, x = ctr_wage.x - cw - g.skin.margin, y = g.skin.bars.ty, w = cw, align = "center", font = g.skin.bars.font[3] }
 		--

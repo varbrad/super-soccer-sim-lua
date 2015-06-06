@@ -26,6 +26,7 @@ function piechart:reset(settings)
 	self.y = self.settings.y or self.y or 0
 	self.radius = self.settings.radius or self.radius or 100
 	self.color = self.settings.color or self.color or {0, 0, 0}
+	self.alpha = self.settings.alpha or self.alpha or 255
 	if self.settings.visible==false or self.visible==false then self.visible = false else self.visible = true end
 	self.font = self.settings.font or self.font or ui.__defaultFont
 	--
@@ -68,12 +69,12 @@ end
 function piechart:draw(t_alpha)
 	if not self.visible then return end
 	--
-	love.graphics.setColor(self.color)
+	love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.alpha)
 	love.graphics.circle("fill", self.x, self.y, self.radius)
 	--
 	for i = 1, #self.arcs do
 		local arc = self.arcs[i]
-		love.graphics.setColor(arc.color)
+		love.graphics.setColor(arc.color[1], arc.color[2], arc.color[3], self.alpha)
 		local start = i==1 and piechart.__start or self.arcs[i-1].finish
 		love.graphics.arc("fill", self.x, self.y, self.radius, start, arc.finish)
 	end

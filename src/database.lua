@@ -90,6 +90,10 @@ function database.get_player_team() return database.team_dict[database.vars.play
 function database.get_player_league() return database.get_player_team().refs.league end
 function database.get_player_nation() return database.get_player_league().refs.nation end
 
+function database.get_random_team() return database.team_list[love.math.random(1,#database.team_list)] end
+function database.get_random_league() return database.league_list[love.math.random(1,#database.league_list)] end
+function database.get_random_nation() return database.nation_list[love.math.random(1,#database.nation_list)] end
+
 function database.setup()
 	for i=#database.nation_list, 1, -1 do
 		local nation = database.nation_list[i]
@@ -148,20 +152,15 @@ function database.new_game(player_team_id)
 	vars.view = {}
 	vars.view.league_id = database.get_player_league()
 	vars.view.team_id = player_team_id
-	-- Inbox
-	vars.inbox = {}
 	--
 	local team = database.get_player_team()
 	local def, mid, att = team.def, team.mid, team.att
 	vars.players = g.players.generate_team(def, mid, att, team.refs.league.flag) -- Gets a preset team of 21 players based around team stats
-	--
-	for i=1, #vars.players do
-		local p = vars.players[i]
-		local str = string.format("%3s: %-20s - Age = %2i, OVR = %2i", p.position, p.first_name .. " " .. p.last_name, p.age, p.rating)
-		local c = g.skin.red
-		if p.position=="gk" then c = g.skin.yellow elseif p.position=="df" then c = g.skin.blue elseif p.position=="mf" then c = g.skin.green end
-		g.console:print(str, c)
-	end
+	-- Inbox
+	vars.inbox = {}
+	-- Financial
+	vars.finance = {}
+	vars.finance.cash = g.players.total_wage_bill(vars.players) * love.math.random(85, 115) -- Possible DIFFICULTY level set here (e.g. hard = 50, easy = 150)
 end
 
 function database.new_season()
@@ -323,6 +322,11 @@ function database.advance_week()
 		end
 		--
 	end
+	-- GAME
+	-- Reduce the total cash of the club by the total_wage_bill
+	local total_wage_bill = g.players.total_wage_bill(database.vars.players)
+	database.vars.finance.cash = database.vars.finance.cash - total_wage_bill
+	--
 end
 
 function database.save_game()

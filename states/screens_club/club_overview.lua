@@ -18,8 +18,8 @@ function club_overview:added()
 	self.history_graph = g.components.team_league_history_graph.new(self.league_graph.x, g.skin.screen.y + g.skin.screen.h - g.skin.margin - split_h, split_w, split_h / 2, 20)
 	local pcx, pcy = self.history_graph.x + split_w / 2, self.history_graph.y + self.history_graph.h * 1.5
 	local pcr = (self.history_graph.h / 2) - g.skin.margin * 2
-	self.piechart_wdl = g.ui.piechart.new({ x = pcx - pcr - g.skin.margin, y = pcy, radius = pcr })
-	self.piechart_gd = g.ui.piechart.new({ x = pcx + pcr + g.skin.margin, y = pcy, radius = pcr })
+	self.piechart_wdl = g.ui.piechart.new({ x = pcx - pcr - g.skin.margin, y = pcy, radius = pcr, color = g.skin.bars.color1, alpha = g.skin.bars.alpha })
+	self.piechart_gd = g.ui.piechart.new({ x = pcx + pcr + g.skin.margin, y = pcy, radius = pcr, color = g.skin.bars.color3, alpha = g.skin.bars.alpha })
 	g.tween_alpha()
 	self:set_team()
 end

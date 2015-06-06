@@ -136,4 +136,8 @@ function settings:get_background_cycle_bar(x, y, w, h, c)
 	return bar
 end
 
+function settings:get_currency_bar(x, y, w, h, c)
+
+end
+
 return settings

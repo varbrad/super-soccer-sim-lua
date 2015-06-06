@@ -4,6 +4,7 @@ function settings.default()
 	settings.screenshot_format = "jpg"
 	settings.background_cycle = true
 	settings.background_cycle_time = 120
+	settings.currency = "$"
 end
 
 function settings.save()
@@ -20,6 +21,7 @@ function settings.load()
 	settings.screenshot_format = data.screenshot_format
 	settings.background_cycle = data.background_cycle
 	settings.background_cycle_time = data.background_cycle_time
+	settings.currency = data.currency
 end
 
 return settings

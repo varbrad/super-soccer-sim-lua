@@ -327,6 +327,31 @@ function ribbon:set_team(team)
 	self:start_tween()
 end
 
+function ribbon:set_game(header)
+	local team = g.database.get_player_team()
+	self.active_screen_type = "game"
+	self:reset()
+	self:set_image("logos/"..team.id..".png", team)
+	self:set_header(header)
+	self:set_colors(team.color1, team.color2, team.color3)
+	local btn_settings = {}
+	btn_settings.w = "auto"
+	btn_settings.color1 = team.color1
+	btn_settings.color2 = team.color2
+	btn_settings.color3 = team.color3
+	btn_settings.image = g.image.new("logos/"..team.id..".png", {mipmap=true, w=26, h=26, team = team})
+	btn_settings.enabled = false
+	self:set_infobox(team.long_name, btn_settings)
+	local sb = {}
+	sb.color1, sb.color2, sb.color3 = team.color1, team.color2, team.color3
+	self:set_searchbox(sb)
+	self.continue:set_colors(team.color3, team.color2, team.color3)
+	--
+	self:set_tabs()
+	self:set_positions()
+	self:start_tween()
+end
+
 function ribbon:reset()
 	self:set_image()
 	self:set_header()

@@ -47,6 +47,8 @@ function love.load(args)
 		club_history = require "states.screens_club.club_history";
 		club_overview = require "states.screens_club.club_overview";
 		--
+		game_financial = require "states.screens_game.game_financial";
+		game_inbox = require "states.screens_game.game_inbox";
 		game_squad = require "states.screens_game.game_squad";
 		--
 		league_full_table = require "states.screens_league.league_full_table";
@@ -177,6 +179,15 @@ end
 function g.tween_alpha()
 	g.tween.t_alpha = 0
 	g.flux.to(g.tween, g.skin.tween.time, { t_alpha = 1 }):ease(g.skin.tween.type)
+end
+
+function g.format_currency(n)
+	currency = g.settings.currency
+	if currency=="$" then n = n * 1.53 -- £ to $ Exchange rate
+	elseif currency=="€" then n = n * 1.37 end
+	n = math.floor(n + .5)
+	local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
+	return (currency or "£")..left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
 function love.keypressed(k,ir)
