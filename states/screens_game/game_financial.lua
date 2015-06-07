@@ -47,7 +47,7 @@ function game_financial:set()
 	income.h, expenses.h = g.font.height(income.font), g.font.height(expenses.font)
 	--
 	local wage_txt = g.format_currency(g.players.total_wage_bill(g.database.vars.players))
-	local wage = { text = "Wages = " .. wage_txt, x = expenses.x, y = expenses.y + expenses.h, w = expenses.w, align = "left", color = g.skin.red, font = { "bebas", 24 } }
+	local wage = { text = "Player Wages = " .. wage_txt, x = expenses.x, y = expenses.y + expenses.h, w = expenses.w, align = "left", color = g.skin.red, font = { "bebas", 24 } }
 	self.labels = { cash_title, cash, income, expenses, wage }
 	--
 	g.ribbon:set_game("Financial Overview")

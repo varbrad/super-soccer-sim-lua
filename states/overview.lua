@@ -21,6 +21,12 @@ function overview:added()
 	local settings =	g.ui.button.new("Settings", { x = new_game.x, y = load_game.y + new_game.h, w = new_game.w, h = new_game.h })
 	local exit =		g.ui.button.new("Exit Game", { x = new_game.x, y = settings.y + new_game.h, w = new_game.w, h = new_game.h })
 	--
+	self.logo = g.image.new("misc/logo_alt.png", { color = {255, 255, 255} })
+	local h = new_game.y - g.skin.margin * 2
+	local w = (h / self.logo.h) * self.logo.w
+	self.logo:resize(w, h)
+	self.logo.x, self.logo.y = math.floor(g.width/2 - self.logo.w/2 + .5), g.skin.margin
+	--
 	new_game:set_colors(g.skin.bars.color1, g.skin.bars.color2, g.skin.bars.color3)
 	load_game:set_colors(g.skin.bars.color1, g.skin.bars.color2, g.skin.bars.color3)
 	settings:set_colors(g.skin.bars.color1, g.skin.bars.color2, g.skin.bars.color3)
@@ -68,6 +74,7 @@ end
 
 function overview:draw()
 	self.panel:draw()
+	self.logo:draw()
 	--for i=1, #self.buttons do self.buttons[i]:draw() end
 	for i=1, #self.custom_buttons do
 		local b = self.custom_buttons[i]
@@ -77,6 +84,11 @@ function overview:draw()
 		g.font.set("bold", 48)
 		love.graphics.printf(b.text, b.x, b.y + b.ty, b.w, "center")
 	end
+	-- Version at bottom left
+	love.graphics.setColor(255, 255, 255, 100)
+	g.font.set("bebas", 14)
+	local h = g.font.height()
+	love.graphics.print("VERSION " .. g.version, g.skin.margin, g.height - g.skin.margin - h)
 end
 
 function overview:keypressed(k, ir)

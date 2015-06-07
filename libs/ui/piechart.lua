@@ -34,7 +34,7 @@ function piechart:reset(settings)
 	return self
 end
 
-function piechart:add(color, percent)
+function piechart:add(color, percent, label)
 	if self.percent>=100 or percent==0 then return self end
 	if percent==nil then percent = 100 - self.percent end
 	self.percent = self.percent + percent
@@ -47,7 +47,7 @@ function piechart:add(color, percent)
 	local mid_arc = (start + arc.finish) / 2
 	local lx = self.x + math.cos(mid_arc) * self.radius / 1.5
 	local ly = self.y + math.sin(mid_arc) * self.radius / 1.5
-	arc.lx, arc.ly, arc.percent = lx, ly, percent
+	arc.lx, arc.ly, arc.label = lx, ly, label
 	--
 	table.insert(self.arcs, arc)
 	return self
@@ -87,10 +87,12 @@ function piechart:draw(t_alpha)
 		local x = self.x + math.cos(start) * self.radius
 		local y = self.y + math.sin(start) * self.radius
 		if #self.arcs > 1 then love.graphics.line(self.x, self.y, x, y) end
-		love.graphics.setFont(self.font)
-		local txt = arc.percent .. "%"
-		local fw, fh = math.floor(self.font:getWidth(txt)/2+.5), math.floor(self.font:getHeight()/2+.5)
-		love.graphics.print(arc.percent.."%", arc.lx - fw, arc.ly - fh)
+		if arc.label then
+			love.graphics.setFont(self.font)
+			local txt = arc.label
+			local fw, fh = math.floor(self.font:getWidth(txt)/2+.5), math.floor(self.font:getHeight()/2+.5)
+			love.graphics.print(arc.label, arc.lx - fw, arc.ly - fh)
+		end
 	end
 	--
 	love.graphics.circle("line", self.x, self.y, self.radius)

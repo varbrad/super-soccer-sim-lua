@@ -207,15 +207,7 @@ function new_game:set_team(team)
 	btn.y = bar.y + bar.h - g.skin.margin - btn.h
 	btn:set_colors(team.color2, team.color1, team.color3)
 	btn.on_release = function(b)
-		g.database.new_game(team.id)
-		g.database.new_season()
-		g.database.save_game()
-		--
-		g.state.pop()
-		g.state.add(g.states.navbar)
-		g.state.add(g.states.ribbon)
-		g.state.add(g.states.club_overview)
-		g.in_game = true
+		g.start_game(team)
 	end
 	table.insert(self.buttons, btn)
 	--

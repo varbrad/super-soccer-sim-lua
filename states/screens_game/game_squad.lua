@@ -27,7 +27,7 @@ end
 function game_squad:set()
 	self.player_list:set()
 	--
-	g.ribbon:set_game("Squad")
+	g.ribbon:set_game("First Team Squad")
 end
 
 function game_squad:keypressed(k, ir)

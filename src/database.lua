@@ -146,6 +146,7 @@ end
 function database.new_game(player_team_id)
 	local vars = database.vars
 	vars.__type = "vars"
+	-- vars.year = (set in database file)
 	vars.week = 1
 	vars.player = {}
 	database.set_player_team(player_team_id) -- equiv. vars.player.team_id = player_team_id

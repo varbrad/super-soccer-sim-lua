@@ -36,7 +36,7 @@ function navbar:set()
 		-- Game btns
 		function() g.state.switch(g.states.game_inbox) end,
 		function() g.state.switch(g.states.game_squad) end,
-		function() end,
+		function() g.state.switch(g.states.game_youth) end,
 		function() g.state.switch(g.states.game_financial) end,
 		-- Top
 		function() g.database.vars.view.team_id = team.id; g.state.switch(g.states.club_overview) end,
@@ -89,15 +89,15 @@ function navbar:set()
 			table.insert(self.labels, label)
 			--
 			local btn = g.ui.button.new("", { x = btn_x, y = y, w = btn_w, h = btn_w, image = imgs[index], on_release = funcs[index] })
+			btn.image.color = to_color
+			btn.image.alpha = 90
 			btn.on_enter = function(b)
 				self.flux:to(label, g.skin.tween.time, { x = g.skin.navbar.x + g.skin.navbar.w + g.skin.margin }):ease(g.skin.tween.type)
 				self.flux:to(btn.image, g.skin.tween.time, { alpha = 255 }):ease(g.skin.tween.type)
-				btn.image.color = to_color
 			end
 			btn.on_exit = function(b)
 				self.flux:to(label, g.skin.tween.time, { x = label.x1 }):ease(g.skin.tween.type)
-				self.flux:to(btn.image, g.skin.tween.time, { alpha = g.skin.bars.alpha }):ease(g.skin.tween.type)
-				btn.image.color = team.color1
+				self.flux:to(btn.image, g.skin.tween.time, { alpha = 90 }):ease(g.skin.tween.type)
 			end
 			btn:set_colors(team.color3, team.color2, team.color1)
 			table.insert(self.buttons, btn)

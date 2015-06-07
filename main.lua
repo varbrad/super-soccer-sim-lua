@@ -26,6 +26,7 @@ function love.load(args)
 	g.database = require "src.database"
 	g.engine = require "src.engine"
 	g.math = require "src.math"
+	g.message = require "src.message"
 	g.names = require "src.names"
 	g.players = require "src.players"
 	g.settings = require "src.settings"
@@ -50,6 +51,7 @@ function love.load(args)
 		game_financial = require "states.screens_game.game_financial";
 		game_inbox = require "states.screens_game.game_inbox";
 		game_squad = require "states.screens_game.game_squad";
+		game_youth = require "states.screens_game.game_youth";
 		--
 		league_full_table = require "states.screens_league.league_full_table";
 		league_overview = require "states.screens_league.league_overview";
@@ -171,7 +173,30 @@ function love.draw()
 	end
 end
 
+function g.start_game(team)
+	-- This is called by a button callback to start the game.
+	g.database.new_game(team.id) -- Run a new_game
+	g.database.new_season() -- Create a new season
+	--
+	-- Fire a message to welcome the player and give season targets
+	g.message.welcome()
+	g.message.season_targets()
+	--
+	g.database.save_game() -- Save the game
+	--
+	g.state.pop() -- Remove the current singlet state
+	g.state.add(g.states.navbar) -- Add navbar
+	g.state.add(g.states.ribbon) -- add ribbon
+	g.state.add(g.states.club_overview) -- default to the club_overview page
+	g.in_game = true -- in_game is now true
+end
+
 function g.continue_function()
+	if g.message.urgent then
+		--An urgent message needs to be dealt with!
+		--Should display popup to tell player
+		--And not run below functions (return)
+	end
 	g.database.advance_week()
 	g.state.refresh_all()
 end
@@ -181,13 +206,17 @@ function g.tween_alpha()
 	g.flux.to(g.tween, g.skin.tween.time, { t_alpha = 1 }):ease(g.skin.tween.type)
 end
 
+function g.convert_currency(n)
+	local currency = g.settings.currency
+	if currency=="£" then return math.floor(n + .5) end
+	if currency=="$" then return math.floor(n * 1.53 + .5) end
+	if currency=="€" then return math.floor(n * 1.37 + .5) end
+end
+
 function g.format_currency(n)
-	currency = g.settings.currency
-	if currency=="$" then n = n * 1.53 -- £ to $ Exchange rate
-	elseif currency=="€" then n = n * 1.37 end
-	n = math.floor(n + .5)
+	n = g.convert_currency(n)
 	local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
-	return (currency or "£")..left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
+	return (g.settings.currency or "£")..left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
 function love.keypressed(k,ir)

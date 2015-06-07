@@ -4,10 +4,12 @@ local hex = love.graphics.hexToRgb
 
 skin.red = hex("ff3333")
 skin.green = hex("33ff33")
-skin.blue = hex("72f7ff")
+skin.blue = hex("7272ff")
 skin.yellow = hex("f7ff72")
 skin.white = hex("ffffff")
 skin.black = hex("000000")
+
+skin.dark_red = hex("880404")
 
 -- Load fonts
 g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 13, 14, 24, 36, 48})

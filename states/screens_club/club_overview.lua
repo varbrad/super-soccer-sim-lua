@@ -53,9 +53,9 @@ function club_overview:set_team()
 	local gf, ga = self.team.data.season.stats.gf, self.team.data.season.stats.ga
 	if p > 0 then
 		w, d = math.floor(w * 100 / p + .5), math.floor(d * 100 / p + .5)
-		gf = math.floor(gf * 100 / (gf+ga) + .5)
-		self.piechart_wdl:add(g.skin.green, w):add(g.skin.yellow, d):add(g.skin.red)
-		self.piechart_gd:add(g.skin.green, gf):add(g.skin.red)
+		local gfp = math.floor(gf * 100 / (gf+ga) + .5)
+		self.piechart_wdl:add(g.skin.green, w, "W "..w.."%"):add(g.skin.yellow, d, "D "..d.."%"):add(g.skin.red, nil, "L "..(100-w-d).."%")
+		self.piechart_gd:add(g.skin.green, gfp, "GF "..gf):add(g.skin.red, nil, "GA "..ga)
 		self.piechart_wdl:tween(g.skin.tween.time, g.skin.tween.type)
 		self.piechart_gd:tween(g.skin.tween.time, g.skin.tween.type)
 	end

@@ -150,6 +150,7 @@ function ribbon:keypressed(k, ir)
 				if k=="left" then g.database.vars.view.team_id = g.database.vars.view.team_id - 1 end
 				if k=="right" then g.database.vars.view.team_id = g.database.vars.view.team_id + 1 end
 				if not g.database.team_dict[g.database.vars.view.team_id] then g.database.vars.view.team_id = old end
+				if g.database.vars.view.team_id ~= old then g.state.refresh_all() end
 			elseif self.active_screen_type=="league" then
 				local old = g.database.vars.view.league_id
 				if k=="up" then g.database.vars.view.league_id = g.database.get_view_league().level_up end
@@ -157,8 +158,8 @@ function ribbon:keypressed(k, ir)
 				if k=="left" then g.database.vars.view.league_id = g.database.vars.view.league_id - 1 end
 				if k=="right" then g.database.vars.view.league_id = g.database.vars.view.league_id + 1 end
 				if not g.database.league_dict[g.database.vars.view.league_id] then g.database.vars.view.league_id = old end
+				if g.database.vars.view.league_id ~= old then g.state.refresh_all() end
 			end
-			g.state.refresh_all()
 		end
 	end
 end

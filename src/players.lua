@@ -117,10 +117,17 @@ function players.generate_nationality(data)
 end
 
 function players.generate_name(nationality) --5% chance of a random nationality name being produced
-	if love.math.random(1, 100) < 8 then nationality = g.database.get_random_nation().code end
-	if g.names[nationality]==nil then return "Player", love.math.random(1, 1000000) end
-	local first_list, last_list = g.names[nationality].first_names, g.names[nationality].surnames
-	return first_list[love.math.random(1,#first_list)], last_list[love.math.random(1,#last_list)]
+	local nat1, nat2 = nationality, nationality
+	local rand = love.math.random(1, 100)
+	if rand < 8 then -- Random last nationality
+		nat2 = g.database.get_random_nation().code
+	elseif rand < 12 then
+		nat1 = g.database.get_random_nation().code
+		nat2 = nat1
+	end
+	local first = g.names[nat1] and g.names[nat1].first_names[love.math.random(1, #g.names[nat1].first_names)] or "<FIRST>"
+	local last = g.names[nat2] and g.names[nat2].surnames[love.math.random(1, #g.names[nat2].surnames)] or "<LAST>"
+	return first, last
 end
 
 local function round_to_nearest_n(value, unit)
@@ -131,8 +138,8 @@ local wage_list = { -- First number is rating, second is wage in £ per week.
 	{ 5, 1 }, { 10, 5 }, { 15, 10 }, { 20, 15 }, { 25, 20 },
 	{ 30, 25 }, { 35, 40 }, { 40, 70 }, { 45, 130 }, { 50, 250 },
 	{ 55, 550 }, { 60, 1000 }, { 65, 3000 }, { 70, 7000 },
-	{ 75, 20000 }, { 80, 50000 }, { 85, 100000 }, { 90, 150000 },
-	{ 95, 230000 }, { 100, 350000 }
+	{ 75, 22000 }, { 80, 60000 }, { 85, 110000 }, { 90, 170000 },
+	{ 95, 240000 }, { 100, 350000 }
 }
 function players.generate_wage(age, rating)
 	--
