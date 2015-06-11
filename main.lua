@@ -23,6 +23,7 @@ function love.load(args)
 	-- Src
 	-- Load skin first
 	g.skin = require "src.skin"
+	g.board = require "src.board"
 	g.database = require "src.database"
 	g.engine = require "src.engine"
 	g.math = require "src.math"
@@ -176,11 +177,9 @@ end
 function g.start_game(team)
 	-- This is called by a button callback to start the game.
 	g.database.new_game(team.id) -- Run a new_game
-	g.database.new_season() -- Create a new season
-	--
-	-- Fire a message to welcome the player and give season targets
-	g.message.welcome()
-	g.message.season_targets()
+	g.message.welcome() -- Fire a message to welcome the player
+	g.message.initial_budget()
+	g.database.new_season() -- Create a new season, also gives season_targets message
 	--
 	g.database.save_game() -- Save the game
 	--

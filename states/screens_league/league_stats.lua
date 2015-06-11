@@ -1,5 +1,5 @@
 local league_stats = {}
-league_stats.name = "League Stats"
+league_stats.name = "League Full Table"
 
 function league_stats:init()
 	self.__z = 1

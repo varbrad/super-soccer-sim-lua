@@ -60,11 +60,12 @@ function player_list:set()
 		--
 		local ctr_years = { text = player.contract_time, x = rating.x - g.skin.margin - cw * 2, y = g.skin.bars.ty, w = cw * 2, align = "center", font = g.skin.bars.font[3] }
 		local ctr_wage = { text = g.format_currency(player.contract_wage), x = ctr_years.x - cw * 2 - g.skin.margin, y = g.skin.bars.ty, w = cw * 2, align = "right", font = g.skin.bars.font[3] }
+		local value = { text = g.format_currency(player.value), x = ctr_wage.x - cw * 2 - g.skin.margin, y = g.skin.bars.ty, w = cw * 2, align = "right", font = g.skin.bars.font[3] }
 		--
-		local age = { text = player.age, x = ctr_wage.x - cw - g.skin.margin, y = g.skin.bars.ty, w = cw, align = "center", font = g.skin.bars.font[3] }
+		local age = { text = player.age, x = value.x - cw - g.skin.margin, y = g.skin.bars.ty, w = cw, align = "center", font = g.skin.bars.font[3] }
 		--
 		bar.rects = { pos_rect, rating_rect }
-		bar.labels = { position, player_name, rating, ctr_years, ctr_wage, age }
+		bar.labels = { position, player_name, rating, ctr_years, ctr_wage, value, age }
 		bar.images = { nation_img }
 		--[[
 		local age = { text = player.age, x = 500, y = g.skin.bars.ty, w = cw, align = "center", font = g.skin.bars.font[3] }

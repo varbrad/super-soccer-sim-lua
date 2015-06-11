@@ -194,6 +194,10 @@ function database.new_season()
 			--
 		end
 	end
+	--
+	database.vars.league_position_target = g.board.league_position_target()
+	g.message.season_targets()
+	--
 end
 
 function database.end_season()

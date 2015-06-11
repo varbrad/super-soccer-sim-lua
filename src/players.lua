@@ -14,6 +14,7 @@ function players.generate_player(settings)
 	p.contract_time = love.math.random(1, 5)
 	p.position = settings.position or "gk"
 	p.position_value = p.position=="gk" and 1 or p.position=="df" and 2 or p.position=="mf" and 3 or 4
+	p.value = players.generate_value(p)
 	return p
 end
 
@@ -30,7 +31,7 @@ function players.generate_team(def, mid, att, nation)
 	end
 	-- 1st = 2, 5 (avg 3.5), 2nd = 1, 3 (avg 2), 3rd = -1, 1 (avg 0), 4th = -3, 1 (avg -1), 5th = -5, -2 (avg -3.5), 6th = -5, -2 (avg -3.5), 7th = -6, -2 (avg -4)
 	-- Averages = 3.5, 2.0, 0.0, -1.0, -3.5, -3.5, -4
-	local df = { {3, 5}, {0, 2}, {-2, 1}, {-3, 1}, {-5, -2}, {-5, -2}, {-6, -2} }
+	local df = { {3, 5}, {0, 2}, {-2, 1}, {-3, 1}, {-5, -2}, {-6, -3}, {-7, -3} }
 	for i = 1, #df do
 		local rating = def + love.math.random(df[i][1], df[i][2])
 		local age = (i==6 or i==7) and love.math.random(17,20) or nil -- Last 2 players will auto be under 21
@@ -47,7 +48,7 @@ function players.generate_team(def, mid, att, nation)
 		table.insert(p, players.generate_player(settings))
 	end
 	--
-	local at = { {1, 4}, {-1, 1}, {-2, 1}, {-5, -1} }
+	local at = { {1, 4}, {-1, 1}, {-2, 1}, {-6, -2} }
 	local random_under21 = love.math.random(1,#at)
 	for i=1, #at do
 		local rating = att + love.math.random(at[i][1], at[i][2])
@@ -58,12 +59,19 @@ function players.generate_team(def, mid, att, nation)
 	end
 	--
 	players.sort_by_rating(p)
+	--
+	for i = 1, #p do
+		local plyr = p[i]
+		g.console:log(plyr.first_name .. " " .. plyr.last_name .. " : " .. plyr.age .. " - Wage: " .. plyr.contract_wage .. " - Value " .. plyr.value)
+	end
+	--
 	return p
 end
 
 function players.get_position_players(pos, plyrs)
 	local l = {}
 	for i=1, #plyrs do if plyrs[i].position==pos then table.insert(l,plyrs[i]) end end
+	table.sort(l, function(a,b) return a.rating > b.rating end)
 	return l
 end
 
@@ -132,6 +140,38 @@ end
 
 local function round_to_nearest_n(value, unit)
 	return math.floor(value / unit + .5) * unit
+end
+
+local value_list = {
+	{ 5, 0 }, { 10, 50 }, { 15, 150 }, { 20, 350 }, { 25, 750 },
+	{ 30, 1500 }, { 35, 3000 }, { 40, 5000 }, { 45, 8000 },
+	{ 50, 16000 }, { 55, 30000 }, { 60, 120000 }, { 65, 350000 },
+	{ 70, 1100000 }, { 75, 4000000 }, { 80, 10000000 },
+	{ 85, 24000000 }, { 90, 48000000 }, { 95, 80000000 },
+	{ 100, 115000000 }
+}
+function players.generate_value(player)
+	local age, rating = player.age, player.rating
+	local age_bonus = age < 22 and 1 or age > 30 and (30-age) - 1 or 0
+	-- peak_age_diff will be between 0 and roughly 11
+	local potential_diff = player.potential - player.rating
+	if age >= 27 then potential_diff = -1 end -- If over 27, we probably will never hit our potential_diff
+	rating = rating + age_bonus + (potential_diff * .1)
+	--
+	for i = 1, #value_list do
+		local data = value_list[i]
+		if data[1] >= rating then
+			local max_value = data[2]
+			local min_value = value_list[i-1][2]
+			local diff = rating - value_list[i-1][1]
+			local value = min_value + (max_value - min_value) * (diff / 5)
+			local len_value = #tostring(value)
+			if len_value < 3 then len_value = 3 end
+			local round_unit = 10 ^ (len_value - 2)
+			local rounded = round_to_nearest_n(value, round_unit)
+			return rounded -- No rand_bonus, calculate that yourself!
+		end
+	end
 end
 
 local wage_list = { -- First number is rating, second is wage in £ per week.

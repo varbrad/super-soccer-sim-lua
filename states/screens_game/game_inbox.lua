@@ -92,7 +92,8 @@ function game_inbox:set()
 		bar.labels = { title, content }
 		--
 		local btn = g.ui.button.new("Delete", { w = "auto", image = g.image.new("icons/delete.png", {mipmap=true, w = 16, h = 16, color = g.skin.black}) } )
-		btn.x, btn.y = bar.x + bar.w - g.skin.margin - btn.w, bar.y + math.floor(bar.h/2 - btn.h/2 + .5)
+		local margin = math.floor(bar.h/2 - btn.h/2 + .5)
+		btn.x, btn.y = bar.x + bar.w - btn.w - margin, bar.y + margin
 		btn:set_colors(g.skin.red, g.skin.black, love.graphics.darken(g.skin.red))
 		btn.on_release = function(b)
 			g.message.delete(self.show_message)
@@ -134,11 +135,11 @@ function game_inbox:keypressed(k, ir)
 end
 
 function game_inbox:mousepressed(x, y, b)
-	for i = 1, #self.buttons do self.buttons[i]:mousepressed(x, y, b) end
+	for i = 1, #self.buttons do if self.buttons[i] then self.buttons[i]:mousepressed(x, y, b) end end
 end
 
 function game_inbox:mousereleased(x, y, b)
-	for i = 1, #self.buttons do self.buttons[i]:mousereleased(x, y, b) end
+	for i = 1, #self.buttons do if self.buttons[i] then self.buttons[i]:mousereleased(x, y, b) end end
 end
 
 return game_inbox
