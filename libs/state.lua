@@ -24,13 +24,13 @@ function s.add(state, ...)
 	_states_z[#_states_z+1] = state
 	-- Sort the z table
 	sort_z()
-	return (state.added or __NULL__)(state, ...)
+	if state.added then state.added(state, ...) end
 end
 
 function s.remove(state)
 	remove_from_table(_states, state)
 	remove_from_table(_states_z, state)
-	return (state.removed or __NULL__)(state)
+	if state.removed then state.removed(state) end
 end
 
 function s.switch(state, ...)
@@ -50,7 +50,7 @@ function s.swap(old, new, ...)
 			_states_z[#_states_z+1] = new
 			--
 			sort_z()
-			return (new.added or __NULL__)(new, ...)
+			if new.added then new.added(new, ...) end
 		end
 	end
 end
@@ -58,7 +58,7 @@ end
 function s.refresh(...)
 	-- Refreshes the active state
 	local state = s.active()
-	return (state.added or __NULL__)(state, ...)
+	if state.added then state.added(state, ...) end
 end
 
 function s.refresh_all()
@@ -72,7 +72,7 @@ function s.pop()
 	local state = s.active()
 	remove_from_table(_states, state)
 	remove_from_table(_states_z, state)
-	return (state.removed or __NULL__)(state)
+	if state.removed then state.removed(state) end
 end
 
 function s.active()

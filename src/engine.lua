@@ -107,6 +107,14 @@ local u_chance = 0.033
 local att_weight, mid_weight, boost_weight = 0.05, 0.04, 0.0035
 local min_chance = -0.004
 function engine.simulate_fixture(f)
+	engine.begin_fixture(f)
+	while not f.finished do
+		engine.step_fixture(f) -- Will automatically finish up the fixture once over (and flag with f.finished = true)
+	end
+end
+
+function engine.begin_fixture(f)
+	if f.finished then return end
 	local home = g.database.get_team(f.home)
 	local away = g.database.get_team(f.away)
 	--
@@ -137,25 +145,33 @@ function engine.simulate_fixture(f)
 	if a_chance < p_chance.away_min then a_chance = p_chance.away_min end
 	--
 	f.home_score, f.away_score = 0, 0
-	for i=1, 90 do
-		if i == 46 then f.half_time = { f.home_score, f.away_score } end
-		local h_g = h_chance > love.math.random()
-		local a_g = a_chance > love.math.random()
-		if h_g and a_g then h_g, a_g = false, false end
-		if h_g then f.home_score = f.home_score + 1 end
-		if a_g then f.away_score = f.away_score + 1 end
+	f.h_chance, f.a_chance = h_chance, a_chance
+	f.minute = 0
+end
+
+function engine.step_fixture(f)
+	f.minute = f.minute + 1
+	if f.minute == 46 then f.half_time = { f.home_score, f.away_score }
+	elseif f.minute == 91 then
+		if f.home_score > f.away_score then
+			f.winner = f.home
+			f.result_code = "1"
+		elseif f.away_score > f.home_score then
+			f.winner = f.away
+			f.result_code = "2"
+		else
+			f.draw = true
+			f.result_code = "X"
+		end
+		f.finished = true
+		f.minute = "FT"
 	end
-	if f.home_score > f.away_score then
-		f.winner = f.home
-		f.result_code = "1"
-	elseif f.away_score > f.home_score then
-		f.winner = f.away
-		f.result_code = "2"
-	else
-		f.draw = true
-		f.result_code = "X"
-	end
-	f.finished = true
+	--
+	local h_g = f.h_chance > love.math.random()
+	local a_g = f.a_chance > love.math.random()
+	if h_g and a_g then h_g, a_g = false, false end
+	if h_g then f.home_score = f.home_score + 1 end
+	if a_g then f.away_score = f.away_score + 1 end
 end
 
 function engine.update_league_table(league)
@@ -190,8 +206,6 @@ function engine.update_league_table(league)
 			as.pts = as.w*3+as.d;	as.apts = as.aw*3+as.ad
 			hs.cs, hs.hcs = hs.cs + (fix.away_score==0 and 1 or 0), hs.hcs + (fix.away_score==0 and 1 or 0)
 			as.cs, as.acs = as.cs + (fix.home_score==0 and 1 or 0), as.acs + (fix.home_score==0 and 1 or 0)
-		else
-			break
 		end
 	end
 	--

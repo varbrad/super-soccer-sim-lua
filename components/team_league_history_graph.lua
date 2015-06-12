@@ -16,7 +16,7 @@ function team_league_history_graph:set(team)
 	self.team = team
 	local graph_h = self.h - g.skin.margin * 4
 	local graph_w = self.w - g.skin.margin * 4
-	local top, left, bottom, right = g.skin.margin * 4, g.skin.margin * 4 + g.skin.bars.img_size, self.h - g.skin.margin * 4, self.w - g.skin.margin * 4
+	local top, left, bottom, right = g.skin.margin * 2, g.skin.margin * 2 + g.skin.bars.img_size, self.h - g.skin.margin * 2, self.w - g.skin.margin * 2
 	self.lines = {}
 	self.points = {}
 	self.rects = {}

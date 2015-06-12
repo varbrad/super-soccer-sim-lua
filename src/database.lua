@@ -159,6 +159,8 @@ function database.new_game(player_team_id)
 	vars.players = g.players.generate_team(def, mid, att, team.refs.league.flag) -- Gets a preset team of 21 players based around team stats
 	-- Inbox
 	vars.inbox = {}
+	-- Achievements
+	vars.achievements = {}
 	-- Financial
 	vars.finance = {}
 	vars.finance.cash = g.players.total_wage_bill(vars.players) * love.math.random(85, 115) -- Possible DIFFICULTY level set here (e.g. hard = 50, easy = 150)
@@ -294,12 +296,35 @@ function database.end_season()
 end
 
 function database.advance_week()
+	local player_team = database.get_player_team()
 	database.vars.week = database.vars.week + 1
 	if database.vars.week == 53 then
 		database.end_season()
 		database.new_season()
 		return
 	end
+	-- Does the player team have any fixtures this week?
+	local league_fixtures = g.engine.get_team_league_fixtures(player_team.refs.league, player_team)
+	for i = 1, #league_fixtures do
+		local f = league_fixtures[i]
+		if f.week == database.vars.week - 1 then
+			--This game needs to be played, goto the game center!
+			--Make sure to call post_advance_week in the game center!
+			--g.engine.simulate_fixture(f)
+			-- Remove the current screen, ribbon & navbar
+			g.state.pop()
+			g.state.remove(g.states.ribbon)
+			g.state.remove(g.states.navbar)
+			--
+			g.state.add(g.states.match_centre, f)
+			return
+		end
+	end
+	--
+	database:post_advance_week()
+end
+
+function database.post_advance_week()
 	-- Simulate all fixtures from the previous week
 	for i = 1, #database.league_list do
 		local league = database.league_list[i]
@@ -331,7 +356,8 @@ function database.advance_week()
 	-- Reduce the total cash of the club by the total_wage_bill
 	local total_wage_bill = g.players.total_wage_bill(database.vars.players)
 	database.vars.finance.cash = database.vars.finance.cash - total_wage_bill
-	--
+	-- Check for any achievements that will have been earned
+	g.achievements.check()
 end
 
 function database.save_game()

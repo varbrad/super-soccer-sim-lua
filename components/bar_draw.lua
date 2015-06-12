@@ -16,7 +16,10 @@ function bd.draw(bar, ox, oy, t_alpha)
 		for i=1, #bar.rects do
 			local rect = bar.rects[i]
 			love.graphics.setColorAlpha(rect.color, (rect.alpha or 255)  * t_alpha)
-			if rect.rounded then
+			if rect.radius then
+				love.graphics.circle("fill", bar.x + rect.x + ox, bar.y + rect.y + oy, rect.radius, rect.radius * 2)
+				if rect.smooth then love.graphics.circle("line", bar.x + rect.x + ox, bar.y + rect.y + oy, rect.radius, rect.radius * 2) end
+			elseif rect.rounded then
 				love.graphics.roundrect("fill", bar.x + rect.x + ox, bar.y + rect.y + oy, rect.w, rect.h, rect.rounded)
 			else
 				love.graphics.rectangle("fill", bar.x + rect.x + oy, bar.y + rect.y + oy, rect.w, rect.h)

@@ -23,14 +23,15 @@ function navbar:set()
 	local names = {
 		"Inbox",
 		"Squad",
-		"Youth System",
+		"Youth Academy",
 		"Financial",
 		--
 		g.database.get_player_team().short_name,
 		g.database.get_player_league().short_name,
 		--
 		"Quit",
-		"Save"
+		"Save",
+		"Achievements"
 	}
 	local funcs = {
 		-- Game btns
@@ -44,6 +45,7 @@ function navbar:set()
 		-- Bottom
 		function() g.state.pop(); g.state.remove(g.states.ribbon); g.state.remove(g.states.navbar); g.state.add(g.states.overview) end,
 		function() if not g.busy then g.database.save_game() end end,
+		function() g.state.switch(g.states.game_achievements) end,
 	}
 	local imgs = {
 		g.image.new("icons/inbox.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
@@ -55,10 +57,11 @@ function navbar:set()
 		g.image.new("logos/"..league.flag..league.level..".png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha, league = league }),
 		--
 		g.image.new("icons/error.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
-		g.image.new("icons/save.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha })
+		g.image.new("icons/save.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha }),
+		g.image.new("icons/star.png", {mipmap=true, w=32, h=32, color = team.color1, alpha = g.skin.bars.alpha })
 	}
-	local pos = { "top", "top", "top", "top", "gap_top", "top", "top", "bottom", "bottom" }
-	local whiten = {false, false, false, false, true, true, false, false}
+	local pos = { "top", "top", "top", "top", "gap_top", "top", "top", "bottom", "bottom", "bottom" }
+	local whiten = {false, false, false, false, true, true, false, false, false}
 	local top_y = btn_x
 	local bottom_y = g.skin.navbar.h - btn_w - btn_x
 	local index = 0

@@ -23,6 +23,7 @@ function love.load(args)
 	-- Src
 	-- Load skin first
 	g.skin = require "src.skin"
+	g.achievements = require "src.achievements"
 	g.board = require "src.board"
 	g.database = require "src.database"
 	g.engine = require "src.engine"
@@ -49,6 +50,7 @@ function love.load(args)
 		club_history = require "states.screens_club.club_history";
 		club_overview = require "states.screens_club.club_overview";
 		--
+		game_achievements = require "states.screens_game.game_achievements";
 		game_financial = require "states.screens_game.game_financial";
 		game_inbox = require "states.screens_game.game_inbox";
 		game_squad = require "states.screens_game.game_squad";
@@ -64,6 +66,7 @@ function love.load(args)
 		background = require "states.background";
 		console = require "states.console";
 		database_select = require "states.database_select";
+		match_centre = require "states.match_centre";
 		msgbox = require "states.msgbox";
 		navbar = require "states.navbar";
 		new_game = require "states.new_game";
@@ -286,7 +289,7 @@ function love.graphics.darken(color)
 end
 
 function love.graphics.setColorAlpha(color,alpha)
-	love.graphics.setColor(color[1],color[2],color[3],alpha)
+	love.graphics.setColor(color[1] or color.r,color[2] or color.g,color[3] or color.b,alpha)
 end
 
 function love.graphics.gradient(colors)

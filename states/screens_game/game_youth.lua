@@ -32,7 +32,7 @@ end
 
 function game_youth:set()
 	--
-	g.ribbon:set_game("Youth System")
+	g.ribbon:set_game("Youth Academy")
 end
 
 function game_youth:keypressed(k, ir)

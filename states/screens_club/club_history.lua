@@ -119,6 +119,9 @@ function club_history:set_team()
 		local gfpg = string.format("%.2f", data.stats.gf/data.stats.p)
 		local gapg = string.format("%.2f", data.stats.ga/data.stats.p)
 		local ppg = string.format("%.2f", data.stats.pts/data.stats.p)
+		if data.stats.p == 0 then
+			win_p, draw_p, lose_p, gfpg, gapg, ppg = "-", "-", "-", "-", "-", "-"
+		end
 		bar.labels[12] = { text = win_p, x = bar.labels[11].x + bar.labels[11].w + g.skin.margin * 3, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 		bar.labels[13] = { text = draw_p, x = bar.labels[12].x + bar.labels[12].w, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }
 		bar.labels[14] = { text = lose_p, x = bar.labels[13].x + bar.labels[13].w, y = g.skin.bars.ty, w = g.skin.bars.column_size, align = "center", font = g.skin.bars.font[3], color = g.skin.bars.color2 }

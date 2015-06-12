@@ -12,11 +12,11 @@ skin.black = hex("000000")
 skin.dark_red = hex("880404")
 
 -- Load fonts
-g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 13, 14, 24, 36, 48})
-g.font.new("regular", "assets/fonts/opensans/regular.ttf", 		{12, 13, 14, 24, 36, 48})
-g.font.new("italic", "assets/fonts/opensans/italic.ttf", 		{12, 13, 14, 24, 36, 48})
-g.font.new("semibold", "assets/fonts/opensans/semibold.ttf",	{12, 13, 14, 24, 36, 48})
-g.font.new("bold", "assets/fonts/opensans/bold.ttf",			{12, 13, 14, 24, 36, 48})
+g.font.new("console", "assets/fonts/consolas/regular.ttf",		{12, 13, 14, 24, 36, 48, 96})
+g.font.new("regular", "assets/fonts/opensans/regular.ttf", 		{12, 13, 14, 24, 36, 48, 96})
+g.font.new("italic", "assets/fonts/opensans/italic.ttf", 		{12, 13, 14, 24, 36, 48, 96})
+g.font.new("semibold", "assets/fonts/opensans/semibold.ttf",	{12, 13, 14, 24, 36, 48, 96})
+g.font.new("bold", "assets/fonts/opensans/bold.ttf",			{12, 13, 14, 24, 36, 48, 96})
 g.font.new("bebas", "assets/fonts/bebasneue/regular.otf",	 	{12, 13, 14, 24, 36, 48, 96})
 
 skin.colors = {
@@ -37,6 +37,7 @@ skin.darken = 0.8 -- 20% color reduction for darken
 
 --
 skin.header = {"bold", 48}
+skin.h2 = {"bebas", 48}
 skin.bold = {"bold", 14}
 
 skin.tween = {
