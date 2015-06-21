@@ -38,6 +38,7 @@ skin.darken = 0.8 -- 20% color reduction for darken
 --
 skin.header = {"bold", 48}
 skin.h2 = {"bebas", 48}
+skin.h3 = {"bebas", 36}
 skin.bold = {"bold", 14}
 
 skin.tween = {

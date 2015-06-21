@@ -6,8 +6,6 @@ function mc:arr_to_rgb(array)
 end
 function mc:tween_color(object, time, from, to, type)
 	-- Ignores alpha!
-	g.console:log("from", from.r, from.g, from.b)
-	g.console:log("to", to.r, to.g, to.b)
 	object.color = { r = from.r, g = from.g, b = from.b }
 	self.flux:to(object.color, time, { r = to.r, g = to.g, b = to.b }):ease(type)
 end
@@ -39,8 +37,9 @@ function mc:added(fixture)
 	--
 	local title_font = { "bold", 48 }
 	local score_font = { "bebas", 96 }
+	-- Panel 1 is for match bar, Panel 2 is for stats bar on left
 	self.panel1 = g.ui.panel.new(g.skin.margin, g.skin.margin, g.width - g.skin.margin * 2, 128 + g.skin.bars.h + g.skin.margin * 5) -- self.panel1 height needs to be set later
-	self.panel2 = g.ui.panel.new(g.skin.margin, self.panel1.y + self.panel1.h + g.skin.margin, self.panel1.w, g.height - g.skin.margin * 3 - self.panel1.h)
+	self.panel2 = g.ui.panel.new(g.skin.margin, self.panel1.y + self.panel1.h + g.skin.margin, 256 + g.skin.margin * 2, g.height - g.skin.margin * 3 - self.panel1.h)
 	self.panel1:set_colors(g.skin.components.color1, g.skin.components.color3)
 	self.panel2:set_colors(g.skin.components.color1, g.skin.components.color3)
 	--
@@ -82,8 +81,36 @@ function mc:added(fixture)
 	self.match_bar.rects = { home_rect, away_rect, score_rect_1, score_rect_2, event_rect, time_circ }
 	self.match_bar.labels = { home_name, away_name, event_name, home_score, away_score, time_label }
 	self.match_bar.images = { home_logo, away_logo }
+	----
 	--
-	self.bars = { self.match_bar }
+	self.stat_bar = { x = self.panel2.x + g.skin.margin, y = self.panel2.y + g.skin.margin, w = self.panel2.w - g.skin.margin * 2, h = self.panel2.h - g.skin.margin * 2, color = g.skin.black, alpha = 0 }
+	self.stat_bar.label_color = g.skin.bars.color2
+	local sbw = self.stat_bar.w / 2
+	local home_rect = { x = 0, y = 0, w = sbw - g.skin.margin / 2, h = 64 + g.skin.margin * 2, color = self.home.color1, alpha = g.skin.bars.alpha, rounded = g.skin.rounded }
+	local away_rect = { x = sbw + g.skin.margin / 2, y = 0, w = home_rect.w, h = 64 + g.skin.margin * 2, color = self.away.color1, alpha = g.skin.bars.alpha, rounded = g.skin.rounded }
+	local dx = math.floor(home_rect.w / 2 - 32 + .5)
+	local home_logo = g.image.new("logos/"..self.home.id..".png", {mipmap=true, w=64, h=64, x = dx, y = g.skin.margin })
+	local away_logo = g.image.new("logos/"..self.away.id..".png", {mipmap=true, w=64, h=64, x = away_rect.x + dx, y = g.skin.margin })
+	--
+	self.stat_bar.labels = {}
+	local labels = {"Possession", "Shots", "On Target", "Off Target", "Free Kicks", "Corner Kicks", "Offsides", "Fouls", "Yellow Cards", "Red Cards" }
+	local height_left = (self.stat_bar.h - home_rect.h) / #labels
+	local label_y = math.floor(height_left / 2 - g.font.height(g.skin.bars.font[1])/2 + .5)
+	local label2_y = math.floor(height_left / 2 - g.font.height(g.skin.h3)/2 + .5)
+	for i = 1, #labels do
+		local y = home_rect.y + home_rect.h + label_y + (i-1) * height_left
+		table.insert(self.stat_bar.labels, { text = labels[i], x = 0, y = y, w = self.stat_bar.w, align = "center", font = g.skin.bars.font[1] })
+		--
+		y = home_rect.y + home_rect.h + label2_y + (i-1) * height_left
+		table.insert(self.stat_bar.labels, { text = "-", x = home_rect.x - g.skin.tab, y = y, w = home_rect.w, align = "center", font = g.skin.h3 })
+		table.insert(self.stat_bar.labels, { text = "-", x = away_rect.x + g.skin.tab, y = y, w = away_rect.w, align = "center", font = g.skin.h3 })
+	end
+	--
+	self.stat_bar.rects = { home_rect, away_rect }
+	self.stat_bar.images = { home_logo, away_logo }
+	--
+	----
+	self.bars = { self.match_bar, self.stat_bar }
 	self.game_time = 0
 	--
 	g.tween_alpha()
