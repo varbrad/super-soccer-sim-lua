@@ -107,13 +107,14 @@ local u_chance = 0.033
 local att_weight, mid_weight, boost_weight = 0.05, 0.04, 0.0035
 local min_chance = -0.004
 function engine.simulate_fixture(f)
+	if f.finished then return end
 	engine.begin_fixture(f)
 	while not f.finished do
 		engine.step_fixture(f) -- Will automatically finish up the fixture once over (and flag with f.finished = true)
 	end
 end
 
-function engine.begin_fixture(f)
+function engine.begin_fixture(f, advanced) -- advanced is boolean, if true then simulate stats as well
 	if f.finished then return end
 	local home = g.database.get_team(f.home)
 	local away = g.database.get_team(f.away)
@@ -147,31 +148,90 @@ function engine.begin_fixture(f)
 	f.home_score, f.away_score = 0, 0
 	f.h_chance, f.a_chance = h_chance, a_chance
 	f.minute = 0
+	--
+	if advanced then
+		f.advanced = true
+		g.console:print(home.short_name .. " chance is " .. f.h_chance * 100 .. "%", g.skin.red)
+		g.console:print(away.short_name .. " chance is " .. f.a_chance * 100 .. "%", g.skin.red)
+		--
+		f.possession_home = 1 -- Points of posssesion home
+		f.possession_away = 1
+		f.on_target_home = 0
+		f.on_target_away = 0
+		f.off_target_home = 0
+		f.off_target_away = 0
+		--
+		f.possession = "-"
+	end
 end
 
 function engine.step_fixture(f)
-	f.minute = f.minute + 1
-	if f.minute == 46 then f.half_time = { f.home_score, f.away_score }
-	elseif f.minute == 91 then
-		if f.home_score > f.away_score then
-			f.winner = f.home
-			f.result_code = "1"
-		elseif f.away_score > f.home_score then
-			f.winner = f.away
-			f.result_code = "2"
-		else
-			f.draw = true
-			f.result_code = "X"
-		end
-		f.finished = true
-		f.minute = "FT"
+	if f.finished then return end
+	f.started = true
+	--
+	if f.minute == 90 then
+		engine.finish_fixture(f)
+		return
+	elseif f.minute == 45 then
+		f.minute = "HT"
+		f.half_time = { f.home_score, f.away_score }
+		return
+	elseif f.minute == "HT" then
+		f.minute = 45
 	end
+	--
+	f.minute = f.minute + 1
 	--
 	local h_g = f.h_chance > love.math.random()
 	local a_g = f.a_chance > love.math.random()
 	if h_g and a_g then h_g, a_g = false, false end
 	if h_g then f.home_score = f.home_score + 1 end
 	if a_g then f.away_score = f.away_score + 1 end
+	--
+	if f.advanced then
+		-- Advanced stats
+		local c_1, c_2 = f.h_chance * 13 > love.math.random(), f.a_chance * 12 > love.math.random()
+		f.possession_home = f.possession_home + love.math.random(1, 3)
+		f.possession_away = f.possession_away + love.math.random(1, 3)
+		if c_1 then f.possession_home = f.possession_home + love.math.random(5, 8) end
+		if c_2 then	f.possession_away = f.possession_away + love.math.random(5, 8) end
+		f.possession = math.floor(f.possession_home * 100 / (f.possession_home + f.possession_away) + .5)
+		--
+		local c_1, c_2 = f.h_chance * 7 > love.math.random(), f.a_chance * 7 > love.math.random()
+		if h_g then f.on_target_home = f.on_target_home + 1 end
+		if a_g then f.on_target_away = f.on_target_away + 1 end
+		if c_1 then
+			if love.math.random() > 0.55 then
+				f.on_target_home = f.on_target_home + 1
+			else
+				f.off_target_home = f.off_target_home + 1
+			end
+		end
+		if c_2 then
+			if love.math.random() > 0.55 then
+				f.on_target_away = f.on_target_away + 1
+			else
+				f.off_target_away = f.off_target_away + 1
+			end
+		end
+	end
+end
+
+function engine.finish_fixture(f)
+	if f.home_score > f.away_score then
+		f.winner = f.home
+		f.result_code = "1"
+	elseif f.away_score > f.home_score then
+		f.winner = f.away
+		f.result_code = "2"
+	else
+		f.draw = true
+		f.result_code = "X"
+	end
+	f.finished = true
+	f.minute = "FT"
+	-- Remove unnecessary chance data
+	f.h_chance, f.a_chance = nil, nil
 end
 
 function engine.update_league_table(league)

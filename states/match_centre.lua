@@ -24,7 +24,7 @@ function mc:added(fixture)
 	--
 	g.busy = true
 	self.fixture = fixture
-	g.engine.begin_fixture(fixture)
+	g.engine.begin_fixture(fixture, true)
 	--
 	self.home, self.away = g.database.get_team(fixture.home), g.database.get_team(fixture.away)
 	self.player = g.database.get_player_team()
@@ -94,6 +94,7 @@ function mc:added(fixture)
 	--
 	self.stat_bar.labels = {}
 	local labels = {"Possession", "Shots", "On Target", "Off Target", "Free Kicks", "Corner Kicks", "Offsides", "Fouls", "Yellow Cards", "Red Cards" }
+	local label_names = {"possession", "shots", "on_target", "off_target", "free_kicks", "corner_kicks", "offsides", "fouls", "yellow_cards", "red_cards" }
 	local height_left = (self.stat_bar.h - home_rect.h) / #labels
 	local label_y = math.floor(height_left / 2 - g.font.height(g.skin.bars.font[1])/2 + .5)
 	local label2_y = math.floor(height_left / 2 - g.font.height(g.skin.h3)/2 + .5)
@@ -102,8 +103,13 @@ function mc:added(fixture)
 		table.insert(self.stat_bar.labels, { text = labels[i], x = 0, y = y, w = self.stat_bar.w, align = "center", font = g.skin.bars.font[1] })
 		--
 		y = home_rect.y + home_rect.h + label2_y + (i-1) * height_left
-		table.insert(self.stat_bar.labels, { text = "-", x = home_rect.x - g.skin.tab, y = y, w = home_rect.w, align = "center", font = g.skin.h3 })
-		table.insert(self.stat_bar.labels, { text = "-", x = away_rect.x + g.skin.tab, y = y, w = away_rect.w, align = "center", font = g.skin.h3 })
+		local home_stat = { text = "-", x = home_rect.x - g.skin.tab, y = y, w = home_rect.w, align = "center", font = g.skin.h3 }
+		local away_stat = { text = "-", x = away_rect.x + g.skin.tab, y = y, w = away_rect.w, align = "center", font = g.skin.h3 }
+		table.insert(self.stat_bar.labels, home_stat)
+		table.insert(self.stat_bar.labels, away_stat)
+		--
+		self.stat_bar["home_" .. label_names[i]] = home_stat
+		self.stat_bar["away_" .. label_names[i]] = away_stat
 	end
 	--
 	self.stat_bar.rects = { home_rect, away_rect }
@@ -131,6 +137,16 @@ function mc:update(dt)
 	self.match_bar.time_label.text = self.fixture.minute=="FT" and "FT" or self.fixture.minute .. "'"
 	self.match_bar.home_score.text = self.fixture.home_score
 	self.match_bar.away_score.text = self.fixture.away_score
+	--
+	self.stat_bar.home_possession.text = self.fixture.started and self.fixture.possession .. "%" or "-"
+	self.stat_bar.away_possession.text = self.fixture.started and (100 - self.fixture.possession) .. "%" or "-"
+	self.stat_bar.home_shots.text = self.fixture.started and self.fixture.on_target_home + self.fixture.off_target_home or "-"
+	self.stat_bar.away_shots.text = self.fixture.started and self.fixture.on_target_away + self.fixture.off_target_away or "-"
+	self.stat_bar.home_on_target.text = self.fixture.started and self.fixture.on_target_home or "-"
+	self.stat_bar.away_on_target.text = self.fixture.started and self.fixture.on_target_away or "-"
+	self.stat_bar.home_off_target.text = self.fixture.started and self.fixture.off_target_home or "-"
+	self.stat_bar.away_off_target.text = self.fixture.started and self.fixture.off_target_away or "-"
+	--
 	if not self.fixture.finished then
 		delta = delta + dt
 		if delta > .1 then
