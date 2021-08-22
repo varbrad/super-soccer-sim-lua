@@ -235,6 +235,28 @@ function love.keypressed(k,ir)
 	-- Probably should be F1 thru F12 keys only, as nothing else cares about those!
 	if k=="f5" then
 		if g.in_game and not g.msgbox.active and not g.busy then g.database.save_game() end
+	elseif k=="f6" then
+		if g.in_game and not g.msgbox.active and not g.busy then
+			local t = g.database.get_player_team()
+			t.def = t.def + 1
+			t.mid = t.mid + 1
+			t.att = t.att + 1
+		end
+	elseif k=="f7" then
+		if g.in_game and not g.msgbox.active and not g.busy then
+			local t = g.database.get_player_team()
+			g.console:print(t.def .. ", " .. t.mid .. ", " .. t.att)
+		end
+	elseif k=="f8" then
+		if g.in_game and not g.msgbox.active and not g.busy then
+			for i=1, #g.database.team_list do
+				local team = g.database.team_list[i]
+				team.def=100
+				team.mid=100
+				team.att=100
+			end
+			g.console:print("All teams 100!")
+		end
 	elseif k=="f9" then
 		if g.in_game and not g.msgbox.active and not g.busy then g.database.load_game(); g.state.refresh_all() end
 	elseif k=="f10" then
