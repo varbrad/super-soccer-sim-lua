@@ -15,6 +15,7 @@ function mc:init()
 end
 
 local delta = nil
+local exit = false
 local last_score = nil
 
 function mc:added(fixture)
@@ -180,6 +181,33 @@ function mc:draw()
 end
 
 function mc:keypressed(k, ir)
+	if self.fixture.finished and k=="w" then
+		local s1 = love.math.random(1,3)
+		local s2 = love.math.random(0,3)
+		local min = s1 < s2 and s1 or s2
+		local max = s1 > s2 and s1 or s2
+		if (max == min) then max = max + 1 end
+		self.fixture.home_score = max
+		self.fixture.away_score = min
+		g.engine.finish_fixture(self.fixture)
+
+	end
+	if self.fixture.finished and k=="d" then
+		local s1 = love.math.random(0,3)
+		self.fixture.home_score = s1
+		self.fixture.away_score = s1
+		g.engine.finish_fixture(self.fixture)
+	end
+	if self.fixture.finished and k=="l" then
+		local s1 = love.math.random(1,3)
+		local s2 = love.math.random(0,3)
+		local min = s1 < s2 and s1 or s2
+		local max = s1 > s2 and s1 or s2
+		if (max == min) then max = max + 1 end
+		self.fixture.home_score = min
+		self.fixture.away_score = max
+		g.engine.finish_fixture(self.fixture)
+	end
 	if k==" " then 
 		if self.fixture.finished then 
 			exit = true

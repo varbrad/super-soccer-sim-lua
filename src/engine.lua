@@ -220,11 +220,14 @@ end
 function engine.finish_fixture(f)
 	if f.home_score > f.away_score then
 		f.winner = f.home
+		f.draw = nil
 		f.result_code = "1"
 	elseif f.away_score > f.home_score then
 		f.winner = f.away
+		f.draw = nil
 		f.result_code = "2"
 	else
+		f.winner = nil
 		f.draw = true
 		f.result_code = "X"
 	end
